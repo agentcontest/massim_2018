@@ -1,0 +1,71 @@
+{
+  "server" : {
+    "tournamentMode" : "round-robin",
+    "teamsPerMatch" : 3,
+    "teamSize" : 6,
+    "launch" : "1s",
+    "port" : 12300,
+    "backlog" : 10000,
+  },
+
+  "match" : [
+    {
+      "id" : "2017-TestSim-1of2",
+      "scenarioClass" : "city.CityScenario",
+      "steps" : 1000,
+      "map" : "london",
+      "seedCapital" : 50000,
+      "minLon" : -0.1978,
+      "maxLon" : -0.0354,
+      "minLat" : 51.4647,
+      "maxLat" : 51.5223,
+      "proximity" : 0.0002,
+      "cellSize" : 0.001,
+      "serviceTime" : 25,
+      "serviceFee" : 500
+    }
+  ],
+
+  "teams" : {
+    "A" : {
+      "agentA1": "1",
+      "agentA2": "1",
+      "agentA3": "1",
+      "agentA4": "1",
+      "agentA5": "1",
+      "agentA6": "1"
+    },
+    "B" : {
+      "agentB1": "1",
+      "agentB2": "1",
+      "agentB3": "1",
+      "agentB4": "1",
+      "agentB5": "1",
+      "agentB6": "1"
+    },
+    "C" : {
+      "agentB1": "1",
+      "agentB2": "1",
+      "agentB3": "1",
+      "agentB4": "1",
+      "agentB5": "1",
+      "agentB6": "1"
+    },
+    "D" : {
+      "agentB1": "1",
+      "agentB2": "1",
+      "agentB3": "1",
+      "agentB4": "1",
+      "agentB5": "1",
+      "agentB6": "1"
+    },
+    "E" : {
+      "agentB1": "1",
+      "agentB2": "1",
+      "agentB3": "1",
+      "agentB4": "1",
+      "agentB5": "1",
+      "agentB6": "1"
+    }
+  }
+}
