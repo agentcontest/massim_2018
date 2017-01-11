@@ -113,7 +113,7 @@ public class Server {
     private void go(){
 
         // setup backend
-        agentManager = new AgentManager(config.teams);
+        agentManager = new AgentManager(config.teams, config.agentTimeout);
         try {
             loginManager = new LoginManager(agentManager, config.port, config.backlog);
             loginManager.start();
@@ -221,15 +221,16 @@ public class Server {
                 AbstractSimulation sim = (AbstractSimulation) AbstractSimulation.class.getClassLoader()
                                                                 .loadClass("massim.scenario." + className)
                                                                 .newInstance();
-                sim.init(simConfig);
+                Map<String, Percept> initialPercepts = sim.init(simConfig, matchTeams);
+                agentManager.handleInitialPercepts(initialPercepts);
                 for (int i = 0; i < simConfig.optInt("steps", 1000); i++){
                     Log.log(Log.NORMAL, "Simulation at step " + i);
-                    sim.preStep(i);
-                    sim.getInitialPercept();
+                    Map<String, Percept> percepts = sim.preStep(i);
+                    sim.setActions(agentManager.requestActions(percepts));
                     sim.step(i);
-                    sim.postStep(i);
                 }
-                sim.finish();
+                Map<String, Percept> finalPercepts = sim.finish();
+                agentManager.handleFinalPercepts(finalPercepts);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 e.printStackTrace();
                 Log.log(Log.ERROR, "Could not load scenario class: " + className);
@@ -260,6 +261,8 @@ public class Server {
         Log.log(Log.NORMAL, "Configuring port: " + config.port);
         config.backlog = serverJSON.optInt("backlog", 10000);
         Log.log(Log.NORMAL, "Configuring backlog: " + config.backlog);
+        config.agentTimeout = serverJSON.optInt("agentTimeout", 4000);
+        Log.log(Log.NORMAL, "Configuring agent timeout: " + config.agentTimeout);
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");
