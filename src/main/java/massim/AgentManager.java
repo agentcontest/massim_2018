@@ -62,6 +62,7 @@ class AgentManager {
     void setSocket(Socket s, String agentName){
         if (agents.containsKey(agentName)){
             agents.get(agentName).setSocket(s);
+            agents.get(agentName).resendSimStartMessage();
         }
     }
 
@@ -427,6 +428,16 @@ class AgentManager {
                 sendQueue.put(message);
             } catch (InterruptedException e) {
                 Log.log(Log.ERROR, "Interrupted while trying to put message into queue.");
+            }
+        }
+
+        /**
+         * If there already exists a sim start message, it is added to the front of the {@link #sendQueue}.
+         */
+        void resendSimStartMessage() {
+            Document message = lastSimStartMessage;
+            if (message != null && !sendQueue.contains(message)){
+                sendQueue.addFirst(message);
             }
         }
     }

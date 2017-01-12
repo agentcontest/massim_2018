@@ -232,7 +232,6 @@ public class Server {
                 Map<String, Percept> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                e.printStackTrace();
                 Log.log(Log.ERROR, "Could not load scenario class: " + className);
             }
         }

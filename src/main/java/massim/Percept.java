@@ -13,4 +13,12 @@ public interface Percept {
      * @param simElement the ("simulation") element that will hold the converted percept
      */
     void toXML(Element simElement);
+
+    /**
+     * An empty percept which does nothing.
+     */
+    class EmptyPercept implements Percept{
+        @Override
+        public void toXML(Element simElement) {} //do nothing
+    }
 }

@@ -12,7 +12,7 @@
   "match" : [
     {
       "id" : "2017-TestSim-1of2",
-      "scenarioClass" : "city.CityScenario",
+      "scenarioClass" : "city.CitySimulation",
       "steps" : 1000,
       "map" : "london",
       "seedCapital" : 50000,
