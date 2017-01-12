@@ -21,7 +21,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * TODO write test cases
  * Responsible for network actions.
  * Created in 2017.
  * @author ta10
@@ -78,6 +77,11 @@ class LoginManager {
         }
     }
 
+    /**
+     * Creates and sends an auth-response message on the given socket.
+     * @param s the socket to send on
+     * @param result whether the authentication was successful
+     */
     private void sendAuthResponse(Socket s, boolean result) {
         try {
             OutputStream out = s.getOutputStream();

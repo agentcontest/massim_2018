@@ -33,11 +33,11 @@ class AgentManager {
 
     private long agentTimeout;
     private boolean disconnecting = false;
-    int maximumPacketLength = 65536;
 
     /**
      * Creates a new agent manager responsible for sending and receiving messages.
      * @param teams a list of all teams to configure the manager for
+     * @param agentTimeout the timeout to use for request-action messages (to wait for actions) in milliseconds
      */
     AgentManager(List<TeamConfig> teams, long agentTimeout) {
         teams.forEach(team -> team.getAgents().forEach((name, pass) -> {
@@ -50,6 +50,7 @@ class AgentManager {
      * Stops all related threads and closes all sockets involved.
      */
     void stop(){
+        disconnecting = true;
         agents.values().parallelStream().forEach(AgentProxy::close);
     }
 
@@ -115,7 +116,7 @@ class AgentManager {
     void handleFinalPercepts(Map<String, Percept> finalPercepts) {
         finalPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
-                agents.get(agName).sendPerceptMessage("sim-end", percept, -1);
+                agents.get(agName).handleFinalPercept(percept);
             }
         });
     }
@@ -126,28 +127,99 @@ class AgentManager {
      */
     private class AgentProxy {
 
+        // things that do not change
         private String name;
         private String teamName;
         private String password;
 
+        // networking things
         private Socket socket;
-
-        private final LinkedBlockingQueue<Document> sendQueue = new LinkedBlockingQueue<>();
-        private Map<Long, Document> actionQueue = new HashMap<>();
         private Thread sendThread;
         private Thread receiveThread;
 
+        // concurrency magic
         private AtomicLong messageCounter = new AtomicLong();
+        private LinkedBlockingDeque<Document> sendQueue = new LinkedBlockingDeque<>();
         private Map<Long, CompletableFuture<Document>> futureActions = new ConcurrentHashMap<>();
 
+        private Document lastSimStartMessage;
+
+        /**
+         * Creates a new instance with the given credentials.
+         * @param name the name of the agent
+         * @param team the name of the agent's team
+         * @param pass the password to authenticate the agent with
+         */
         private AgentProxy(String name, String team, String pass) {
             this.name = name;
             this.teamName = team;
             this.password = pass;
         }
 
+        /**
+         * Creates a message for the given initial percept and sends it to the remote agent.
+         * @param percept the initial percept to forward
+         */
+        void handleInitialPercept(Percept percept) {
+            Document doc = createEmptyMessage("sim-start");
+            if (doc == null) return;
+            Element el = (Element) doc.appendChild(doc.createElement("simulation"));
+            appendMessageID(el);
+            percept.toXML(el);
+            sendMessage(doc);
+            lastSimStartMessage = doc;
+        }
+
+        /**
+         * Creates a request-action message and sends it to the agent.
+         * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
+         * @param percept the step percept to forward
+         */
+        Action requestAction(Percept percept) {
+            Document doc = createEmptyMessage("request-action");
+            if (doc == null) return Action.NO_ACTION;
+            Element el = (Element) doc.appendChild(doc.createElement("perception"));
+            long id = appendMessageID(el);
+            percept.toXML(el);
+            CompletableFuture<Document> futureAction = new CompletableFuture<>();
+            futureActions.put(id, futureAction);
+            sendMessage(doc);
+            try {
+                // wait for action to be received
+                return Action.parse(futureAction.get(agentTimeout, TimeUnit.MILLISECONDS));
+            } catch (InterruptedException | ExecutionException e) {
+                Log.log(Log.ERROR, "Interrupted while waiting for action.");
+            } catch (TimeoutException e) {
+                Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
+            }
+            return Action.NO_ACTION;
+        }
+
+        /**
+         * Creates and send a sim-end message to the agent.
+         * @param percept the percept to append to the message.
+         */
+        void handleFinalPercept(Percept percept) {
+            lastSimStartMessage = null; // now we can stop resending it
+            Document doc = createEmptyMessage("sim-end");
+            if (doc == null) return;
+            Element el = (Element) doc.appendChild(doc.createElement("sim-result"));
+            percept.toXML(el);
+            sendMessage(doc);
+        }
+
+        /**
+         * Sets a new endpoint for sending and receiving messages. If a socket is already present, it is replaced and closed.
+         * @param newSocket the new socket to use for this agent
+         */
         private void setSocket(Socket newSocket){
-            close(); // potentially close old socket
+            // potentially close old socket
+            if (sendThread != null) sendThread.interrupt();
+            if (receiveThread != null) receiveThread.interrupt();
+            if (socket != null){
+                try { socket.close(); } catch (IOException ignored) {}
+            }
+            // set new socket and open new threads
             socket = newSocket;
             sendThread = new Thread(this::send);
             sendThread.start();
@@ -156,8 +228,8 @@ class AgentManager {
         }
 
         private void receive() {
-            DocumentBuilder docBuilder = null;
-            InputStream in = null;
+            DocumentBuilder docBuilder;
+            InputStream in;
             try {
                 docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 in = socket.getInputStream();
@@ -176,7 +248,8 @@ class AgentManager {
             boolean seekNextEnd = false; // is the terminating null-byte overdue?
             int packetLen = 0; // length of current packet so far
             try {
-                while (true) {
+                int maximumPacketLength = 65536;
+                while (!disconnecting) { // we can stop receiving when disconnect is triggered
                     // Read at least 1 byte or as many as available, limited by maximum packet length
                     int amount = in.available();
                     amount = Math.max(amount, 1);
@@ -212,12 +285,12 @@ class AgentManager {
         }
 
         /**
-         * Handles one received document.
+         * Handles one received document (from the remote agent).
          * @param doc the document that needs to be processed
          */
         private void handleReceivedDoc(Document doc) {
             TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = null;
+            Transformer transformer;
             try {
                 transformer = factory.newTransformer();
                 transformer.setOutputProperty("indent","yes");
@@ -267,8 +340,7 @@ class AgentManager {
         private void send() {
             while (true) {
                 try {
-                    if (disconnecting && sendQueue.isEmpty()) {
-                        //TODO disconnecting ?? (& other syncs)
+                    if (disconnecting && sendQueue.isEmpty()) { // we can stop when everything is sent (e.g. the bye message)
                         break;
                     }
                     Document sendDoc = sendQueue.take();
@@ -299,96 +371,63 @@ class AgentManager {
          * Closes socket and stops threads (if they exist).
          */
         private void close() {
+            sendMessage(createEmptyMessage("bye"));
+            try {
+                sendThread.join(5000); // give bye-message some time to be sent (but not too much)
+            } catch (InterruptedException e) {
+                Log.log(Log.ERROR, "Interrupted while waiting for disconnection.");
+            }
+            if (sendThread != null) sendThread.interrupt();
+            if (receiveThread != null) receiveThread.interrupt();
             if (socket != null) {
                 try {
                     socket.close();
                 } catch (IOException ignored) {}
             }
-            if (sendThread != null) sendThread.interrupt();
-            if (receiveThread != null) receiveThread.interrupt();
         }
 
         /**
-         * Creates a message for the given initial percept and sends it to the remote agent.
-         * @param percept the initial percept to forward
+         * Creates an "empty" message XML object.
+         * @param type the type of the message ("request-action" etc.)
+         * @return the message document
          */
-        void handleInitialPercept(Percept percept) {
-            sendPerceptMessage("sim-start", percept, -1);
-        }
-
-        /**
-         * Creates a request-action message and sends it to the agent.
-         * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
-         * @param percept the step percept to forward
-         */
-        Action requestAction(Percept percept) {
-            long id = messageCounter.getAndIncrement();
-            CompletableFuture<Document> futureAction = new CompletableFuture<>();
-            futureActions.put(id, futureAction);
-            id = sendPerceptMessage("request-action", percept, id);
-            if(id != -1) { // id might be -1 again if sth. went wrong while sending the message
-                try {
-                    // wait for action to be received
-                    return Action.parse(futureAction.get(agentTimeout, TimeUnit.MILLISECONDS));
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.log(Log.ERROR, "Interrupted while waiting for action.");
-                } catch (TimeoutException e) {
-                    Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
-                }
-            }
-            return Action.NO_ACTION;
-        }
-
-        /**
-         * Creates a default message that can be sent to agents.
-         * @param msgType the type of the message. Current types include "sim-start", "sim-end", "request-action", etc.
-         * @param percept the percept to attach to the message
-         * @param messageID the messageID to use. If it is -1 and a real one is needed, a new one will be drawn from {@link #messageCounter}
-         * @return the message id used or -1 (in case of sim-end or error)
-         */
-        private long sendPerceptMessage(String msgType, Percept percept, long messageID) {
-            DocumentBuilder docBuilder = null;
+        private Document createEmptyMessage(String type){
+            DocumentBuilder docBuilder;
             try {
                 docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             } catch (ParserConfigurationException e) {
                 Log.log(Log.ERROR, "Serious parser exception. Could not create message.");
-                return messageID;
+                return null;
             }
             Document doc = docBuilder.newDocument();
             Element root = doc.createElement("message");
             doc.appendChild(root);
-            long timestamp = System.currentTimeMillis();
-            root.setAttribute("timestamp", Long.toString(timestamp));
-            root.setAttribute("type", msgType);
+            root.setAttribute("timestamp", Long.toString(System.currentTimeMillis()));
+            root.setAttribute("type", type);
+            return doc;
+        }
 
-            Element simElement;
-            switch(msgType) {
-                case "sim-start":
-                    simElement = doc.createElement("simulation");
-                    break;
-                case "request-action":
-                    simElement = doc.createElement("perception");
-                    simElement.setAttribute("deadline", String.valueOf(timestamp + agentTimeout));
-                    break;
-                case "sim-end":
-                    simElement = doc.createElement("sim-result");
-                    break;
-                default:
-                    Log.log(Log.ERROR, "Unknown message type.");
-                    return messageID;
-            }
-            if (!msgType.equals("sim-end")){ // only sim-end has no ID
-                long id = messageID == -1? messageCounter.getAndIncrement() : messageID;
-                simElement.setAttribute("id", String.valueOf(id));
-            }
-            doc.appendChild(simElement);
-            percept.toXML(simElement);
+        /**
+         * Sets a new message ID to the given element
+         * @param messageChild the child node of a message document.
+         * @return the new message ID that has been set
+         */
+        private long appendMessageID(Element messageChild){
+            long id = messageCounter.getAndIncrement();
+            messageChild.setAttribute("id", String.valueOf(id));
+            return id;
+        }
+
+        /**
+         * Puts the given message into the send queue as soon as possible.
+         * @param message the message document to send
+         */
+        private void sendMessage(Document message){
             try {
-                sendQueue.put(doc);
+                sendQueue.put(message);
             } catch (InterruptedException e) {
                 Log.log(Log.ERROR, "Interrupted while trying to put message into queue.");
             }
-            return messageID;
         }
     }
 }
