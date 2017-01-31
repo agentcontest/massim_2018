@@ -19,6 +19,7 @@ public abstract class AbstractSimulation {
      * @param steps total number of steps
      * @param config the scenario's configuration.
      * @param matchTeams set of participating teams and their details
+     * @return map of agent names to their respective initial (sim-start) percept
      */
     public abstract Map<String, Percept> init(int steps, JSONObject config, Set<TeamConfig> matchTeams);
 
@@ -27,6 +28,7 @@ public abstract class AbstractSimulation {
      * Can be used to prepare the actual step and definitely needs to calculate the agents' percepts.
      * The agent's actions are (of course) not set yet as they need the percepts first.
      * @param stepNo number of the simulation step
+     * @return map from agent names to their current step percept (for request-action message)
      */
     public abstract Map<String, Percept> preStep(int stepNo);
 
@@ -40,6 +42,7 @@ public abstract class AbstractSimulation {
 
     /**
      * Finish scenario execution, prepare results, etc.
+     * @return map from agent names to sim-end percepts
      */
     public abstract Map<String, Percept> finish();
 }

@@ -536,7 +536,6 @@ class ActionExecutor {
         });
     }
 
-
     /**
      * Checks if a team of entities has all necessary items (except tools) to assemble an item.
      * If called to apply changes, checks first whether changes can be applied in total
@@ -545,7 +544,8 @@ class ActionExecutor {
      * @param assembler the head assembler
      * @param assistants the assistant assemblers
      * @param applyChanges whether to apply the changes (i.e. remove parts and add product to head assembler)
-     * @return the freed space of the head assembler (without adding the volume of the potential product) or -1 if assembly would not work
+     * @return the result of the assemble action, i.e. one of {@link #SUCCESSFUL}, {@link #FAILED_ITEM_TYPE},
+     * {@link #FAILED_ITEM_AMOUNT}, {@link #FAILED_CAPACITY}
      */
     private String canBeAssembled(Item item, Entity assembler, Set<Entity> assistants, boolean applyChanges){
         if(!item.needsAssembly()) return FAILED_ITEM_TYPE;
