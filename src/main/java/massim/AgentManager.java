@@ -40,8 +40,8 @@ class AgentManager {
      * @param agentTimeout the timeout to use for request-action messages (to wait for actions) in milliseconds
      */
     AgentManager(List<TeamConfig> teams, long agentTimeout) {
-        teams.forEach(team -> team.getAgents().forEach((name, pass) -> {
-            agents.put(name, new AgentProxy(name, team.getName(), pass));
+        teams.forEach(team -> team.getAgentNames().forEach((name) -> {
+            agents.put(name, new AgentProxy(name, team.getName(), team.getPassword(name)));
         }));
         this.agentTimeout = agentTimeout;
     }
@@ -178,7 +178,7 @@ class AgentManager {
          */
         Action requestAction(Percept percept) {
             Document doc = createEmptyMessage("request-action");
-            if (doc == null) return Action.NO_ACTION;
+            if (doc == null) return Action.STD_NO_ACTION;
             Element el = (Element) doc.appendChild(doc.createElement("perception"));
             long id = appendMessageID(el);
             percept.toXML(el);
@@ -193,7 +193,7 @@ class AgentManager {
             } catch (TimeoutException e) {
                 Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
             }
-            return Action.NO_ACTION;
+            return Action.STD_NO_ACTION;
         }
 
         /**

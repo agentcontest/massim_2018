@@ -14,14 +14,13 @@ import java.util.Set;
  */
 public abstract class AbstractSimulation {
 
-    private Map<String, Action> lastActions;
-
     /**
      * Setup the scenario. Called before the first step.
+     * @param steps total number of steps
      * @param config the scenario's configuration.
      * @param matchTeams set of participating teams and their details
      */
-    public abstract Map<String, Percept> init(JSONObject config, Set<TeamConfig> matchTeams);
+    public abstract Map<String, Percept> init(int steps, JSONObject config, Set<TeamConfig> matchTeams);
 
     /**
      * Called before each step.
@@ -35,29 +34,12 @@ public abstract class AbstractSimulation {
      * Execute one step in the scenario.
      * The agent's new actions have been set now.
      * @param stepNo number of the simulation step
-     * @return mapping from agent names to their percept resulting from the step
+     * @param actionMap mapping from agent names to their actions for this step
      */
-    public abstract Map<String, Percept> step(int stepNo);
+    public abstract void step(int stepNo, Map<String, Action> actionMap);
 
     /**
      * Finish scenario execution, prepare results, etc.
      */
     public abstract Map<String, Percept> finish();
-
-    /**
-     * Stores the actions so they can be processed in the next call to {@link AbstractSimulation#step(int)}
-     * @param actions mapping from agent names to actions that were received by the agents
-     */
-    public void setActions(Map<String,Action> actions) {
-        lastActions = actions;
-    }
-
-    /**
-     * Retrieves the latest action for the given agent.
-     * @param agentName name of the agent
-     * @return the last action of the agent
-     */
-    protected Action getAction(String agentName){
-        return lastActions.getOrDefault(agentName, Action.NO_ACTION);
-    }
 }

@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * Created in 2017.
- * MASSim massim.Server main class/entry point.
+ * MASSim server main class/entry point.
  * @author ta10
  */
 public class Server {
@@ -221,13 +221,13 @@ public class Server {
                 AbstractSimulation sim = (AbstractSimulation) AbstractSimulation.class.getClassLoader()
                                                                 .loadClass("massim.scenario." + className)
                                                                 .newInstance();
-                Map<String, Percept> initialPercepts = sim.init(simConfig, matchTeams);
+                int steps = simConfig.optInt("steps", 1000);
+                Map<String, Percept> initialPercepts = sim.init(steps, simConfig, matchTeams);
                 agentManager.handleInitialPercepts(initialPercepts);
-                for (int i = 0; i < simConfig.optInt("steps", 1000); i++){
+                for (int i = 0; i < steps; i++){
                     Log.log(Log.NORMAL, "Simulation at step " + i);
                     Map<String, Percept> percepts = sim.preStep(i);
-                    sim.setActions(agentManager.requestActions(percepts));
-                    sim.step(i);
+                    sim.step(i, agentManager.requestActions(percepts)); // execute step with agent actions
                 }
                 Map<String, Percept> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);

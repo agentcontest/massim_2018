@@ -11,7 +11,7 @@
 
   "match" : [
     {
-      "id" : "2017-TestSim-1of2",
+      "id" : "2017-TestSim-1of1",
       "scenarioClass" : "city.CitySimulation",
       "steps" : 1000,
       "map" : "london",
@@ -20,10 +20,66 @@
       "maxLon" : -0.0354,
       "minLat" : 51.4647,
       "maxLat" : 51.5223,
+      "centerLat" : 51.4885438,
+      "centerLon" : -0.1112036,
       "proximity" : 0.0002,
       "cellSize" : 0.001,
       "serviceTime" : 25,
-      "serviceFee" : 500
+      "serviceFee" : 500,
+      "randomSeed" : 17,
+      "randomFail" : 1,
+
+      "roles" : {
+        "Car" : {
+          "speed" : 3,
+          "load" : 550,
+          "battery" : 500,
+          "roads" : ["road"]
+        },
+        "Drone" : {
+          "speed" : 5,
+          "load" : 100,
+          "battery" : 250,
+          "roads" : ["air"]
+        },
+        "Motorcycle" : {
+          "speed" : 4,
+          "load" : 300,
+          "battery" : 350,
+          "roads" : ["road"]
+        },
+        "Truck" : {
+          "speed" : 2,
+          "load" : 3000,
+          "battery" : 1000,
+          "roads" : ["road"]
+        }
+      },
+
+      "entities" : [{"Car" : 2}, {"Drone" : 2}, {"Motorcycle" : 1}, {"Truck" : 1}],
+
+      "generate" : {
+        "facilities" : {
+          "quadSize" : 0.04,
+          "chargingStations" : {
+            "density" : 0.9
+          },
+          "shops" : {
+            "density" : 0.8
+          },
+          "dumps" : {
+            "density" : 0.6
+          },
+          "workshops" : {
+            "density" : 0.6
+          },
+          "storage" : {
+            "density" : 0.8
+          }
+        },
+        "items" : {},
+        "jobs" : {}
+      }
     }
   ],
 

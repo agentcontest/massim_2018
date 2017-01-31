@@ -1,7 +1,6 @@
 package massim.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents one configured team.
@@ -9,24 +8,55 @@ import java.util.Map;
  */
 public class TeamConfig {
     private String name;
-    private Map<String, String> agents = new HashMap<>();
 
+    private Map<String, String> passwords = new HashMap<>();
+    private Vector<String> agents = new Vector<>();
+
+    /**
+     * Creates a new team with the given name.
+     * @param name the name of the team
+     */
     public TeamConfig(String name){
         this.name = name;
     }
 
+    /**
+     * @return the name of the team
+     */
     public String getName(){
         return name;
     }
 
+    /**
+     * Adds an agent to the team (in order).
+     * @param name name of the agent
+     * @param password the agent's password
+     */
     public void addAgent(String name, String password){
-        agents.put(name, password);
+        agents.add(name);
+        passwords.put(name, password);
     }
 
     /**
-     * @return Mapping from agent names to passwords
+     * @param agentName name of an agent
+     * @return the agent's password or null if no such agent exists
      */
-    public Map<String, String> getAgents(){
-        return agents;
+    public String getPassword(String agentName){
+        return passwords.get(agentName);
+    }
+
+    /**
+     * Creates a new list containing the names of all agents in this team.
+     * @return the new set
+     */
+    public Vector<String> getAgentNames(){
+        return new Vector<>(agents);
+    }
+
+    /**
+     * @return the number of agents in this team
+     */
+    public int getSize(){
+        return agents.size();
     }
 }
