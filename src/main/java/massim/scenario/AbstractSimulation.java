@@ -26,7 +26,6 @@ public abstract class AbstractSimulation {
     /**
      * Called before each step.
      * Can be used to prepare the actual step and definitely needs to calculate the agents' percepts.
-     * The agent's actions are (of course) not set yet as they need the percepts first.
      * @param stepNo number of the simulation step
      * @return map from agent names to their current step percept (for request-action message)
      */

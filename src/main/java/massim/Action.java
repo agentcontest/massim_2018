@@ -24,10 +24,10 @@ import java.util.List;
 public class Action {
 
     public final static String NO_ACTION = "noAction";
-    public final static String UNKNOWN_ACTION = "unknownAction";
-    public final static String RANDOM_FAIL = "randomFail";
+    private final static String UNKNOWN_ACTION = "unknownAction";
+    private final static String RANDOM_FAIL = "randomFail";
 
-    public static final Action STD_NO_ACTION = new Action(NO_ACTION);
+    static final Action STD_NO_ACTION = new Action(NO_ACTION);
     public static final Action STD_UNKNOWN_ACTION = new Action(UNKNOWN_ACTION);
     public static final Action STD_RANDOM_FAIL_ACTION = new Action(RANDOM_FAIL);
 
@@ -40,7 +40,7 @@ public class Action {
     @XmlElement(name = "p")
     private List<String> params = new LinkedList<>();
 
-    protected Action(String type, String... parameters){
+    private Action(String type, String... parameters){
         this.type = type;
         this.params.addAll(Arrays.asList(parameters));
     }
@@ -61,7 +61,7 @@ public class Action {
     }
 
     /**
-     * Creates a message document that would be expected by the server from this object.
+     * Creates an action message document, that would be expected by the server, containing the data of this action.
      * @return the XML document
      */
     public Document toMessage(){
