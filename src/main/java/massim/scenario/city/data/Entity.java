@@ -164,4 +164,11 @@ public class Entity {
     public void clearRoute() {
         role = null;
     }
+
+    /**
+     * @return the mutable inventory of this agent. Proceed with caution.
+     */
+    public ItemBox getInventory(){
+        return items;
+    }
 }

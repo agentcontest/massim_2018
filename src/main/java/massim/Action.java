@@ -40,7 +40,7 @@ public class Action {
     @XmlElement(name = "p")
     private List<String> params = new LinkedList<>();
 
-    private Action(String type, String... parameters){
+    Action(String type, String... parameters){
         this.type = type;
         this.params.addAll(Arrays.asList(parameters));
     }

@@ -4,7 +4,7 @@ import massim.Log;
 import massim.RNG;
 import massim.config.TeamConfig;
 import massim.scenario.city.CityMap;
-import massim.scenario.city.data.facilities.Facility;
+import massim.scenario.city.data.facilities.*;
 import massim.scenario.city.util.Generator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,8 +25,14 @@ public class WorldState {
 
     private List<Tool> tools;
     private Map<String, Item> items = new HashMap<>();
-    private Map<String, Facility> facilities = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
+
+    private Map<String, Facility> facilities = new HashMap<>();
+    private Set<Workshop> workshops = new HashSet<>();
+    private Set<Dump> dumps = new HashSet<>();
+    private Set<ChargingStation> chargingStations = new HashSet<>();
+    private Set<Shop> shops = new HashSet<>();
+    private Set<Storage> storages = new HashSet<>();
 
     private Vector<String> teamNames = new Vector<>();
     private Vector<String> agentNames;
@@ -104,6 +110,13 @@ public class WorldState {
         generator.generateItems(tools).forEach(i -> items.put(i.getName(), i));
         generator.generateFacilities().forEach(f -> facilities.put(f.getName(), f));
         facilities.values().forEach(f -> facilityByLocation.put(f.getLocation(), f));
+        facilities.values().forEach(f -> {
+            if(f instanceof Workshop) workshops.add((Workshop) f);
+            else if(f instanceof ChargingStation) chargingStations.add((ChargingStation) f);
+            else if(f instanceof Shop) shops.add((Shop) f);
+            else if(f instanceof Storage) storages.add((Storage) f);
+            else if(f instanceof Dump) dumps.add((Dump) f);
+        });
 
         // draw initial locations
         Location[] initialLocations = new Location[matchTeams.iterator().next().getSize()];
@@ -283,5 +296,45 @@ public class WorldState {
      */
     public int getRandomFail(){
         return randomFail;
+    }
+
+    public String getSimID() {
+        // TODO
+        return "sim";
+    }
+
+    /**
+     * @param e an entity in this world
+     * @return the name of the agent connected to the entity or null if this entity does not exist
+     */
+    public String getAgentForEntity(Entity e){
+        return entityToAgent.get(e);
+    }
+
+    public Set<Dump> getDumps() {
+        return dumps;
+    }
+
+    public Set<Workshop> getWorkshops() {
+        return workshops;
+    }
+
+    public Set<ChargingStation> getChargingStations() {
+        return chargingStations;
+    }
+
+    public Set<Shop> getShops() {
+        return shops;
+    }
+
+    public Set<Storage> getStorages() {
+        return storages;
+    }
+
+    /**
+     * @return a list of all team states
+     */
+    public List<TeamState> getTeams() {
+        return new ArrayList<>(teams.values());
     }
 }

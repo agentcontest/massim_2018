@@ -6,6 +6,7 @@ import massim.scenario.city.data.Location;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Shop facility in the City scenario.
@@ -14,9 +15,19 @@ public class Shop extends Facility{
 
     private ItemBox stock = new ItemBox();
     private Map<Item, Integer> prices = new HashMap<>();
+    private int restock;
+    private int nextRestock;
 
-    public Shop(String name, Location location) {
+    /**
+     * Creates a new shop.
+     * @param name the name of the shop
+     * @param location the shop's location
+     * @param restock how many steps until and between the shop restocks one of each item
+     */
+    public Shop(String name, Location location, int restock) {
         super(name, location);
+        this.restock = restock;
+        this.nextRestock = restock;
     }
 
     /**
@@ -64,5 +75,30 @@ public class Shop extends Facility{
      */
     public void restock(Item item, int amount){
         stock.store(item, amount);
+    }
+
+    /**
+     * @return all items that were ever offered by this shop
+     */
+    public Set<Item> getOfferedItems(){
+        return stock.getStoredTypes();
+    }
+
+    /**
+     * Should be called after each step. Triggers restocking.
+     */
+    public void step(){
+        nextRestock = Math.max(0, nextRestock - 1);
+        if(nextRestock == 0){
+            nextRestock = restock;
+            stock.getStoredTypes().forEach(item -> restock(item, 1));
+        }
+    }
+
+    /**
+     * @return the restock interval of this shop
+     */
+    public int getRestock() {
+        return restock;
     }
 }

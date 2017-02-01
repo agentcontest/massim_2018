@@ -129,4 +129,11 @@ public class Storage extends Facility{
         ItemBox targetBox = deliveredItems.get(team);
         if(targetBox != null) targetBox.addAll(box);
     }
+
+    /**
+     * @return this storage's capacity
+     */
+    public int getCapacity() {
+        return capacity;
+    }
 }

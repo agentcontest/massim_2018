@@ -19,12 +19,18 @@ public class Job {
     private String source;
     private Storage storage;
     private int reward;
+    private int beginStep;
+    private int endStep;
 
     private Map<Item, Integer> requiredItems = new HashMap<>();
     private Map<String, ItemBox> deliveredItems = new HashMap<>();
 
-    public Job(int reward, String source, Storage storage){
+    public Job(int reward, String source, Storage storage, int begin, int end){
         this.source = source;
+        this.reward = reward;
+        this.storage = storage;
+        this.beginStep = beginStep;
+        this.endStep = endStep;
     }
 
     public boolean isActive(){
@@ -125,6 +131,14 @@ public class Job {
      */
     public void acquireName(){
         if(name.equals("")) name = "job" + counter.getAndIncrement();
+    }
+
+    public int getBeginStep() {
+        return beginStep;
+    }
+
+    public int getEndStep() {
+        return endStep;
     }
 
     /**

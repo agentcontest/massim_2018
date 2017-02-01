@@ -1,6 +1,10 @@
 package massim;
 
 import massim.config.TeamConfig;
+import massim.messages.Message;
+import massim.messages.SimEndContent;
+import massim.messages.SimStartPercept;
+import massim.messages.StepPercept;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -80,7 +84,7 @@ class AgentManager {
      * Sends initial percepts to the agents and stores them for later (possible agent reconnection).
      * @param initialPercepts mapping from agent names to initial percepts
      */
-    void handleInitialPercepts(Map<String, Percept> initialPercepts) {
+    void handleInitialPercepts(Map<String, SimStartPercept> initialPercepts) {
         initialPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
                 agents.get(agName).handleInitialPercept(percept);
@@ -94,13 +98,13 @@ class AgentManager {
      * @param percepts mapping from agent names to percepts of the current simulation state
      * @return mapping from agent names to actions received in response
      */
-    Map<String, Action> requestActions(Map<String, Percept> percepts) {
+    Map<String, Action> requestActions(Map<String, StepPercept> percepts) {
         // each thread needs to countdown the latch when it finishes
         CountDownLatch latch = new CountDownLatch(agents.keySet().size());
         Map<String, Action> resultMap = new ConcurrentHashMap<>();
         percepts.forEach((agName, percept) -> {
             // start a new thread to get each action
-            new Thread(() -> agents.get(agName).requestAction(percept)).start();
+            new Thread(() -> agents.get(agName).requestAction(percept, latch)).start();
         });
         try {
             latch.await(2 * agentTimeout, TimeUnit.MILLISECONDS); // timeout ensured by threads; use this one for safety reasons
@@ -114,7 +118,7 @@ class AgentManager {
      * Sends sim-end percepts to the agents.
      * @param finalPercepts mapping from agent names to sim-end percepts
      */
-    void handleFinalPercepts(Map<String, Percept> finalPercepts) {
+    void handleFinalPercepts(Map<String, SimEndContent> finalPercepts) {
         finalPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
                 agents.get(agName).handleFinalPercept(percept);
@@ -161,38 +165,34 @@ class AgentManager {
          * Creates a message for the given initial percept and sends it to the remote agent.
          * @param percept the initial percept to forward
          */
-        void handleInitialPercept(Percept percept) {
-            Document doc = createEmptyMessage("sim-start");
-            if (doc == null) return;
-            Element el = (Element) doc.appendChild(doc.createElement("simulation"));
-            appendMessageID(el);
-            percept.toXML(el);
-            sendMessage(doc);
-            lastSimStartMessage = doc;
+        void handleInitialPercept(SimStartPercept percept) {
+            lastSimStartMessage = new Message(System.currentTimeMillis(), percept).toXML();
+            sendMessage(lastSimStartMessage);
         }
 
         /**
          * Creates a request-action message and sends it to the agent.
          * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
          * @param percept the step percept to forward
+         * @param latch the latch to count down after the action is acquired (or not)
+         * @return the action that was received by the agent (or {@link Action#STD_NO_ACTION})
          */
-        Action requestAction(Percept percept) {
-            Document doc = createEmptyMessage("request-action");
-            if (doc == null) return Action.STD_NO_ACTION;
-            Element el = (Element) doc.appendChild(doc.createElement("perception"));
-            long id = appendMessageID(el);
-            percept.toXML(el);
+        Action requestAction(StepPercept percept, CountDownLatch latch) {
+            long id = messageCounter.getAndIncrement();
+            percept.finalize(id, System.currentTimeMillis() + agentTimeout);
             CompletableFuture<Document> futureAction = new CompletableFuture<>();
             futureActions.put(id, futureAction);
-            sendMessage(doc);
+            sendMessage(new Message(System.currentTimeMillis(), percept).toXML());
             try {
                 // wait for action to be received
+                latch.countDown();
                 return Action.parse(futureAction.get(agentTimeout, TimeUnit.MILLISECONDS));
             } catch (InterruptedException | ExecutionException e) {
                 Log.log(Log.ERROR, "Interrupted while waiting for action.");
             } catch (TimeoutException e) {
                 Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
             }
+            latch.countDown();
             return Action.STD_NO_ACTION;
         }
 
@@ -200,13 +200,9 @@ class AgentManager {
          * Creates and send a sim-end message to the agent.
          * @param percept the percept to append to the message.
          */
-        void handleFinalPercept(Percept percept) {
+        void handleFinalPercept(SimEndContent percept) {
             lastSimStartMessage = null; // now we can stop resending it
-            Document doc = createEmptyMessage("sim-end");
-            if (doc == null) return;
-            Element el = (Element) doc.appendChild(doc.createElement("sim-result"));
-            percept.toXML(el);
-            sendMessage(doc);
+            sendMessage(new Message(System.currentTimeMillis(), percept).toXML());
         }
 
         /**
@@ -406,17 +402,6 @@ class AgentManager {
             root.setAttribute("timestamp", Long.toString(System.currentTimeMillis()));
             root.setAttribute("type", type);
             return doc;
-        }
-
-        /**
-         * Sets a new message ID to the given element
-         * @param messageChild the child node of a message document.
-         * @return the new message ID that has been set
-         */
-        private long appendMessageID(Element messageChild){
-            long id = messageCounter.getAndIncrement();
-            messageChild.setAttribute("id", String.valueOf(id));
-            return id;
         }
 
         /**

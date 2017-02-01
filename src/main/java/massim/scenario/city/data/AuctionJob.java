@@ -9,8 +9,8 @@ public class AuctionJob extends Job{
 
     private String assignedTeam;
 
-    public AuctionJob(int reward, String source, Storage storage) {
-        super(reward, source, storage);
+    public AuctionJob(int reward, String source, Storage storage, int begin, int end) {
+        super(reward, source, storage, begin, end);
     }
 
     public void assign(String team){
