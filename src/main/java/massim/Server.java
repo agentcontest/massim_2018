@@ -41,7 +41,7 @@ public class Server {
 
                 case "-conf":
                     try {
-                        server.parseServerConfig(new JSONObject(new String(Files.readAllBytes(Paths.get(args[++i])),
+                        server.config = parseServerConfig(new JSONObject(new String(Files.readAllBytes(Paths.get(args[++i])),
                                 StandardCharsets.UTF_8)));
                     } catch (java.io.IOException e) {
                         e.printStackTrace();
@@ -51,7 +51,7 @@ public class Server {
                     break;
                 case "-confString":
                     try {
-                        server.parseServerConfig(new JSONObject(args[++i]));
+                        server.config = parseServerConfig(new JSONObject(args[++i]));
                     } catch (JSONException e) {
                         Log.log(Log.ERROR, "Passed configuration string invalid.");
                         i--;
@@ -90,7 +90,8 @@ public class Server {
                     }
                 }
                 try {
-                    server.parseServerConfig(new JSONObject(new String( Files.readAllBytes(Paths.get(confFiles[confNum].toURI())))));
+                    server.config = parseServerConfig(
+                            new JSONObject(new String( Files.readAllBytes(Paths.get(confFiles[confNum].toURI())))));
                 } catch (IOException e) {
                     Log.log(Log.ERROR, "Could not read massim.config file, exiting MASSim");
                     System.exit(0);
@@ -241,11 +242,13 @@ public class Server {
     }
 
     /**
-     * Parses the given JSONObject into a new massim.config.ServerConfig object.
+     * Parses the given JSONObject into a new {@link ServerConfig} object.
+     * Uses default values if the JSONObject is "broken" somehow.
      * @param conf the JSONObject (configuration) holding a "server" JSONObject
+     * @return the parsed server config
      */
-    private void parseServerConfig(JSONObject conf){
-        config = new ServerConfig();
+    public static ServerConfig parseServerConfig(JSONObject conf){
+        ServerConfig config = new ServerConfig();
         JSONObject serverJSON = conf.optJSONObject("server");
         if (serverJSON == null) {
             Log.log(Log.ERROR, "No server object in configuration.");
@@ -295,5 +298,6 @@ public class Server {
                 config.simConfigs.add(simConfig);
             }
         }
+        return config;
     }
 }
