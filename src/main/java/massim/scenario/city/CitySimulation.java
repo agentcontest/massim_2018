@@ -8,8 +8,12 @@ import massim.messages.SimEndContent;
 import massim.messages.SimStartPercept;
 import massim.messages.StepPercept;
 import massim.scenario.AbstractSimulation;
+import massim.scenario.city.data.Entity;
+import massim.scenario.city.data.Item;
+import massim.scenario.city.data.Job;
 import massim.scenario.city.data.WorldState;
 import massim.scenario.city.data.facilities.Shop;
+import massim.scenario.city.data.facilities.Storage;
 import massim.scenario.city.percept.CityInitialPercept;
 import massim.scenario.city.percept.CityStepPercept;
 import massim.scenario.city.util.Generator;
@@ -59,9 +63,7 @@ public class CitySimulation extends AbstractSimulation {
 
         // create entity data
         List<CityStepPercept.EntityData> entities = new Vector<>();
-        world.getEntities().forEach(entity -> {
-            entities.add(new CityStepPercept.EntityData(world, entity, false));
-        });
+        world.getEntities().forEach(entity -> entities.add(new CityStepPercept.EntityData(world, entity, false)));
 
         //create facility data
         List<CityStepPercept.ShopData> shops = new Vector<>();
@@ -75,7 +77,6 @@ public class CitySimulation extends AbstractSimulation {
         List<CityStepPercept.DumpData> dumps = new Vector<>();
         world.getDumps().forEach(dump -> dumps.add(new CityStepPercept.DumpData(
                 dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon())));
-
         Map<String, List<CityStepPercept.StorageData>> storageMap = new HashMap<>();
         world.getTeams().forEach(team -> {
             List<CityStepPercept.StorageData> storage = new Vector<>();
@@ -83,12 +84,16 @@ public class CitySimulation extends AbstractSimulation {
             storageMap.put(team.getName(), storage);
         });
 
+        //create job data
+        List<CityStepPercept.JobData> jobs = new ArrayList<>();
+        world.getJobs().stream().filter(Job::isActive).forEach(job -> jobs.add(new CityStepPercept.JobData(job)));
+
         //create and deliver percepts
         world.getAgents().forEach(agent -> {
             String team = world.getTeamForAgent(agent);
             percepts.put(agent,
                     new CityStepPercept(agent, world, stepNo, teamData.get(team), entities,
-                            shops, workshops, stations, dumps, storageMap.get(team)));
+                            shops, workshops, stations, dumps, storageMap.get(team), jobs));
         });
         return percepts;
     }
@@ -96,7 +101,7 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public void step(int stepNo, Map<String, Action> actions) {
         // step job generator
-        generator.generateJobs(stepNo).forEach(job -> world.addJob(job));
+        generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
         // execute all actions in random order
         List<String> agents = world.getAgents();
         RNG.shuffle(agents);
@@ -118,5 +123,45 @@ public class CitySimulation extends AbstractSimulation {
         });
 
         return results;
+    }
+
+    /**
+     * Gives items to an entity/agent, if both exist and capacity allows.
+     * @param itemName the item type to give
+     * @param agentName the name of the agent to receive the item
+     * @param amount how many items to give
+     * @return true if giving was successful
+     */
+    public boolean simGive(String itemName, String agentName, int amount){
+        Item item = world.getItem(itemName);
+        if(item == null) return false;
+        Entity entity = world.getEntity(agentName);
+        if(entity != null) return entity.addItem(item, amount);
+        return false;
+    }
+
+    /**
+     * Stores items in a storage if both exist.
+     * @param storageName name of a storage
+     * @param itemName name of an item
+     * @param team name of a team
+     * @param amount how many items to store
+     * @return whether storing was successful
+     */
+    public boolean simStore(String storageName, String itemName, String team, int amount){
+        Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
+        if(storage.isPresent()){
+            Item item = world.getItem(itemName);
+            if(item != null) return storage.get().store(item, amount, team);
+        }
+        return false;
+    }
+
+    public void simAddJob(){
+        Job job = new Job(1001, Job.SOURCE_SYSTEM, world.getStorages().iterator().next(), 1, 11);
+        world.getItems().forEach(item -> job.addRequiredItem(item, 7));
+        job.activate();
+        world.addJob(job);
+        world.processNewJobs();
     }
 }

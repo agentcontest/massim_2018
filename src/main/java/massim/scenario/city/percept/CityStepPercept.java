@@ -8,9 +8,7 @@ import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
 
 import javax.xml.bind.annotation.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -22,36 +20,21 @@ public class CityStepPercept extends StepPercept {
 
     // ID and deadline are inherited
 
-    @XmlElement
-    private SimData simData;
+    @XmlElement(name="simulation") private SimData simData;
+    @XmlElement(name="self") private EntityData selfData;
+    @XmlElement(name="team") private TeamData teamData;
+    @XmlElement(name="entity") private List<EntityData> entityData;
+    @XmlElement(name="shop") private List<ShopData> shops;
+    @XmlElement(name="workshop") private List<WorkshopData> workshops;
+    @XmlElement(name="chargingStation") private List<ChargingStationData> chargingStations;
+    @XmlElement(name="dump") private List<DumpData> dumps;
+    @XmlElement(name="storage") private List<StorageData> storage;
+    @XmlElement(name="job") private List<JobData> jobs;
 
-    @XmlElement(name="self")
-    private EntityData selfData;
-
-    @XmlElement
-    private TeamData teamData;
-
-    @XmlElement(name="entities")
-    private List<EntityData> entityData;
-
-    @XmlElement
-    private List<ShopData> shops;
-
-    @XmlElement
-    private List<WorkshopData> workshops;
-
-    @XmlElement
-    private List<ChargingStationData> chargingStations;
-
-    @XmlElement
-    private List<DumpData> dumps;
-
-    @XmlElement
-    private List<StorageData> storage;
-
+    private CityStepPercept(){} // for jaxb
     public CityStepPercept(String agent, WorldState world, int step, TeamData team, List<EntityData> entities,
                            List<ShopData> shops, List<WorkshopData> workshops, List<ChargingStationData> stations,
-                           List<DumpData> dumps, List<StorageData> storage){
+                           List<DumpData> dumps, List<StorageData> storage, List<JobData> jobs){
         simData = new SimData(step);
         teamData = team;
         selfData = new EntityData(world, world.getEntity(agent), true);
@@ -61,6 +44,7 @@ public class CityStepPercept extends StepPercept {
         this.chargingStations = stations;
         this.dumps = dumps;
         this.storage = storage;
+        this.jobs = jobs;
     }
 
     public SimData getSimData() {
@@ -70,8 +54,8 @@ public class CityStepPercept extends StepPercept {
     @XmlRootElement(name="simulation")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class SimData{
-        @XmlAttribute
-        public int step;
+
+        @XmlAttribute public int step;
 
         private SimData(){}
         SimData(int step){
@@ -83,41 +67,18 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class EntityData{
 
-        @XmlAttribute
-        public String name;
-
-        @XmlAttribute
-        public int charge;
-
-        @XmlAttribute
-        public int load;
-
-        @XmlElement(name="action")
-        public ActionData lastAction;
-
-        @XmlAttribute
-        public double lat;
-
-        @XmlAttribute
-        public double lon;
-
-        @XmlAttribute
-        public String facility;
-
-        @XmlAttribute
-        public int routeLength;
-
-        @XmlAttribute
-        public String team;
-
-        @XmlAttribute
-        public String role;
-
-        @XmlElementWrapper //TODO Maps und Listen testen und anpassen
-        Map<String, Integer> items = new HashMap<>();
-
-        @XmlElement
-        List<WayPointData> route = new Vector<>();
+        @XmlAttribute public String name;
+        @XmlAttribute public Integer charge;
+        @XmlAttribute public Integer load;
+        @XmlElement(name="action") public ActionData lastAction;
+        @XmlAttribute public double lat;
+        @XmlAttribute public double lon;
+        @XmlAttribute public String facility;
+        @XmlAttribute public Integer routeLength;
+        @XmlAttribute public String team;
+        @XmlAttribute public String role;
+        @XmlElement List<CityInitialPercept.ItemAmountData> items;
+        @XmlElement List<WayPointData> route;
 
         private EntityData(){}
         public EntityData(WorldState world, Entity original, boolean self){
@@ -130,8 +91,10 @@ public class CityStepPercept extends StepPercept {
                 Route route = original.getRoute();
                 routeLength = route == null? 0: route.getWaypoints().size();
                 ItemBox box = original.getInventory();
-                box.getStoredTypes().forEach(item -> items.put(item.getName(), box.getItemCount(item)));
+                if(box.getStoredTypes().size() > 0) items = new Vector<>();
+                box.getStoredTypes().forEach(item -> items.add(new CityInitialPercept.ItemAmountData(item.getName(), box.getItemCount(item))));
                 if(route != null){
+                    this.route = new Vector<>();
                     int i = 0;
                     for(Location loc: route.getWaypoints()){
                         this.route.add(new WayPointData(i++, loc.getLat(), loc.getLon()));
@@ -151,12 +114,10 @@ public class CityStepPercept extends StepPercept {
     @XmlRootElement(name="n")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class WayPointData {
-        @XmlAttribute(name="i")
-        public int index;
-        @XmlAttribute
-        public double lat;
-        @XmlAttribute
-        public double lon;
+
+        @XmlAttribute(name="i") public int index;
+        @XmlAttribute public double lat;
+        @XmlAttribute public double lon;
 
         private WayPointData(){}
         public WayPointData(int index, double lat, double lon){
@@ -169,15 +130,12 @@ public class CityStepPercept extends StepPercept {
     @XmlRootElement(name="team")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class TeamData{
-        @XmlAttribute
-        public long money;
-//        @XmlElement
-//        public List<String> jobs;
 
-        private TeamData(){}
+        @XmlAttribute public long money;
+
+        private TeamData(){} // for jaxb
         public TeamData(long money){
             this.money = money;
-//            this.jobs = jobs;
         }
     }
 
@@ -185,14 +143,9 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class ActionData{
 
-        @XmlAttribute
-        public String type;
-
-        @XmlAttribute
-        public String result;
-
-        @XmlElement
-        public List<String> params;
+        @XmlAttribute public String type;
+        @XmlAttribute public String result;
+        @XmlElement public List<String> params;
 
         private ActionData(){}
         public ActionData(Action lastAction, String lastActionResult) {
@@ -206,17 +159,10 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class JobData{
 
-        @XmlAttribute
-        public String id;
-
-        @XmlAttribute
-        public String storage;
-
-        @XmlAttribute
-        public int end;
-
-        @XmlElementWrapper(name="items")
-        Map<String, Integer> requiredItems = new HashMap<>();
+        @XmlAttribute public String id;
+        @XmlAttribute public String storage;
+        @XmlAttribute public int end;
+        @XmlElement(name="items") List<CityInitialPercept.ItemAmountData> requiredItems = new Vector<>();
 
         private JobData(){}
         public JobData(Job job){
@@ -224,7 +170,7 @@ public class CityStepPercept extends StepPercept {
             storage = job.getStorage().getName();
             end = job.getEndStep();
             job.getRequiredItems().entrySet().forEach(entry ->
-                    requiredItems.put(entry.getKey().getName(), entry.getValue()));
+                    requiredItems.add(new CityInitialPercept.ItemAmountData(entry.getKey().getName(), entry.getValue())));
         }
     }
 
@@ -232,14 +178,9 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public abstract static class FacilityData{
 
-        @XmlAttribute
-        public String name;
-
-        @XmlAttribute
-        public double lat;
-
-        @XmlAttribute
-        public double lon;
+        @XmlAttribute public String name;
+        @XmlAttribute public double lat;
+        @XmlAttribute public double lon;
 
         private FacilityData(){}
         public FacilityData(String name, double lat, double lon){
@@ -287,11 +228,8 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class ShopData extends FacilityData{
 
-        @XmlAttribute
-        public int restock;
-
-        @XmlElement(name="items")
-        List<StockData> stocks = new Vector<>();
+        @XmlAttribute public int restock;
+        @XmlElement(name="item") List<StockData> stocks = new Vector<>();
 
         private ShopData(){}
         public ShopData(Shop original) {
@@ -306,14 +244,9 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class StockData{
 
-        @XmlAttribute
-        public String name;
-
-        @XmlAttribute
-        public int price;
-
-        @XmlAttribute
-        public int amount;
+        @XmlAttribute public String name;
+        @XmlAttribute public int price;
+        @XmlAttribute public int amount;
 
         private StockData(){}
         public StockData(String itemName, int price, int amount){
@@ -327,14 +260,9 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class StorageData extends FacilityData{
 
-        @XmlAttribute
-        public int totalCapacity;
-
-        @XmlAttribute
-        public int usedCapacity;
-
-        @XmlElement
-        List<StoredData> items = new Vector<>();
+        @XmlAttribute public int totalCapacity;
+        @XmlAttribute public int usedCapacity;
+        @XmlElement(name="item") List<StoredData> items = new Vector<>();
 
         private StorageData(){}
         public StorageData(Storage original, String team, WorldState world) {
@@ -353,14 +281,9 @@ public class CityStepPercept extends StepPercept {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class StoredData{
 
-        @XmlAttribute
-        public String name;
-
-        @XmlAttribute
-        public int stored;
-
-        @XmlAttribute
-        public int delivered;
+        @XmlAttribute public String name;
+        @XmlAttribute public int stored;
+        @XmlAttribute public int delivered;
 
         private StoredData(){}
         public StoredData(String item, int stored, int delivered){

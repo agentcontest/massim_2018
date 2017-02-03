@@ -10,6 +10,9 @@ import java.io.File;
  */
 public class GraphHopperManager {
 
+	public final static String PERMISSION_AIR = "air";
+	public final static String PERMISSION_ROAD = "road";
+
 	private static String mapName;
 	private static GraphHopper hopper;
 
@@ -24,6 +27,7 @@ public class GraphHopperManager {
 		mapName = newMapName;
 		hopper = new GraphHopper().forDesktop();
 		hopper.setOSMFile("osm" + File.separator + mapName + ".osm.pbf");
+		hopper.setCHEnabled(false); // CH does not work with shortest weighting (at the moment)
 		
 		// where to store GH files?
 		hopper.setGraphHopperLocation("graphs" + File.separator + mapName);

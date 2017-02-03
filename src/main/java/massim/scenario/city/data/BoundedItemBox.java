@@ -15,7 +15,7 @@ public class BoundedItemBox extends ItemBox{
     @Override
     public boolean store(Item item, int amount){
         int volumeToStore = item.getVolume() * amount;
-        if(volumeToStore < getFreeSpace() && super.store(item, amount)){
+        if(volumeToStore <= getFreeSpace() && super.store(item, amount)){
             currentVolume += volumeToStore;
             return true;
         }

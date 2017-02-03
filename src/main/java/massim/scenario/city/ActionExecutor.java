@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * How else to execute agent actions.
  */
-class ActionExecutor {
+public class ActionExecutor {
 
     // scenario-specific action names/types
     private final static String GO_TO = "goto";
@@ -32,7 +32,7 @@ class ActionExecutor {
     private final static String SKIP = "skip";
 
     // scenario-specific failure-codes
-    private final static String SUCCESSFUL = "successful";
+    public final static String SUCCESSFUL = "successful";
     private final static String FAILED_COUNTERPART = "failed_counterpart";
     private final static String FAILED_LOCATION = "failed_location";
     private final static String FAILED_NO_ROUTE = "failed_no_route";

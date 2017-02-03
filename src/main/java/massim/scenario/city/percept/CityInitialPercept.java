@@ -7,9 +7,9 @@ import massim.scenario.city.data.Role;
 import massim.scenario.city.data.WorldState;
 
 import javax.xml.bind.annotation.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
@@ -20,26 +20,13 @@ import java.util.stream.Collectors;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CityInitialPercept extends SimStartPercept {
 
-    @XmlAttribute(name="id")
-    private String simId;
-
-    @XmlAttribute
-    private int steps;
-
-    @XmlAttribute
-    private String map;
-
-    @XmlAttribute
-    private long seedCapital;
-
-    @XmlAttribute(name="team")
-    private String teamName;
-
-    @XmlElement
-    public RoleData role;
-
-    @XmlElement
-    public List<ItemData> items;
+    @XmlAttribute(name="id") private String simId;
+    @XmlAttribute private int steps;
+    @XmlAttribute private String map;
+    @XmlAttribute private long seedCapital;
+    @XmlAttribute(name="team") private String teamName;
+    @XmlElement private RoleData role;
+    @XmlElement(name="item") public List<ItemData> items;
 
     /**
      * for JAXB
@@ -143,16 +130,11 @@ public class CityInitialPercept extends SimStartPercept {
     @XmlRootElement(name = "role")
     @XmlAccessorType(XmlAccessType.NONE)
     public static class RoleData {
-        @XmlAttribute
-        public String name;
-        @XmlAttribute
-        int speed;
-        @XmlAttribute
-        int battery;
-        @XmlAttribute
-        int load;
-        @XmlElement(name="tool")
-        List<String> tools;
+        @XmlAttribute public String name;
+        @XmlAttribute int speed;
+        @XmlAttribute int battery;
+        @XmlAttribute int load;
+        @XmlElement(name="tool") List<String> tools;
         private RoleData(){} //used by jaxb
         public RoleData(Role role){
             this.name = role.getName();
@@ -164,28 +146,40 @@ public class CityInitialPercept extends SimStartPercept {
     }
 
     /**
-     * Info of an item for serialization.
+     * Complete info of an item for serialization.
      */
-    @XmlRootElement(name = "item")
+    @XmlRootElement
     @XmlAccessorType(XmlAccessType.NONE)
     public static class ItemData {
-        @XmlAttribute
-        public String name;
-        @XmlAttribute
-        public int volume;
-        @XmlElementWrapper(name="part")
-        public Map<String, Integer> requirements = new HashMap<>();
-        @XmlElement(name="tool")
-        public List<String> tools;
+        @XmlAttribute public String name;
+        @XmlAttribute public int volume;
+        @XmlElement(name="item") public List<ItemAmountData> parts;
+        @XmlElement(name="tool") public List<String> tools;
 
-        private ItemData(){} //jaxb
+        private ItemData(){} //for jaxb
         public ItemData(Item original){
             this.name = original.getName();
             this.volume = original.getVolume();
+            if (original.getRequiredItems().size() > 0) parts = new Vector<>();
             for (Map.Entry<Item, Integer> entry : original.getRequiredItems().entrySet()) {
-                requirements.put(entry.getKey().getName(), entry.getValue());
+                parts.add(new ItemAmountData(entry.getKey().getName(), entry.getValue()));
             }
             tools = original.getRequiredTools().stream().map(Item::getName).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * Complete info of an item for serialization.
+     */
+    @XmlRootElement(name="item")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class ItemAmountData {
+        @XmlAttribute public String name;
+        @XmlAttribute public int amount;
+        private ItemAmountData(){}
+        public ItemAmountData(String name, int amount){
+            this.name = name;
+            this.amount = amount;
         }
     }
 }

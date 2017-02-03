@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Job {
 
-    private final static String SOURCE_SYSTEM = "system";
+    public final static String SOURCE_SYSTEM = "system";
     private final static AtomicInteger counter = new AtomicInteger();
 
     private JobStatus status = JobStatus.FUTURE;
@@ -29,8 +29,8 @@ public class Job {
         this.source = source;
         this.reward = reward;
         this.storage = storage;
-        this.beginStep = beginStep;
-        this.endStep = endStep;
+        this.beginStep = begin;
+        this.endStep = end;
     }
 
     public boolean isActive(){
@@ -139,6 +139,13 @@ public class Job {
 
     public int getEndStep() {
         return endStep;
+    }
+
+    /**
+     * Sets status of this job to {@link JobStatus#ACTIVE}
+     */
+    public void activate() {
+        status = JobStatus.ACTIVE;
     }
 
     /**

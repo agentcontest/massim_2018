@@ -67,6 +67,7 @@ public class Message {
     /**
      * Parses the given XML document to a valid message object.
      * @param doc the XML message to parse
+     * @param context specific message content classes used for this message
      * @return a message object according to the XML file or null if sth. went wrong
      */
     public static Message parse(Document doc, Class... context) {
@@ -83,6 +84,7 @@ public class Message {
 
     /**
      * Creates a valid message document marshalling all annotated fields.
+     * @param context specific message content classes used for this message
      * @return the XML document
      */
     public Document toXML(Class... context){
@@ -97,5 +99,12 @@ public class Message {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * @return the variable content of this message
+     */
+    public MessageContent getContent(){
+        return content;
     }
 }

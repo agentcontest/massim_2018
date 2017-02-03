@@ -27,7 +27,7 @@ public class Action {
     private final static String UNKNOWN_ACTION = "unknownAction";
     private final static String RANDOM_FAIL = "randomFail";
 
-    static final Action STD_NO_ACTION = new Action(NO_ACTION);
+    public static final Action STD_NO_ACTION = new Action(NO_ACTION);
     public static final Action STD_UNKNOWN_ACTION = new Action(UNKNOWN_ACTION);
     public static final Action STD_RANDOM_FAIL_ACTION = new Action(RANDOM_FAIL);
 

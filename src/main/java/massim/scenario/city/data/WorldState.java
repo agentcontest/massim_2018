@@ -106,9 +106,9 @@ public class WorldState {
         }
 
         // generate the things
-        tools = generator.generateTools();
+        tools = generator.generateTools(new ArrayList<>(roles.values()));
         generator.generateItems(tools).forEach(i -> items.put(i.getName(), i));
-        generator.generateFacilities().forEach(f -> facilities.put(f.getName(), f));
+        generator.generateFacilities(new ArrayList<>(items.values()), this).forEach(f -> facilities.put(f.getName(), f));
         facilities.values().forEach(f -> facilityByLocation.put(f.getLocation(), f));
         facilities.values().forEach(f -> {
             if(f instanceof Workshop) workshops.add((Workshop) f);
@@ -332,9 +332,23 @@ public class WorldState {
     }
 
     /**
-     * @return a list of all team states
+     * @return a new list of all team states
      */
     public List<TeamState> getTeams() {
         return new ArrayList<>(teams.values());
+    }
+
+    /**
+     * @return a new set of all jobs regardless of their state
+     */
+    public Set<Job> getJobs() {
+        return new HashSet<>(jobs.values());
+    }
+
+    /**
+     * @return a new list containing all existing tools
+     */
+    public List<Tool> getTools() {
+        return new ArrayList<>(tools);
     }
 }

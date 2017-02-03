@@ -97,6 +97,7 @@ public class CityMap implements Serializable {
      */
     private boolean existsRoute(Location from, Location to) {
         GHResponse rsp = queryGH(from, to);
+        rsp.getErrors().forEach(error -> System.out.println(error.getMessage()));
         return !rsp.hasErrors() && rsp.getBest().getPoints().size() > 0;
     }
 	
@@ -192,12 +193,12 @@ public class CityMap implements Serializable {
 	public Location getRandomLocation(Set<String> roads, int iterations) {
 		Location loc;
 		for (int i = 0; i < iterations; i++) {
-			double latDiff = maxLat - minLat;
+            double latDiff = maxLat - minLat;
 			double lonDiff = maxLon - minLon;
 			double lat = minLat + RNG.nextDouble() * latDiff;
 			double lon = minLon + RNG.nextDouble() * lonDiff;
 			loc = getNearestRoad(new Location(lon, lat));
-            if (isReachable(loc, roads)) return loc;
+			if (isReachable(loc, roads)) return loc;
 		}
 		return center;
 	}
@@ -219,6 +220,13 @@ public class CityMap implements Serializable {
      * @return true if the location is within map bounds
      */
     private boolean isInBounds(Location loc){
-	    return loc.getLat() < minLat && loc.getLat() > maxLat && loc.getLon() < minLon && loc.getLon() > maxLon;
+	    return loc.getLat() > minLat && loc.getLat() < maxLat && loc.getLon() > minLon && loc.getLon() < maxLon;
     }
+
+	/**
+	 * @return the "center" location that is used for reachability checking
+	 */
+	public Location getCenter(){
+    	return center;
+	}
 }
