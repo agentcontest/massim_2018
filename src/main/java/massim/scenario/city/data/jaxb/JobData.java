@@ -1,7 +1,6 @@
 package massim.scenario.city.data.jaxb;
 
 import massim.scenario.city.data.Job;
-import massim.scenario.city.percept.CityInitialPercept;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
@@ -24,7 +23,7 @@ public class JobData {
     private int end;
 
     @XmlElement(name = "items")
-    private List<CityInitialPercept.ItemAmountData> requiredItems = new Vector<>();
+    private List<ItemAmountData> requiredItems = new Vector<>();
 
     /**
      * For jaxb
@@ -40,7 +39,7 @@ public class JobData {
         storage = job.getStorage().getName();
         end = job.getEndStep();
         job.getRequiredItems().entrySet().forEach(entry ->
-                requiredItems.add(new CityInitialPercept.ItemAmountData(entry.getKey().getName(), entry.getValue())));
+                requiredItems.add(new ItemAmountData(entry.getKey().getName(), entry.getValue())));
     }
 
     /**

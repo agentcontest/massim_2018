@@ -2,7 +2,6 @@ package massim.scenario.city.data.jaxb;
 
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Facility;
-import massim.scenario.city.percept.CityInitialPercept;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
@@ -46,7 +45,7 @@ public class EntityData {
     private String role;
 
     @XmlElement
-    private List<CityInitialPercept.ItemAmountData> items;
+    private List<ItemAmountData> items;
 
     @XmlElement
     private List<WayPointData> route;
@@ -73,7 +72,7 @@ public class EntityData {
             routeLength = route == null ? 0 : route.getWaypoints().size();
             ItemBox box = original.getInventory();
             if (box.getStoredTypes().size() > 0) items = new Vector<>();
-            box.getStoredTypes().forEach(item -> items.add(new CityInitialPercept.ItemAmountData(item.getName(), box.getItemCount(item))));
+            box.getStoredTypes().forEach(item -> items.add(new ItemAmountData(item.getName(), box.getItemCount(item))));
             if (route != null) {
                 this.route = new Vector<>();
                 int i = 0;
@@ -163,7 +162,7 @@ public class EntityData {
     /**
      * @return list of items the entity is carrying
      */
-    public List<CityInitialPercept.ItemAmountData> getItems() {
+    public List<ItemAmountData> getItems() {
         return items;
     }
 
