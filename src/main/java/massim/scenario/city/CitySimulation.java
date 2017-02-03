@@ -158,11 +158,23 @@ public class CitySimulation extends AbstractSimulation {
         return false;
     }
 
-    public void simAddJob(){
-        Job job = new Job(1001, Job.SOURCE_SYSTEM, world.getStorages().iterator().next(), 1, 11);
-        world.getItems().forEach(item -> job.addRequiredItem(item, 7));
-        job.activate();
+    /**
+     * Adds a job to the simulation. All required items and the storage must exist. Otherwise, the job is not added.
+     * @param requirements the items that need to be delivered to the job
+     * @param reward the reward for completing the job
+     * @param storageName name of the associated storage
+     * @param start when the job should start. if the step has already passed, the job will not be activated at all
+     * @param end the job's deadline
+     */
+    public void simAddJob(Map<String, Integer> requirements, int reward, String storageName, int start, int end){
+        Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
+        if(!storage.isPresent()) return;
+        Job job = new Job(reward, Job.SOURCE_SYSTEM, storage.get(), start, end);
+        requirements.forEach((itemName, amount) -> {
+            Item item = world.getItem(itemName);
+            if(item == null) return;
+            job.addRequiredItem(item, amount);
+        });
         world.addJob(job);
-        world.processNewJobs();
     }
 }
