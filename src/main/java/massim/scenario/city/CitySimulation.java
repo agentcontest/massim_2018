@@ -14,6 +14,7 @@ import massim.scenario.city.data.Job;
 import massim.scenario.city.data.WorldState;
 import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
+import massim.scenario.city.data.jaxb.*;
 import massim.scenario.city.percept.CityInitialPercept;
 import massim.scenario.city.percept.CityStepPercept;
 import massim.scenario.city.util.Generator;
@@ -58,35 +59,35 @@ public class CitySimulation extends AbstractSimulation {
         Map<String, StepPercept> percepts = new HashMap<>();
 
         // create team data
-        Map<String, CityStepPercept.TeamData> teamData = new HashMap<>();
-        world.getTeams().forEach(team -> teamData.put(team.getName(), new CityStepPercept.TeamData(team.getMoney())));
+        Map<String, TeamData> teamData = new HashMap<>();
+        world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(team.getMoney())));
 
         // create entity data
-        List<CityStepPercept.EntityData> entities = new Vector<>();
-        world.getEntities().forEach(entity -> entities.add(new CityStepPercept.EntityData(world, entity, false)));
+        List<EntityData> entities = new Vector<>();
+        world.getEntities().forEach(entity -> entities.add(new EntityData(world, entity, false)));
 
         //create facility data
-        List<CityStepPercept.ShopData> shops = new Vector<>();
-        world.getShops().forEach(shop -> shops.add(new CityStepPercept.ShopData(shop)));
-        List<CityStepPercept.WorkshopData> workshops = new Vector<>();
-        world.getWorkshops().forEach(ws -> workshops.add(new CityStepPercept.WorkshopData(ws.getName(),
+        List<ShopData> shops = new Vector<>();
+        world.getShops().forEach(shop -> shops.add(new ShopData(shop)));
+        List<WorkshopData> workshops = new Vector<>();
+        world.getWorkshops().forEach(ws -> workshops.add(new WorkshopData(ws.getName(),
                 ws.getLocation().getLat(), ws.getLocation().getLon())));
-        List<CityStepPercept.ChargingStationData> stations = new Vector<>();
-        world.getChargingStations().forEach(cs -> stations.add(new CityStepPercept.ChargingStationData(
+        List<ChargingStationData> stations = new Vector<>();
+        world.getChargingStations().forEach(cs -> stations.add(new ChargingStationData(
                 cs.getName(), cs.getLocation().getLat(), cs.getLocation().getLon(), cs.getRate())));
-        List<CityStepPercept.DumpData> dumps = new Vector<>();
-        world.getDumps().forEach(dump -> dumps.add(new CityStepPercept.DumpData(
+        List<DumpData> dumps = new Vector<>();
+        world.getDumps().forEach(dump -> dumps.add(new DumpData(
                 dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon())));
-        Map<String, List<CityStepPercept.StorageData>> storageMap = new HashMap<>();
+        Map<String, List<StorageData>> storageMap = new HashMap<>();
         world.getTeams().forEach(team -> {
-            List<CityStepPercept.StorageData> storage = new Vector<>();
-            world.getStorages().forEach(st -> storage.add(new CityStepPercept.StorageData(st, team.getName(), world)));
+            List<StorageData> storage = new Vector<>();
+            world.getStorages().forEach(st -> storage.add(new StorageData(st, team.getName(), world.getItems())));
             storageMap.put(team.getName(), storage);
         });
 
         //create job data
-        List<CityStepPercept.JobData> jobs = new ArrayList<>();
-        world.getJobs().stream().filter(Job::isActive).forEach(job -> jobs.add(new CityStepPercept.JobData(job)));
+        List<JobData> jobs = new ArrayList<>();
+        world.getJobs().stream().filter(Job::isActive).forEach(job -> jobs.add(new JobData(job)));
 
         //create and deliver percepts
         world.getAgents().forEach(agent -> {
