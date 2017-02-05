@@ -370,7 +370,7 @@ class AgentManager {
          * Closes socket and stops threads (if they exist).
          */
         private void close() {
-            sendMessage(createEmptyMessage("bye"));
+            sendMessage(new Message(System.currentTimeMillis(), new ByeContent()).toXML(ByeContent.class));
             try {
                 sendThread.join(5000); // give bye-message some time to be sent (but not too much)
             } catch (InterruptedException e) {
@@ -383,27 +383,6 @@ class AgentManager {
                     socket.close();
                 } catch (IOException ignored) {}
             }
-        }
-
-        /**
-         * Creates an "empty" message XML object.
-         * @param type the type of the message ("request-action" etc.)
-         * @return the message document
-         */
-        private Document createEmptyMessage(String type){
-            DocumentBuilder docBuilder;
-            try {
-                docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                Log.log(Log.ERROR, "Serious parser exception. Could not create message.");
-                return null;
-            }
-            Document doc = docBuilder.newDocument();
-            Element root = doc.createElement("message");
-            doc.appendChild(root);
-            root.setAttribute("timestamp", Long.toString(System.currentTimeMillis()));
-            root.setAttribute("type", type);
-            return doc;
         }
 
         /**

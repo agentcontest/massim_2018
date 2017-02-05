@@ -16,13 +16,13 @@ import java.util.Arrays;
 @XmlAccessorType(XmlAccessType.NONE) //use only annotated things for XML
 public class Message {
 
-    public final static String TYPE_REQUEST_ACTION = "request-action";
-    public final static String TYPE_ACTION = "action";
-    public final static String TYPE_AUTH_REQUEST = "auth-request";
-    public final static String TYPE_AUTH_RESPONSE = "auth-response";
-    public final static String TYPE_SIM_START = "sim-start";
-    public final static String TYPE_SIM_END = "sim-end";
-    public final static String TYPE_BYE = "bye";
+    final static String TYPE_REQUEST_ACTION = "request-action";
+    final static String TYPE_ACTION = "action";
+    final static String TYPE_AUTH_REQUEST = "auth-request";
+    final static String TYPE_AUTH_RESPONSE = "auth-response";
+    final static String TYPE_SIM_START = "sim-start";
+    final static String TYPE_SIM_END = "sim-end";
+    final static String TYPE_BYE = "bye";
 
     @XmlAttribute(name = "timestamp")
     private Long timestamp;
@@ -36,6 +36,7 @@ public class Message {
     /**
      * Private constructor only to be used by JAXB.
      */
+    @SuppressWarnings("unused")
     private Message(){}
 
     /**
