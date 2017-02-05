@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 /**
  * The content of a message following the MASSim protocol.
  */
-@XmlSeeAlso({AuthRequestContent.class, AuthResponseContent.class})
+@XmlSeeAlso({AuthRequestContent.class, AuthResponseContent.class, ByeContent.class})
 public abstract class MessageContent {
 
     /**

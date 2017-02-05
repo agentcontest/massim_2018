@@ -346,7 +346,11 @@ class AgentManager {
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     TransformerFactory.newInstance().newTransformer().transform(
                             new DOMSource(sendDoc), new StreamResult(buffer));
-                    sendPacket(buffer.toByteArray());
+                    // send packet
+                    OutputStream out = socket.getOutputStream();
+                    out.write(buffer.toByteArray());
+                    out.write(0);
+                    out.flush();
                 } catch (InterruptedException | TransformerException | IOException e) {
                     Log.log(Log.DEBUG, "Error writing to socket. Stop sending now.");
                     break;
@@ -355,22 +359,10 @@ class AgentManager {
         }
 
         /**
-         * Sends the byte array over the socket (with trailing 0).
-         * @param b the bytes to send
-         * @throws IOException if sending fails at any point
-         */
-        private void sendPacket(byte[] b) throws IOException {
-            OutputStream out = socket.getOutputStream();
-            out.write(b);
-            out.write(0);
-            out.flush();
-        }
-
-        /**
          * Closes socket and stops threads (if they exist).
          */
         private void close() {
-            sendMessage(new Message(System.currentTimeMillis(), new ByeContent()).toXML(ByeContent.class));
+            sendMessage(new Message(System.currentTimeMillis(), new ByeContent()).toXML());
             try {
                 sendThread.join(5000); // give bye-message some time to be sent (but not too much)
             } catch (InterruptedException e) {

@@ -15,8 +15,8 @@ public class ByeContentTest {
     public void transformsCorrectly(){
         long time = System.currentTimeMillis();
         Message msg = new Message(time, new ByeContent());
-        Document doc = msg.toXML(ByeContent.class);
-        Message msg2 = Message.parse(doc, ByeContent.class);
+        Document doc = msg.toXML();
+        Message msg2 = Message.parse(doc);
 
         assert(msg2 != null);
         assert(msg2.getContent() instanceof ByeContent);
