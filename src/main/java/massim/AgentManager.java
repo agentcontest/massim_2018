@@ -95,13 +95,13 @@ class AgentManager {
      * @param percepts mapping from agent names to percepts of the current simulation state
      * @return mapping from agent names to actions received in response
      */
-    Map<String, ActionContent> requestActions(Map<String, RequestActionContent> percepts) {
+    Map<String, Action> requestActions(Map<String, RequestActionContent> percepts) {
         // each thread needs to countdown the latch when it finishes
-        CountDownLatch latch = new CountDownLatch(agents.keySet().size());
-        Map<String, ActionContent> resultMap = new ConcurrentHashMap<>();
+        CountDownLatch latch = new CountDownLatch(percepts.keySet().size());
+        Map<String, Action> resultMap = new ConcurrentHashMap<>();
         percepts.forEach((agName, percept) -> {
             // start a new thread to get each action
-            new Thread(() -> agents.get(agName).requestAction(percept, latch)).start();
+            new Thread(() -> resultMap.put(agName, agents.get(agName).requestAction(percept, latch))).start();
         });
         try {
             latch.await(2 * agentTimeout, TimeUnit.MILLISECONDS); // timeout ensured by threads; use this one for safety reasons
@@ -172,9 +172,9 @@ class AgentManager {
          * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
          * @param percept the step percept to forward
          * @param latch the latch to count down after the action is acquired (or not)
-         * @return the action that was received by the agent (or {@link ActionContent#STD_NO_ACTION})
+         * @return the action that was received by the agent (or {@link Action#STD_NO_ACTION})
          */
-        ActionContent requestAction(RequestActionContent percept, CountDownLatch latch) {
+        Action requestAction(RequestActionContent percept, CountDownLatch latch) {
             long id = messageCounter.getAndIncrement();
             percept.finalize(id, System.currentTimeMillis() + agentTimeout);
             CompletableFuture<Document> futureAction = new CompletableFuture<>();
@@ -182,12 +182,11 @@ class AgentManager {
             sendMessage(new Message(System.currentTimeMillis(), percept).toXML());
             try {
                 // wait for action to be received
-                latch.countDown();
                 Document doc = futureAction.get(agentTimeout, TimeUnit.MILLISECONDS);
-                Message msg = Message.parse(doc, ActionContent.class);
+                Message msg = Message.parse(doc, Action.class);
                 if(msg != null){
                     MessageContent content = msg.getContent();
-                    if(content instanceof ActionContent) return (ActionContent) content;
+                    if(content instanceof Action) return (Action) content;
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.log(Log.ERROR, "Interrupted while waiting for action.");
@@ -195,7 +194,7 @@ class AgentManager {
                 Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
             }
             latch.countDown();
-            return ActionContent.STD_NO_ACTION;
+            return Action.STD_NO_ACTION;
         }
 
         /**

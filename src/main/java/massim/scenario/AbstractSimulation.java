@@ -1,6 +1,6 @@
 package massim.scenario;
 
-import massim.messages.ActionContent;
+import massim.messages.Action;
 import massim.config.TeamConfig;
 import massim.messages.SimEndContent;
 import massim.messages.SimStartContent;
@@ -39,7 +39,7 @@ public abstract class AbstractSimulation {
      * @param stepNo number of the simulation step
      * @param actionMap mapping from agent names to their actions for this step
      */
-    public abstract void step(int stepNo, Map<String, ActionContent> actionMap);
+    public abstract void step(int stepNo, Map<String, Action> actionMap);
 
     /**
      * Finish scenario execution, prepare results, etc.

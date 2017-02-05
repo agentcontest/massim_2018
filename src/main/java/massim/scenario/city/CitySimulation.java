@@ -1,6 +1,6 @@
 package massim.scenario.city;
 
-import massim.messages.ActionContent;
+import massim.messages.Action;
 import massim.Log;
 import massim.RNG;
 import massim.config.TeamConfig;
@@ -100,16 +100,15 @@ public class CitySimulation extends AbstractSimulation {
     }
 
     @Override
-    public void step(int stepNo, Map<String, ActionContent> actions) {
+    public void step(int stepNo, Map<String, Action> actions) {
         // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
         // execute all actions in random order
         List<String> agents = world.getAgents();
         RNG.shuffle(agents);
         actionExecutor.preProcess();
-        for(String agent: agents){
+        for(String agent: agents)
             actionExecutor.execute(agent, actions);
-        }
         actionExecutor.postProcess();
         world.processNewJobs();
         world.getShops().forEach(Shop::step);

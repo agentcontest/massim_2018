@@ -12,15 +12,15 @@ import java.util.List;
  */
 @XmlRootElement(name = "action") //the whole message object
 @XmlAccessorType(XmlAccessType.NONE) //use only annotated things for XML
-public class ActionContent extends MessageContent{
+public class Action extends MessageContent{
 
     public final static String NO_ACTION = "noAction";
     private final static String UNKNOWN_ACTION = "unknownAction";
     private final static String RANDOM_FAIL = "randomFail";
 
-    public static final ActionContent STD_NO_ACTION = new ActionContent(NO_ACTION);
-    public static final ActionContent STD_UNKNOWN_ACTION = new ActionContent(UNKNOWN_ACTION);
-    public static final ActionContent STD_RANDOM_FAIL_ACTION = new ActionContent(RANDOM_FAIL);
+    public static final Action STD_NO_ACTION = new Action(NO_ACTION);
+    public static final Action STD_UNKNOWN_ACTION = new Action(UNKNOWN_ACTION);
+    public static final Action STD_RANDOM_FAIL_ACTION = new Action(RANDOM_FAIL);
 
     @XmlAttribute(name = "type")
     private String type;
@@ -34,14 +34,14 @@ public class ActionContent extends MessageContent{
     /**
      * For JAXB
      */
-    private ActionContent(){}
+    private Action(){}
 
     /**
      * Constructor.
      * @param type the actions' type
      * @param parameters parameters of the action
      */
-    public ActionContent(String type, String... parameters){
+    public Action(String type, String... parameters){
         this.type = type;
         if(parameters.length > 0){
             params = new LinkedList<>();

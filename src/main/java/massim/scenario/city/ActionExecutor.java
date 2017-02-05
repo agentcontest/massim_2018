@@ -1,6 +1,6 @@
 package massim.scenario.city;
 
-import massim.messages.ActionContent;
+import massim.messages.Action;
 import massim.RNG;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
@@ -88,23 +88,23 @@ public class ActionExecutor {
      * @param agent the name of the agent
      * @param actions the actions of all agents
      */
-    void execute(String agent, Map<String, ActionContent> actions) {
+    void execute(String agent, Map<String, Action> actions) {
 
         Entity entity = world.getEntity(agent);
 
-        // random fail?
+        // determine random fail
         if (RNG.nextInt(100) < world.getRandomFail()){
-            entity.setLastAction(ActionContent.STD_RANDOM_FAIL_ACTION);
+            entity.setLastAction(Action.STD_RANDOM_FAIL_ACTION);
             entity.setLastActionResult(FAILED);
             return;
         }
 
-        ActionContent action = actions.get(agent);
+        Action action = actions.get(agent);
         entity.setLastAction(action);
         List<String> params = action.getParameters();
         switch (action.getActionType()){
 
-            case ActionContent.NO_ACTION:
+            case Action.NO_ACTION:
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 
@@ -295,7 +295,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_UNKNOWN_AGENT);
                     break;
                 }
-                ActionContent counterPartAction = actions.get(params.get(0));
+                Action counterPartAction = actions.get(params.get(0));
                 if(counterPartAction != null && !counterPartAction.getActionType().equals(ASSEMBLE)){
                     entity.setLastActionResult(FAILED_COUNTERPART);
                     break;
@@ -471,7 +471,7 @@ public class ActionExecutor {
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
             default:
-                entity.setLastAction(ActionContent.STD_UNKNOWN_ACTION);
+                entity.setLastAction(Action.STD_UNKNOWN_ACTION);
                 entity.setLastActionResult(FAILED);
         }
     }

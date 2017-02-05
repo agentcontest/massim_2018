@@ -91,8 +91,9 @@ public class Message {
     public Document toXML(Class... context){
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Class[] contextClasses = Arrays.copyOf(context, context.length + 1);
-            contextClasses[contextClasses.length - 1] = Message.class;
+            Class[] contextClasses = Arrays.copyOf(context, context.length + 2);
+            contextClasses[contextClasses.length - 2] = Message.class;
+            contextClasses[contextClasses.length - 1] = getContent().getClass();
             JAXBContext jc = JAXBContext.newInstance(contextClasses);
             jc.createMarshaller().marshal(this, document);
             return document;

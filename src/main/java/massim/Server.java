@@ -2,6 +2,7 @@ package massim;
 
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
+import massim.messages.Action;
 import massim.messages.SimEndContent;
 import massim.messages.SimStartContent;
 import massim.messages.RequestActionContent;
@@ -231,7 +232,8 @@ public class Server {
                 for (int i = 0; i < steps; i++){
                     Log.log(Log.NORMAL, "Simulation at step " + i);
                     Map<String, RequestActionContent> percepts = sim.preStep(i);
-                    sim.step(i, agentManager.requestActions(percepts)); // execute step with agent actions
+                    Map<String, Action> actions = agentManager.requestActions(percepts);
+                    sim.step(i, actions); // execute step with agent actions
                 }
                 Map<String, SimEndContent> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
@@ -271,6 +273,7 @@ public class Server {
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");
+        Set<String> allAgents = new HashSet<>();
         if (teamJSON == null) Log.log(Log.ERROR, "No teams configured.");
         else{
             teamJSON.keySet().forEach(name -> {
@@ -279,6 +282,8 @@ public class Server {
                 JSONObject accounts = teamJSON.optJSONObject(name);
                 if (accounts != null){
                     accounts.keySet().forEach(agName -> {
+                        if(!allAgents.add(agName))
+                            Log.log(Log.CRITICAL, "Agent " + agName + " occurs in multiple teams.");
                         team.addAgent(agName, accounts.getString(agName));
                         config.accounts.put(agName, accounts.getString(agName));
                     });
