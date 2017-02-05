@@ -1,6 +1,6 @@
 package massim.scenario.city.percept;
 
-import massim.messages.StepPercept;
+import massim.messages.RequestActionContent;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.jaxb.*;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 @XmlRootElement(name="percept")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CityStepPercept extends StepPercept {
+public class CityStepPercept extends RequestActionContent {
 
     // ID and deadline are inherited
 

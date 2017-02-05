@@ -1,6 +1,6 @@
 package massim.scenario.city;
 
-import massim.Action;
+import massim.messages.ActionContent;
 import massim.RNG;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
@@ -88,23 +88,23 @@ public class ActionExecutor {
      * @param agent the name of the agent
      * @param actions the actions of all agents
      */
-    void execute(String agent, Map<String, Action> actions) {
+    void execute(String agent, Map<String, ActionContent> actions) {
 
         Entity entity = world.getEntity(agent);
 
         // random fail?
         if (RNG.nextInt(100) < world.getRandomFail()){
-            entity.setLastAction(Action.STD_RANDOM_FAIL_ACTION);
+            entity.setLastAction(ActionContent.STD_RANDOM_FAIL_ACTION);
             entity.setLastActionResult(FAILED);
             return;
         }
 
-        Action action = actions.get(agent);
+        ActionContent action = actions.get(agent);
         entity.setLastAction(action);
         List<String> params = action.getParameters();
-        switch (action.getType()){
+        switch (action.getActionType()){
 
-            case Action.NO_ACTION:
+            case ActionContent.NO_ACTION:
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 
@@ -159,7 +159,7 @@ public class ActionExecutor {
                     else if (item == null) {
                         entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     }
-                    else if (!actions.get(receiver).getType().equals(RECEIVE)) {
+                    else if (!actions.get(receiver).getActionType().equals(RECEIVE)) {
                         entity.setLastActionResult(FAILED_COUNTERPART);
                     }
                     else if (!receiverEntity.getLocation().inRange(entity.getLocation())) {
@@ -248,7 +248,7 @@ public class ActionExecutor {
                 try{
                     amount = Integer.parseInt(params.get(1));
                 } catch(NumberFormatException ignored){}
-                int retrievable = action.getType().equals(RETRIEVE)?
+                int retrievable = action.getActionType().equals(RETRIEVE)?
                                               storage.getStored(item, world.getTeamForAgent(agent))
                                             : storage.getDelivered(item, world.getTeamForAgent(agent));
                 if (amount < 0 || amount > retrievable){
@@ -259,7 +259,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_CAPACITY);
                     return;
                 }
-                if(action.getType().equals(RETRIEVE))
+                if(action.getActionType().equals(RETRIEVE))
                     storage.removeStored(item, amount, world.getTeamForAgent(agent));
                 else
                     storage.removeDelivered(item, amount, world.getTeamForAgent(agent));
@@ -295,8 +295,8 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_UNKNOWN_AGENT);
                     break;
                 }
-                Action counterPartAction = actions.get(params.get(0));
-                if(counterPartAction != null && !counterPartAction.getType().equals(ASSEMBLE)){
+                ActionContent counterPartAction = actions.get(params.get(0));
+                if(counterPartAction != null && !counterPartAction.getActionType().equals(ASSEMBLE)){
                     entity.setLastActionResult(FAILED_COUNTERPART);
                     break;
                 }
@@ -471,7 +471,7 @@ public class ActionExecutor {
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
             default:
-                entity.setLastAction(Action.STD_UNKNOWN_ACTION);
+                entity.setLastAction(ActionContent.STD_UNKNOWN_ACTION);
                 entity.setLastActionResult(FAILED);
         }
     }
@@ -483,7 +483,7 @@ public class ActionExecutor {
         // set last action result for receiver agents
         receivers.forEach(r -> r.setLastActionResult(SUCCESSFUL));
         world.getEntities().stream()
-                .filter(r -> r.getLastAction().getType().equals(RECEIVE))
+                .filter(r -> r.getLastAction().getActionType().equals(RECEIVE))
                 .forEach(r -> r.setLastActionResult(receivers.contains(r)? SUCCESSFUL : FAILED_COUNTERPART));
 
         // handle assembly

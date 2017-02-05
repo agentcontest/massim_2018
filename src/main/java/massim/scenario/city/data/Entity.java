@@ -1,6 +1,6 @@
 package massim.scenario.city.data;
 
-import massim.Action;
+import massim.messages.ActionContent;
 import massim.scenario.city.ActionExecutor;
 
 import java.util.HashSet;
@@ -19,7 +19,7 @@ public class Entity {
     private int currentBattery;
     private BoundedItemBox items;
 
-    private Action lastAction = Action.STD_NO_ACTION;
+    private ActionContent lastAction = ActionContent.STD_NO_ACTION;
     private String lastActionResult = ActionExecutor.SUCCESSFUL;
 
     public Entity(Role role, Location location){
@@ -83,7 +83,7 @@ public class Entity {
         return true;
     }
 
-    public void setLastAction(Action action) {
+    public void setLastAction(ActionContent action) {
         lastAction = action;
     }
 
@@ -147,7 +147,7 @@ public class Entity {
     /**
      * @return the last action executed for this agent
      */
-    public Action getLastAction() {
+    public ActionContent getLastAction() {
         return lastAction;
     }
 

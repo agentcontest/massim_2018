@@ -1,12 +1,12 @@
 package massim.scenario.city;
 
-import massim.Action;
+import massim.messages.ActionContent;
 import massim.Log;
 import massim.RNG;
 import massim.config.TeamConfig;
 import massim.messages.SimEndContent;
-import massim.messages.SimStartPercept;
-import massim.messages.StepPercept;
+import massim.messages.SimStartContent;
+import massim.messages.RequestActionContent;
 import massim.scenario.AbstractSimulation;
 import massim.scenario.city.data.Entity;
 import massim.scenario.city.data.Item;
@@ -33,7 +33,7 @@ public class CitySimulation extends AbstractSimulation {
     private Generator generator;
 
     @Override
-    public Map<String, SimStartPercept> init(int steps, JSONObject config, Set<TeamConfig> matchTeams) {
+    public Map<String, SimStartContent> init(int steps, JSONObject config, Set<TeamConfig> matchTeams) {
 
         // build the random generator
         JSONObject randomConf = config.optJSONObject("generate");
@@ -48,15 +48,15 @@ public class CitySimulation extends AbstractSimulation {
         actionExecutor = new ActionExecutor(world);
 
         // determine initial percepts
-        Map<String, SimStartPercept> initialPercepts = new HashMap<>();
+        Map<String, SimStartContent> initialPercepts = new HashMap<>();
         world.getAgents().forEach(agName -> initialPercepts.put(agName, new CityInitialPercept(agName, world)));
         return initialPercepts;
     }
 
     @Override
-    public Map<String, StepPercept> preStep(int stepNo) {
+    public Map<String, RequestActionContent> preStep(int stepNo) {
 
-        Map<String, StepPercept> percepts = new HashMap<>();
+        Map<String, RequestActionContent> percepts = new HashMap<>();
 
         // create team data
         Map<String, TeamData> teamData = new HashMap<>();
@@ -100,7 +100,7 @@ public class CitySimulation extends AbstractSimulation {
     }
 
     @Override
-    public void step(int stepNo, Map<String, Action> actions) {
+    public void step(int stepNo, Map<String, ActionContent> actions) {
         // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
         // execute all actions in random order

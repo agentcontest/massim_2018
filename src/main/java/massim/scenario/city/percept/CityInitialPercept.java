@@ -1,6 +1,6 @@
 package massim.scenario.city.percept;
 
-import massim.messages.SimStartPercept;
+import massim.messages.SimStartContent;
 import massim.scenario.city.data.Entity;
 import massim.scenario.city.data.WorldState;
 import massim.scenario.city.data.jaxb.ItemData;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name="simulation")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CityInitialPercept extends SimStartPercept {
+public class CityInitialPercept extends SimStartContent {
 
     @XmlAttribute(name="id") private String simId;
     @XmlAttribute private int steps;

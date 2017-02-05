@@ -1,10 +1,7 @@
 package massim;
 
 import massim.config.TeamConfig;
-import massim.messages.Message;
-import massim.messages.SimEndContent;
-import massim.messages.SimStartPercept;
-import massim.messages.StepPercept;
+import massim.messages.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -84,7 +81,7 @@ class AgentManager {
      * Sends initial percepts to the agents and stores them for later (possible agent reconnection).
      * @param initialPercepts mapping from agent names to initial percepts
      */
-    void handleInitialPercepts(Map<String, SimStartPercept> initialPercepts) {
+    void handleInitialPercepts(Map<String, SimStartContent> initialPercepts) {
         initialPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
                 agents.get(agName).handleInitialPercept(percept);
@@ -98,10 +95,10 @@ class AgentManager {
      * @param percepts mapping from agent names to percepts of the current simulation state
      * @return mapping from agent names to actions received in response
      */
-    Map<String, Action> requestActions(Map<String, StepPercept> percepts) {
+    Map<String, ActionContent> requestActions(Map<String, RequestActionContent> percepts) {
         // each thread needs to countdown the latch when it finishes
         CountDownLatch latch = new CountDownLatch(agents.keySet().size());
-        Map<String, Action> resultMap = new ConcurrentHashMap<>();
+        Map<String, ActionContent> resultMap = new ConcurrentHashMap<>();
         percepts.forEach((agName, percept) -> {
             // start a new thread to get each action
             new Thread(() -> agents.get(agName).requestAction(percept, latch)).start();
@@ -165,7 +162,7 @@ class AgentManager {
          * Creates a message for the given initial percept and sends it to the remote agent.
          * @param percept the initial percept to forward
          */
-        void handleInitialPercept(SimStartPercept percept) {
+        void handleInitialPercept(SimStartContent percept) {
             lastSimStartMessage = new Message(System.currentTimeMillis(), percept).toXML();
             sendMessage(lastSimStartMessage);
         }
@@ -175,9 +172,9 @@ class AgentManager {
          * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
          * @param percept the step percept to forward
          * @param latch the latch to count down after the action is acquired (or not)
-         * @return the action that was received by the agent (or {@link Action#STD_NO_ACTION})
+         * @return the action that was received by the agent (or {@link ActionContent#STD_NO_ACTION})
          */
-        Action requestAction(StepPercept percept, CountDownLatch latch) {
+        ActionContent requestAction(RequestActionContent percept, CountDownLatch latch) {
             long id = messageCounter.getAndIncrement();
             percept.finalize(id, System.currentTimeMillis() + agentTimeout);
             CompletableFuture<Document> futureAction = new CompletableFuture<>();
@@ -186,14 +183,19 @@ class AgentManager {
             try {
                 // wait for action to be received
                 latch.countDown();
-                return Action.parse(futureAction.get(agentTimeout, TimeUnit.MILLISECONDS));
+                Document doc = futureAction.get(agentTimeout, TimeUnit.MILLISECONDS);
+                Message msg = Message.parse(doc, ActionContent.class);
+                if(msg != null){
+                    MessageContent content = msg.getContent();
+                    if(content instanceof ActionContent) return (ActionContent) content;
+                }
             } catch (InterruptedException | ExecutionException e) {
                 Log.log(Log.ERROR, "Interrupted while waiting for action.");
             } catch (TimeoutException e) {
                 Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
             }
             latch.countDown();
-            return Action.STD_NO_ACTION;
+            return ActionContent.STD_NO_ACTION;
         }
 
         /**

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Subclass needs to support JAXB annotations to be de/serialized via XML.
  */
 @XmlRootElement
-public abstract class StepPercept extends MessageContent{
+public abstract class RequestActionContent extends MessageContent{
 
     @XmlAttribute
     private long id;

@@ -3,8 +3,8 @@ package massim;
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
 import massim.messages.SimEndContent;
-import massim.messages.SimStartPercept;
-import massim.messages.StepPercept;
+import massim.messages.SimStartContent;
+import massim.messages.RequestActionContent;
 import massim.scenario.AbstractSimulation;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -226,11 +226,11 @@ public class Server {
                                                                 .loadClass("massim.scenario." + className)
                                                                 .newInstance();
                 int steps = simConfig.optInt("steps", 1000);
-                Map<String, SimStartPercept> initialPercepts = sim.init(steps, simConfig, matchTeams);
+                Map<String, SimStartContent> initialPercepts = sim.init(steps, simConfig, matchTeams);
                 agentManager.handleInitialPercepts(initialPercepts);
                 for (int i = 0; i < steps; i++){
                     Log.log(Log.NORMAL, "Simulation at step " + i);
-                    Map<String, StepPercept> percepts = sim.preStep(i);
+                    Map<String, RequestActionContent> percepts = sim.preStep(i);
                     sim.step(i, agentManager.requestActions(percepts)); // execute step with agent actions
                 }
                 Map<String, SimEndContent> finalPercepts = sim.finish();

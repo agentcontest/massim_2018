@@ -1,10 +1,10 @@
 package massim.scenario;
 
-import massim.Action;
+import massim.messages.ActionContent;
 import massim.config.TeamConfig;
 import massim.messages.SimEndContent;
-import massim.messages.SimStartPercept;
-import massim.messages.StepPercept;
+import massim.messages.SimStartContent;
+import massim.messages.RequestActionContent;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -23,7 +23,7 @@ public abstract class AbstractSimulation {
      * @param matchTeams set of participating teams and their details
      * @return map of agent names to their respective initial (sim-start) percept
      */
-    public abstract Map<String, SimStartPercept> init(int steps, JSONObject config, Set<TeamConfig> matchTeams);
+    public abstract Map<String, SimStartContent> init(int steps, JSONObject config, Set<TeamConfig> matchTeams);
 
     /**
      * Called before each step.
@@ -31,7 +31,7 @@ public abstract class AbstractSimulation {
      * @param stepNo number of the simulation step
      * @return map from agent names to their current step percept (for request-action message)
      */
-    public abstract Map<String, StepPercept> preStep(int stepNo);
+    public abstract Map<String, RequestActionContent> preStep(int stepNo);
 
     /**
      * Execute one step in the scenario.
@@ -39,7 +39,7 @@ public abstract class AbstractSimulation {
      * @param stepNo number of the simulation step
      * @param actionMap mapping from agent names to their actions for this step
      */
-    public abstract void step(int stepNo, Map<String, Action> actionMap);
+    public abstract void step(int stepNo, Map<String, ActionContent> actionMap);
 
     /**
      * Finish scenario execution, prepare results, etc.
