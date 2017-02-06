@@ -6,7 +6,8 @@
 
     <groupId>massim</groupId>
     <artifactId>massim</artifactId>
-    <version>2017-0.1-PRE-ALPHA</version>
+    <packaging>pom</packaging>
+    <version>2017-0.1</version><!-- !! Change in eismassim pom !! -->
     <build>
         <plugins>
             <plugin>
@@ -19,6 +20,9 @@
             </plugin>
         </plugins>
     </build>
+    <modules>
+        <module>../eismassim</module>
+    </modules>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
