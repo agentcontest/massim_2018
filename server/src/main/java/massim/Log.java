@@ -110,14 +110,12 @@ public class Log {
             t+= ls.getClassName()+"."+ls.getMethodName()+":"+ls.getLineNumber();
             x="<-";
         }
-        String s =
-                String.format("%02d:%02d:%02d",
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        calendar.get(Calendar.SECOND)) + " " +
-                        Thread.currentThread().getId() + " " +
-                        t;
-        return s;
+        return String.format("%02d:%02d:%02d",
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                calendar.get(Calendar.SECOND)) + " " +
+                Thread.currentThread().getId() + " " +
+                t;
     }
 
     public static void log(int type) {
