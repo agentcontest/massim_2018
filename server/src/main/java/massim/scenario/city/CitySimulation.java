@@ -8,10 +8,7 @@ import massim.messages.SimEndContent;
 import massim.messages.SimStartContent;
 import massim.messages.RequestActionContent;
 import massim.scenario.AbstractSimulation;
-import massim.scenario.city.data.Entity;
-import massim.scenario.city.data.Item;
-import massim.scenario.city.data.Job;
-import massim.scenario.city.data.WorldState;
+import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
 import massim.scenario.city.data.jaxb.*;
@@ -116,12 +113,30 @@ public class CitySimulation extends AbstractSimulation {
 
     @Override
     public Map<String, SimEndContent> finish() {
-        // TODO calculate rankings!!
-        Map<String, SimEndContent> results = new HashMap<>();
-        world.getAgents().forEach(agent -> {
-            results.put(agent, new SimEndContent(0, world.getTeam(world.getTeamForAgent(agent)).getMoney()));
+
+        // calculate ranking
+        Map<TeamState, Integer> rankings = new HashMap<>();
+        Map<Long, Set<TeamState>> scoreToTeam = new HashMap<>();
+        world.getTeams().forEach(team -> {
+            scoreToTeam.putIfAbsent(team.getMoney(), new HashSet<>());
+            scoreToTeam.get(team.getMoney()).add(team);
+        });
+        List<Long> scoreRanking = new ArrayList<>(scoreToTeam.keySet());
+        Collections.sort(scoreRanking); // sort ascending
+        Collections.reverse(scoreRanking); // now descending
+        final int[] ranking = {1};
+        scoreRanking.forEach(score -> {
+            Set<TeamState> teams = scoreToTeam.get(score);
+            teams.forEach(team -> rankings.put(team, ranking[0]));
+            ranking[0] += teams.size();
         });
 
+        // create percepts
+        Map<String, SimEndContent> results = new HashMap<>();
+        world.getAgents().forEach(agent -> {
+            TeamState team = world.getTeam(world.getTeamForAgent(agent));
+            results.put(agent, new SimEndContent(rankings.get(team), team.getMoney()));
+        });
         return results;
     }
 

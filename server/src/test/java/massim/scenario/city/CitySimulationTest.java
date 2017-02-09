@@ -75,4 +75,10 @@ public class CitySimulationTest {
         doc = outgoing.toXML(CityStepPercept.class);
         System.out.println(Conversions.docToString(doc, true));
     }
+
+    @Test
+    public void finishesWithCorrectRanking() throws Exception {
+        // add a few teamstates and check rankings
+        //TODO
+    }
 }

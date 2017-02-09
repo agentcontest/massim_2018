@@ -76,7 +76,7 @@ public class Entity {
             currentBattery = 0;
             return false;
         }
-        currentBattery -= 10;  // TODO 2017:: define battery cost of moving! (role depending? time-based or distance based?)
+        currentBattery -= 10;
         Location newLoc = this.route.advance(role.getSpeed());
         if (newLoc != null) location = newLoc;
         if (route.isCompleted()) route = null;
