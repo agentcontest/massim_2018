@@ -22,6 +22,7 @@ public class WorldState {
     private String mapName;
     private long seedCapital;
     private int randomFail;
+    private String id;
 
     private List<Tool> tools;
     private Map<String, Item> items = new HashMap<>();
@@ -34,9 +35,7 @@ public class WorldState {
     private Set<Shop> shops = new HashSet<>();
     private Set<Storage> storages = new HashSet<>();
 
-    private Vector<String> teamNames = new Vector<>();
     private Vector<String> agentNames;
-    private Map<String, Vector<String>> teamToAgents = new HashMap<>();
     private Map<String, String> agentToTeam = new HashMap<>();
     private Map<String, Entity> agentToEntity = new HashMap<>();
     private Map<Entity, String> entityToAgent = new HashMap<>();
@@ -50,6 +49,8 @@ public class WorldState {
         totalSteps = steps;
 
         // parse simulation config
+        id = config.optString("id", "Default-simulation");
+        Log.log(Log.NORMAL, "Configuring simulation id: " + id);
         mapName = config.optString("map", "london");
         Log.log(Log.NORMAL, "Configuring scenario map: " + mapName);
         seedCapital = config.optLong("seedCapital", 50000L);
@@ -81,9 +82,7 @@ public class WorldState {
 
         // store teams
         matchTeams.forEach(team -> {
-            teamNames.add(team.getName());
             Vector<String> agNames = team.getAgentNames();
-            teamToAgents.put(team.getName(), agNames);
             agNames.forEach(agName -> agentToTeam.put(agName, team.getName()));
             teams.put(team.getName(), new TeamState(seedCapital, team.getName()));
         });
@@ -299,8 +298,7 @@ public class WorldState {
     }
 
     public String getSimID() {
-        // TODO
-        return "sim";
+        return id;
     }
 
     /**
