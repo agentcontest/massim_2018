@@ -22,6 +22,9 @@ public class JobData {
     @XmlAttribute
     private int end;
 
+    @XmlAttribute
+    private int reward;
+
     @XmlElement(name = "items")
     private List<ItemAmountData> requiredItems = new Vector<>();
 
@@ -38,6 +41,7 @@ public class JobData {
         id = job.getName();
         storage = job.getStorage().getName();
         end = job.getEndStep();
+        reward = job.getReward();
         job.getRequiredItems().entrySet().forEach(entry ->
                 requiredItems.add(new ItemAmountData(entry.getKey().getName(), entry.getValue())));
     }
@@ -61,5 +65,12 @@ public class JobData {
      */
     public int getEnd() {
         return end;
+    }
+
+    /**
+     * @return the job's reward (max reward in case of auction)
+     */
+    public int getReward(){
+        return reward;
     }
 }

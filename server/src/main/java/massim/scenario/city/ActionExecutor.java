@@ -355,7 +355,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_UNKNOWN_JOB);
                     break;
                 }
-                if(!job.isActive() || job.getSource().equals(world.getTeamForAgent(agent))){
+                if(!job.isActive()){
                     entity.setLastActionResult(FAILED_JOB_STATUS);
                     break;
                 }
@@ -383,11 +383,9 @@ public class ActionExecutor {
                 if (itemsUsed[0] > 0){
                     String teamName = world.getTeamForAgent(agent);
                     if (job.checkCompletion(teamName)) {
-                        // add reward to completing team, take from posting team (if not system)
+                        // add reward to completing team
                         int reward = job.getReward();
                         world.getTeam(teamName).addMoney(reward);
-                        TeamState posterTeam = world.getTeam(job.getSource());
-                        if (posterTeam != null) posterTeam.subMoney(reward);
                         entity.setLastActionResult(SUCCESSFUL);
                         break;
                     } else {

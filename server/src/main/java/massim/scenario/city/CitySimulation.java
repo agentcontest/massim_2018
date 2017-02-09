@@ -53,6 +53,13 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public Map<String, RequestActionContent> preStep(int stepNo) {
 
+        // step job generator
+        generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
+
+        // activate jobs for this step
+        world.getJobs().stream().filter(job -> job.getBeginStep() == stepNo).forEach(Job::activate);
+
+        // create and send percepts
         Map<String, RequestActionContent> percepts = new HashMap<>();
 
         // create team data
@@ -98,8 +105,6 @@ public class CitySimulation extends AbstractSimulation {
 
     @Override
     public void step(int stepNo, Map<String, Action> actions) {
-        // step job generator
-        generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
         // execute all actions in random order
         List<String> agents = world.getAgents();
         RNG.shuffle(agents);
@@ -109,6 +114,14 @@ public class CitySimulation extends AbstractSimulation {
         actionExecutor.postProcess();
         world.processNewJobs();
         world.getShops().forEach(Shop::step);
+
+        // tell all jobs which have to end that they have to end
+        world.getJobs().stream().filter(job -> job.getEndStep() == stepNo).forEach(Job::terminate);
+
+        // assign auction jobs which have finished auctioning
+        world.getJobs().stream()
+                .filter(job -> job instanceof AuctionJob && job.getBeginStep() + ((AuctionJob)job).getAuctionTime() - 1 == stepNo)
+                .forEach(job -> ((AuctionJob)job).assign());
     }
 
     @Override
@@ -183,7 +196,7 @@ public class CitySimulation extends AbstractSimulation {
     public void simAddJob(Map<String, Integer> requirements, int reward, String storageName, int start, int end){
         Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
         if(!storage.isPresent()) return;
-        Job job = new Job(reward, Job.SOURCE_SYSTEM, storage.get(), start, end);
+        Job job = new Job(reward, storage.get(), start, end);
         requirements.forEach((itemName, amount) -> {
             Item item = world.getItem(itemName);
             if(item == null) return;

@@ -14,9 +14,8 @@ public class Job {
     public final static String SOURCE_SYSTEM = "system";
     private final static AtomicInteger counter = new AtomicInteger();
 
-    private JobStatus status = JobStatus.FUTURE;
+    JobStatus status = JobStatus.FUTURE;
     private String name = "";
-    private String source;
     private Storage storage;
     private int reward;
     private int beginStep;
@@ -25,8 +24,14 @@ public class Job {
     private Map<Item, Integer> requiredItems = new HashMap<>();
     private Map<String, ItemBox> deliveredItems = new HashMap<>();
 
-    public Job(int reward, String source, Storage storage, int begin, int end){
-        this.source = source;
+    /**
+     * Constructor.
+     * @param reward the reward of the job
+     * @param storage the storage associated with this job
+     * @param begin in which step to start the job
+     * @param end the last step of the job
+     */
+    public Job(int reward, Storage storage, int begin, int end){
         this.reward = reward;
         this.storage = storage;
         this.beginStep = begin;
@@ -35,10 +40,6 @@ public class Job {
 
     public boolean isActive(){
         return status == JobStatus.ACTIVE;
-    }
-
-    public String getSource(){
-        return source;
     }
 
     public Storage getStorage(){
@@ -108,11 +109,8 @@ public class Job {
                 status = JobStatus.COMPLETED;
                 // transfer items
                 deliveredItems.entrySet().stream()
-                        .filter(entry -> !entry.getKey().equals(team)) // completing team does not get items
+                        .filter(entry -> !entry.getKey().equals(team)) // completing team does not get any items
                         .forEach(entry -> storage.addDelivered(entry.getValue(), entry.getKey()));
-                if(!source.equals(SOURCE_SYSTEM)){ // posting team gets required items
-                    requiredItems.entrySet().forEach(entry -> storage.addDelivered(entry.getKey(), entry.getValue(), source));
-                }
                 return true;
             }
         }
@@ -142,21 +140,31 @@ public class Job {
     }
 
     /**
-     * Sets status of this job to {@link JobStatus#ACTIVE}
+     * A regular job is set to {@link JobStatus#ACTIVE}.
+     * Needs to be called before the job's begin step.
      */
     public void activate() {
         status = JobStatus.ACTIVE;
     }
 
     /**
+     * Sets this job's status to ended if it's still not completed.
+     */
+    public void terminate(){
+        if(!(status == JobStatus.COMPLETED)){
+           status = JobStatus.ENDED;
+        }
+    }
+
+    /**
      * The possible states of a job.<br>
      * {@link #ACTIVE}: job has been started and is not cancelled/completed <br>
      * {@link #AUCTION}: job is currently up for auction <br>
-     * {@link #CANCELLED}: job has been cancelled <br>
+     * {@link #ENDED}: job has ended without completion <br>
      * {@link #COMPLETED}: job has been completed by a team <br>
      * {@link #FUTURE}: job has been created and not activated yet.<br>
      */
     public enum JobStatus{
-        ACTIVE, CANCELLED, COMPLETED, AUCTION, FUTURE
+        ACTIVE, ENDED, COMPLETED, AUCTION, FUTURE
     }
 }

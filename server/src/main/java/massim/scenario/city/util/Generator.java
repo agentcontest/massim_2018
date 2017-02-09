@@ -88,7 +88,7 @@ public class Generator {
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
         // TODO maybe it's better not to create the same job each step
-        jobs.add(new Job(1, Job.SOURCE_SYSTEM, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10));
+        jobs.add(new Job(1, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10));
         return jobs;
     }
 }
