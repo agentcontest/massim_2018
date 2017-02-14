@@ -3,9 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>massim</groupId>
-    <artifactId>massim</artifactId>
+    <artifactId>server</artifactId>
     <packaging>pom</packaging>
     <version>2017-0.1</version><!-- !! Change in eismassim pom !! -->
     <build>
@@ -20,9 +19,6 @@
             </plugin>
         </plugins>
     </build>
-    <modules>
-        <module>../eismassim</module>
-    </modules>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.json/json -->

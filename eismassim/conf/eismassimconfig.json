@@ -1,0 +1,18 @@
+{
+  "scenario": "city2017",
+  "host": "localhost",
+  "port": 12300,
+  "timeout": 3900,
+  "scheduling": true,
+  "times": false,
+  "notifications": false,
+  "queued": false,
+  "entities": [
+    {"name": "connectionA1", "username": "a1", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA2", "username": "a2", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA3", "username": "a3", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA4", "username": "a4", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA5", "username": "a5", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA6", "username": "a6", "password": "1", "iilang": "yes", "xml": "yes"}
+  ]
+}

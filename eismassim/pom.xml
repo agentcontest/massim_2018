@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>massim</groupId>
-            <artifactId>massim</artifactId>
+            <artifactId>server</artifactId>
             <version>2017-0.1</version>
         </dependency>
     </dependencies>
