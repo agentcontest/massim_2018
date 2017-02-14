@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Job {
 
-    public final static String SOURCE_SYSTEM = "system";
     private final static AtomicInteger counter = new AtomicInteger();
 
     JobStatus status = JobStatus.FUTURE;
@@ -127,7 +126,7 @@ public class Job {
     /**
      * Gives the job a name if it has none.
      */
-    public void acquireName(){
+    void acquireName(){
         if(name.equals("")) name = "job" + counter.getAndIncrement();
     }
 
