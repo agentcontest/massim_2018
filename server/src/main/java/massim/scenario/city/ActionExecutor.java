@@ -397,8 +397,35 @@ public class ActionExecutor {
                     break;
                 }
 
-            case BID_FOR_JOB: // x params
-                // TODO impl. if still needed
+            case BID_FOR_JOB: // 2 params (job, price)
+                if(params.size() != 2){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                job = world.getJob(params.get(0));
+                if(job == null){
+                    entity.setLastActionResult(FAILED_UNKNOWN_JOB);
+                    break;
+                }
+                price = -1;
+                try{
+                    price = Integer.parseInt(params.get(1));
+                } catch(NumberFormatException ignored){}
+                if(price < 0){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                if(!(job instanceof AuctionJob)){
+                    entity.setLastActionResult(FAILED_JOB_TYPE);
+                    break;
+                }
+                AuctionJob auction = (AuctionJob) job;
+                if(!(job.getStatus() == Job.JobStatus.AUCTION)){
+                    entity.setLastActionResult(FAILED_JOB_STATUS);
+                    break;
+                }
+                auction.bid(world.getTeam(world.getTeamForAgent(agent)), price);
+                entity.setLastActionResult(SUCCESSFUL);
                 break;
 
             case DUMP: // 2 params (item, amount)
@@ -448,10 +475,6 @@ public class ActionExecutor {
                 }
                 entity.charge(((ChargingStation)facility).getRate());
                 entity.setLastActionResult(SUCCESSFUL);
-                break;
-
-            case POST_JOB:
-                // TODO implement if we still have this
                 break;
 
             case CONTINUE:
