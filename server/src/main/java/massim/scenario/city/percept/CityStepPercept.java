@@ -1,11 +1,12 @@
 package massim.scenario.city.percept;
 
 import massim.messages.RequestActionContent;
-import massim.scenario.city.data.*;
+import massim.scenario.city.data.WorldState;
 import massim.scenario.city.data.jaxb.*;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A regular percept that is sent each step in the City scenario.
@@ -30,7 +31,7 @@ public class CityStepPercept extends RequestActionContent {
     private CityStepPercept(){} // for jaxb
     public CityStepPercept(String agent, WorldState world, int step, TeamData team, List<EntityData> entities,
                            List<ShopData> shops, List<WorkshopData> workshops, List<ChargingStationData> stations,
-                           List<DumpData> dumps, List<StorageData> storage, List<JobData> jobs){
+                           List<DumpData> dumps, List<StorageData> storage, Map<String, List<JobData>> jobsPerTeam){
         simData = new SimData(step);
         teamData = team;
         selfData = new EntityData(world, world.getEntity(agent), true);
@@ -40,7 +41,7 @@ public class CityStepPercept extends RequestActionContent {
         this.chargingStations = stations;
         this.dumps = dumps;
         this.storage = storage;
-        this.jobs = jobs;
+        this.jobs = jobsPerTeam.get(world.getTeamForAgent(agent));
     }
 
     public SimData getSimData() {

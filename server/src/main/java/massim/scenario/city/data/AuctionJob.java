@@ -2,18 +2,19 @@ package massim.scenario.city.data;
 
 import massim.scenario.city.data.facilities.Storage;
 
-// TODO: add auction jobs to percepts
 /**
  * An auctioned job in the City scenario.
  */
 public class AuctionJob extends Job{
 
-    private String assignedTeam;
+    private TeamState assignedTeam;
 
     private Integer lowestBid;
-    private String currentAuctionWinner;
+    private TeamState currentAuctionWinner;
 
     private int auctionTime;
+
+    private int fine;
 
     /**
      * Constructor.
@@ -22,10 +23,12 @@ public class AuctionJob extends Job{
      * @param begin the time the auctioning starts
      * @param end the latest step in which items can be delivered
      * @param auctionTime the number of steps to run the auction, i.e. begin at step 7 and auctionTime 5 means:
+     * @param fine the amount of money the assigned team has to pay if it does not finish the job in time
      */
-    public AuctionJob(int reward, Storage storage, int begin, int end, int auctionTime) {
+    public AuctionJob(int reward, Storage storage, int begin, int end, int auctionTime, int fine) {
         super(reward, storage, begin, end);
         this.auctionTime = auctionTime;
+        this.fine = fine;
     }
 
     /**
@@ -66,16 +69,16 @@ public class AuctionJob extends Job{
     }
 
     /**
-     * @return the team this job was assigned to or null if it has not been assigned
+     * @return the team this job was assigned to or an empty string if it has not been assigned
      */
     public String getAuctionWinner() {
-        return assignedTeam;
+        return assignedTeam != null? assignedTeam.getName(): "";
     }
 
     /**
-     * @return the currently lowest bid for this job
+     * @return the currently lowest bid for this job (may be null)
      */
-    public int getLowestBid(){
+    public Integer getLowestBid(){
         return lowestBid;
     }
 
@@ -84,7 +87,7 @@ public class AuctionJob extends Job{
      * @param team the team that is bidding
      * @param amount the amount to bid
      */
-    public void bid(String team, int amount){
+    public void bid(TeamState team, int amount){
         if (lowestBid == null || amount < lowestBid){
             lowestBid = amount;
             currentAuctionWinner = team;
@@ -92,16 +95,24 @@ public class AuctionJob extends Job{
     }
 
     /**
-     * @return the team that currently holds the lowest bid or null, if no team has posted a valid bid yet
+     * @return the team that currently holds the lowest bid or an empty string, if no team has posted a valid bid yet
      */
     public String getCurrentAuctionWinner(){
-        return currentAuctionWinner;
+        return currentAuctionWinner != null? currentAuctionWinner.getName(): "";
     }
 
     @Override
     public void terminate(){
-       if(!(status == JobStatus.COMPLETED)){
-           // TODO subtract fine (but not here)
-       }
+        if(!(status == JobStatus.COMPLETED) && assignedTeam != null){
+            assignedTeam.subMoney(fine);
+        }
+        super.terminate();
+    }
+
+    /**
+     * @return the fine associated with this auction job
+     */
+    public int getFine() {
+        return fine;
     }
 }

@@ -397,7 +397,7 @@ public class ActionExecutor {
                     break;
                 }
 
-            case BID_FOR_JOB:
+            case BID_FOR_JOB: // x params
                 // TODO impl. if still needed
                 break;
 

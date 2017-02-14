@@ -157,6 +157,13 @@ public class Job {
     }
 
     /**
+     * @return the current status of the job
+     */
+    public JobStatus getStatus() {
+        return status;
+    }
+
+    /**
      * The possible states of a job.<br>
      * {@link #ACTIVE}: job has been started and is not cancelled/completed <br>
      * {@link #AUCTION}: job is currently up for auction <br>

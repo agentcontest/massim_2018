@@ -31,7 +31,7 @@ public class JobData {
     /**
      * For jaxb
      */
-    private JobData() {}
+    protected JobData() {}
 
     /**
      * Constructor.

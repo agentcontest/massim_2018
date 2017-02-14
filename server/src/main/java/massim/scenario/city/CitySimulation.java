@@ -18,6 +18,7 @@ import massim.scenario.city.util.Generator;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main class of the City scenario (2017).
@@ -55,13 +56,10 @@ public class CitySimulation extends AbstractSimulation {
 
         // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
-
         // activate jobs for this step
         world.getJobs().stream().filter(job -> job.getBeginStep() == stepNo).forEach(Job::activate);
 
-        // create and send percepts
-        Map<String, RequestActionContent> percepts = new HashMap<>();
-
+        /* create percept data */
         // create team data
         Map<String, TeamData> teamData = new HashMap<>();
         world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(team.getMoney())));
@@ -71,17 +69,13 @@ public class CitySimulation extends AbstractSimulation {
         world.getEntities().forEach(entity -> entities.add(new EntityData(world, entity, false)));
 
         //create facility data
-        List<ShopData> shops = new Vector<>();
-        world.getShops().forEach(shop -> shops.add(new ShopData(shop)));
-        List<WorkshopData> workshops = new Vector<>();
-        world.getWorkshops().forEach(ws -> workshops.add(new WorkshopData(ws.getName(),
-                ws.getLocation().getLat(), ws.getLocation().getLon())));
-        List<ChargingStationData> stations = new Vector<>();
-        world.getChargingStations().forEach(cs -> stations.add(new ChargingStationData(
-                cs.getName(), cs.getLocation().getLat(), cs.getLocation().getLon(), cs.getRate())));
-        List<DumpData> dumps = new Vector<>();
-        world.getDumps().forEach(dump -> dumps.add(new DumpData(
-                dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon())));
+        List<ShopData> shops = world.getShops().stream().map(ShopData::new).collect(Collectors.toList());
+        List<WorkshopData> workshops = world.getWorkshops().stream().map(ws -> new WorkshopData(ws.getName(),
+                ws.getLocation().getLat(), ws.getLocation().getLon())).collect(Collectors.toList());
+        List<ChargingStationData> stations = world.getChargingStations().stream().map(cs -> new ChargingStationData(
+                cs.getName(), cs.getLocation().getLat(), cs.getLocation().getLon(), cs.getRate())).collect(Collectors.toList());
+        List<DumpData> dumps = world.getDumps().stream().map(dump -> new DumpData(
+                dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon())).collect(Collectors.toList());
         Map<String, List<StorageData>> storageMap = new HashMap<>();
         world.getTeams().forEach(team -> {
             List<StorageData> storage = new Vector<>();
@@ -90,15 +84,30 @@ public class CitySimulation extends AbstractSimulation {
         });
 
         //create job data
-        List<JobData> jobs = new ArrayList<>();
-        world.getJobs().stream().filter(Job::isActive).forEach(job -> jobs.add(new JobData(job)));
+        List<JobData> commonJobs = world.getJobs().stream()
+                .filter(job -> ( (!(job instanceof AuctionJob)) && job.isActive() )
+                            || ( job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
+                .map(JobData::new)
+                .collect(Collectors.toList());
+
+        Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
+        world.getTeams().forEach(team -> {
+            List<JobData> teamJobs = new Vector<>(commonJobs);
+            // add auctions only visible to the assigned team
+            world.getJobs().stream()
+                    .filter(job -> job instanceof AuctionJob
+                            && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
+                            && job.isActive())
+                    .forEach(job -> teamJobs.add(new JobData(job)));
+        });
 
         //create and deliver percepts
+        Map<String, RequestActionContent> percepts = new HashMap<>();
         world.getAgents().forEach(agent -> {
             String team = world.getTeamForAgent(agent);
             percepts.put(agent,
                     new CityStepPercept(agent, world, stepNo, teamData.get(team), entities,
-                            shops, workshops, stations, dumps, storageMap.get(team), jobs));
+                            shops, workshops, stations, dumps, storageMap.get(team), jobsPerTeam));
         });
         return percepts;
     }
@@ -112,8 +121,10 @@ public class CitySimulation extends AbstractSimulation {
         for(String agent: agents)
             actionExecutor.execute(agent, actions);
         actionExecutor.postProcess();
-        world.processNewJobs();
         world.getShops().forEach(Shop::step);
+
+        // process new jobs (created in this step)
+        world.processNewJobs();
 
         // tell all jobs which have to end that they have to end
         world.getJobs().stream().filter(job -> job.getEndStep() == stepNo).forEach(Job::terminate);
