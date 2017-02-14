@@ -143,15 +143,12 @@ public class EnvironmentInterface extends EIDefaultImpl{
             String password = jsonEntity.optString("password");
             if (password == null) throw new ParseException("Entity must have a valid password", 0);
 
-            // instantiate entity
             EISEntity entity = EISEntity.createEntity(name, scenario, host, port, username, password);
 
-            // verbose
             if(config.optBoolean("xml", true)){
                 entity.enableXML();
                 Log.log(Log.NORMAL, "Enable XML for entity " + entity.getName());
             }
-
             if(config.optBoolean("iilang", true)){
                 entity.enableIILang();
                 Log.log(Log.NORMAL, "Enable IILang for entity " + entity.getName());
