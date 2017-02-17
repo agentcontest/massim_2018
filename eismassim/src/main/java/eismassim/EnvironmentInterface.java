@@ -21,7 +21,7 @@ import java.util.*;
  * Environment interface to the MASSim server following the Environment Interface Standard (EIS).
  * Supports the City Scenario 2017.
  */
-public class EnvironmentInterface extends EIDefaultImpl{
+public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
     private Set<String> supportedActions = new HashSet<>();
     private Map<String, EISEntity> entities = new HashMap<>();
@@ -31,6 +31,7 @@ public class EnvironmentInterface extends EIDefaultImpl{
      */
     public EnvironmentInterface() {
         super();
+        EISEntity.setEnvironmentInterface(this);
         supportedActions.addAll(ActionExecutor.ALL_ACTIONS);
         try {
             parseConfig();
@@ -121,8 +122,9 @@ public class EnvironmentInterface extends EIDefaultImpl{
         }
 
         // timeout
-        EISEntity.setTimeout(config.optInt("timeout", 3900));
-        Log.log(Log.NORMAL, "Timeout set to " + EISEntity.timeout);
+        int timeout = config.optInt("timeout", 3900);
+        EISEntity.setTimeout(timeout);
+        Log.log(Log.NORMAL, "Timeout set to " + timeout);
 
         // queue
         if(config.optBoolean("queued", true)){
@@ -154,7 +156,50 @@ public class EnvironmentInterface extends EIDefaultImpl{
                 Log.log(Log.NORMAL, "Enable IILang for entity " + entity.getName());
             }
 
-            entities.put(entity.getName(), entity);
+            if(entities.put(entity.getName(), entity) != null){
+                // entity by that name already existed
+                Log.log(Log.CRITICAL,
+                        "Entity by name " + entity.getName() + " configured multiple time. Previous one replaced.");
+            }
+        }
+    }
+
+    @Override
+    public void run() {
+        while (this.getState() != EnvironmentState.KILLED) {
+
+            try { Thread.sleep(10000); } catch (InterruptedException ignored) {}
+
+            // check connections and attempt to reconnect if necessary
+            for ( EISEntity e : entities.values() ) {
+                Log.log(Log.NORMAL, "entity \"" + e.getName() + "\" is not connected. trying to connect.");
+                if (!e.isConnected()) e.establishConnection();
+            }
+
+        }
+    }
+
+    @Override
+    public void associateEntity(String agent, String entity) throws RelationException {
+        super.associateEntity(agent, entity);
+        // connect entity if it's not connected
+        EISEntity e = entities.get(entity);
+        if (!e.isConnected()) e.establishConnection();
+    }
+
+    /**
+     * Sends notifications to an agent for a collection of percepts
+     * @param name the name of the entity
+     * @param percepts the percepts to send notifications for
+     */
+    void sendNotifications(String name, Collection<Percept> percepts) {
+        if (getState() != EnvironmentState.RUNNING) return;
+        for (Percept p : percepts){
+            try {
+                notifyAgentsViaEntity(p, name);
+            } catch (EnvironmentInterfaceException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

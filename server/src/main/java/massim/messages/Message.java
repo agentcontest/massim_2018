@@ -72,6 +72,7 @@ public class Message {
      * @return a message object according to the XML file or null if sth. went wrong
      */
     public static Message parse(Document doc, Class... context) {
+        if (doc == null) return null;
         try {
             Class[] contextClasses = Arrays.copyOf(context, context.length + 1);
             contextClasses[contextClasses.length - 1] = Message.class;
