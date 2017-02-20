@@ -26,7 +26,7 @@ public class Action extends MessageContent{
     private String type;
 
     @XmlAttribute(name = "id")
-    private int id = -1;
+    private long id = -1;
 
     @XmlElement(name = "p")
     private List<String> params;
@@ -67,8 +67,15 @@ public class Action extends MessageContent{
      * Only used when building an XML message out of this object.
      * @param id an action id from a request-action message
      */
-    public void setID(int id){
+    public void setID(long id){
         this.id = id;
+    }
+
+    /**
+     * @return the ID of this action (i.e.s request-action message)
+     */
+    public long getID(){
+        return id;
     }
 
     /**

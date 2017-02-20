@@ -64,7 +64,7 @@ public abstract class EISEntity implements Runnable{
 
     // action IDs
     private long lastUsedActionId;
-    private long currentActionId;
+    protected long currentActionId;
     private long lastUsedActionIdPercept;
 
     /**
@@ -83,10 +83,10 @@ public abstract class EISEntity implements Runnable{
 
     /**
      * Maps the request-action-message to IILang.
-     * @param content the step percept
+     * @param message the step percept message
      * @return a collection of percepts derived from the request-action message
      */
-    protected abstract Collection<Percept> requestActionToIIL(RequestActionContent content);
+    protected abstract Collection<Percept> requestActionToIIL(Message message);
 
     /**
      * Maps the sim-end-message to IILang.
@@ -243,7 +243,7 @@ public abstract class EISEntity implements Runnable{
 
                 requestActionPercepts.clear();
                 requestActionPercepts.add(new Percept("requestAction"));
-                requestActionPercepts.addAll(requestActionToIIL(rac));
+                requestActionPercepts.addAll(requestActionToIIL(msg));
 
                 if (times) annotatePercepts(requestActionPercepts, new Numeral(msg.getTimestamp()));
                 if (notifications) EI.sendNotifications(this.getName(), requestActionPercepts);
@@ -460,7 +460,7 @@ public abstract class EISEntity implements Runnable{
      * @param type the log type
      * @param s the string to log
      */
-    private void log(int type, String s) {
+    protected void log(int type, String s) {
         Log.log(type, "Entity " + name + ": " + s);
     }
 

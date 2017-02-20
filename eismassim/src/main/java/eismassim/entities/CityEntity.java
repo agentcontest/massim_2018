@@ -1,15 +1,21 @@
 package eismassim.entities;
 
-import eis.iilang.Action;
-import eis.iilang.Percept;
+import eis.iilang.*;
 import eismassim.EISEntity;
-import massim.messages.RequestActionContent;
+import massim.Log;
+import massim.messages.Message;
 import massim.messages.SimEndContent;
 import massim.messages.SimStartContent;
+import massim.scenario.city.data.jaxb.ActionData;
+import massim.scenario.city.data.jaxb.AuctionJobData;
+import massim.scenario.city.data.jaxb.EntityData;
+import massim.scenario.city.data.jaxb.RoleData;
+import massim.scenario.city.percept.CityInitialPercept;
+import massim.scenario.city.percept.CityStepPercept;
 import org.w3c.dom.Document;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * An EIS compatible entity for the 2017 MAPC City scenario.
@@ -24,26 +30,187 @@ public class CityEntity extends EISEntity{
 
     @Override
     protected Class[] getPerceptTypes() {
-        return new Class[0];
+        return new Class[]{CityInitialPercept.class, CityStepPercept.class};
     }
 
     @Override
     protected List<Percept> simStartToIIL(SimStartContent startPercept) {
-        return null;
+
+        List<Percept> ret = new Vector<>();
+        if(!(startPercept instanceof CityInitialPercept)) return ret; // protocol incompatibility
+        CityInitialPercept simStart = (CityInitialPercept) startPercept;
+
+        // add global info
+        ret.add(new Percept("id", new Identifier(simStart.getId())));
+        ret.add(new Percept("map", new Identifier(simStart.getMapName())));
+        ret.add(new Percept("seedCapital", new Numeral(simStart.getSeedCapital())));
+        ret.add(new Percept("steps", new Numeral(simStart.getSteps())));
+        ret.add(new Percept("team", new Identifier(simStart.getTeam())));
+
+        // prepare list of tools
+        RoleData role = simStart.getRoleData();
+        ParameterList paramTools = new ParameterList();
+        role.getTools().forEach(tool -> paramTools.add(new Identifier(tool)));
+
+        // add role percept
+        ret.add(new Percept("role",
+                new Identifier(role.getName()), new Numeral(role.getSpeed()), new Numeral(role.getLoad()),
+                new Numeral(role.getBattery()), paramTools));
+
+        // add item percepts
+        simStart.getItemData().forEach(item -> {
+            LinkedList<Parameter> params = new LinkedList<>();
+            params.add(new Identifier(item.getName()));
+            params.add(new Numeral(item.getVolume()));
+
+            ParameterList requiredTools = new ParameterList();
+            item.getTools().forEach(tool -> requiredTools.add(new Identifier(tool)));
+            params.add(new Function("tools", requiredTools));
+
+            ParameterList requiredParts = new ParameterList();
+            item.getParts().forEach(part ->
+                    requiredParts.add(new ParameterList(new Identifier(part.getName()), new Numeral(part.getAmount()))));
+            params.add(new Function("parts", requiredParts));
+
+            ret.add(new Percept("item", params));
+        });
+
+        return ret;
     }
 
     @Override
-    protected Collection<Percept> requestActionToIIL(RequestActionContent content) {
-        return null;
+    protected Collection<Percept> requestActionToIIL(Message message) {
+        Set<Percept> ret = new HashSet<>();
+        if(!(message.getContent() instanceof CityStepPercept)) return ret; // percept incompatible with entity
+        CityStepPercept percept = (CityStepPercept) message.getContent();
+
+        ret.add(new Percept("timestamp", new Numeral(message.getTimestamp())));
+        ret.add(new Percept("deadline", new Numeral(percept.getDeadline())));
+        ret.add(new Percept("step", new Numeral(percept.getSimData().getStep())));
+
+        EntityData self = percept.getSelfData();
+        ret.add(new Percept("charge", new Numeral(self.getCharge())));
+        ret.add(new Percept("load", new Numeral(self.getLoad())));
+        ret.add(new Percept("lat", new Numeral(self.getLat())));
+        ret.add(new Percept("lon", new Numeral(self.getLon())));
+        ret.add(new Percept("routeLength", new Numeral(self.getRouteLength())));
+        ret.add(new Percept("money", new Numeral(percept.getTeamData().getMoney())));
+
+        // add percepts for last action
+        ActionData lastAction = self.getLastAction();
+        ret.add(new Percept("lastAction", new Identifier(lastAction.getType())));
+        ParameterList lastActionParams = new ParameterList();
+        lastAction.getParams().forEach(param -> lastActionParams.add(new Identifier(param)));
+        ret.add(new Percept("lastActionParams", lastActionParams));
+        ret.add(new Percept("lastActionResult", new Identifier(lastAction.getResult())));
+
+        // add carried items
+        self.getItems().forEach(item -> ret.add(
+                new Percept("item", new Identifier(item.getName()), new Numeral(item.getAmount()))));
+
+        // add waypoints if route exists
+        if(self.getRoute() != null) {
+            ParameterList waypoints = new ParameterList();
+            self.getRoute().forEach(wp -> waypoints.add(new Function(
+                    "wp", new Numeral(wp.getIndex()), new Numeral(wp.getLat()), new Numeral(wp.getLon()))));
+            ret.add(new Percept("route", waypoints));
+        }
+
+        // add percept for each entity
+        percept.getEntityData().forEach(entity -> ret.add(new Percept("entity",
+                new Identifier(entity.getName()), new Identifier(entity.getTeam()), new Numeral(entity.getLat()),
+                new Numeral(entity.getLon()), new Identifier(entity.getRole()))));
+
+        // add charging station percepts
+        percept.getChargingStations().forEach(ch -> ret.add(new Percept("chargingStation",
+                new Identifier(ch.getName()), new Numeral(ch.getLat()),
+                new Numeral(ch.getLon()), new Numeral(ch.getRate()))));
+
+        percept.getDumps().forEach(dump -> ret.add(new Percept("dump", new Identifier(dump.getName()),
+                new Numeral(dump.getLat()), new Numeral(dump.getLon()))));
+
+        // shop percepts
+        percept.getShopData().forEach(shop -> {
+            ParameterList shopItems = new ParameterList(
+                    shop.getOfferedItems().stream() // map items to functions and collect those in a param-list
+                            .map(item -> new Function("item", new Identifier(item.getName()),
+                                    new Numeral(item.getPrice()), new Numeral(item.getAmount())))
+                            .collect(Collectors.toList()));
+            ret.add(new Percept("shop", new Identifier(shop.getName()), new Numeral(shop.getLat()),
+                    new Numeral(shop.getLon()), new Numeral(shop.getRestock()), shopItems));
+        });
+
+        // storage percepts
+        percept.getStorage().forEach(storage -> {
+            // map items in the storage to Functions
+            ParameterList storageItems = new ParameterList(
+                storage.getStoredItems().stream().map(item -> new Function("item", new Identifier(item.getName()),
+                        new Numeral(item.getStored()), new Numeral(item.getDelivered()))).collect(Collectors.toList()));
+            ret.add(new Percept("storage", new Identifier(storage.getName()), new Numeral(storage.getLat()),
+                    new Numeral(storage.getLon()), new Numeral(storage.getTotalCapacity()),
+                    new Numeral(storage.getUsedCapacity()), storageItems));
+        });
+
+        // workshop percepts
+        percept.getWorkshops().forEach(ws -> ret.add(new Percept("workshop", new Identifier(ws.getName()),
+                new Numeral(ws.getLat()), new Numeral(ws.getLon()))));
+
+        // job percepts
+        percept.getJobs().forEach(job -> {
+            // add common data
+            Percept jobPercept = new Percept("job", new Identifier(job.getId()), new Identifier(job.getStorage()),
+                    new Numeral(job.getReward()), new Numeral(job.getEnd()));
+            if(job instanceof AuctionJobData){
+                // add auction data
+                AuctionJobData auction = (AuctionJobData) job;
+                jobPercept.addParameter(new Numeral(auction.getFine()));
+                jobPercept.addParameter(new Numeral(auction.getLowestBid()));
+                jobPercept.addParameter(new Numeral(auction.getAuctionTime()));
+            }
+            // add item data
+            ParameterList requiredItems = new ParameterList();
+            job.getRequiredItems().forEach(item -> requiredItems.add(
+                    new Function("required", new Identifier(item.getName()), new Numeral(item.getAmount()))));
+            jobPercept.addParameter(requiredItems);
+            ret.add(jobPercept);
+        });
+
+        return ret;
     }
 
     @Override
     protected Collection<Percept> simEndToIIL(SimEndContent endPercept) {
-        return null;
+        HashSet<Percept> ret = new HashSet<>();
+        if (endPercept != null){
+            ret.add(new Percept("ranking", new Numeral(endPercept.getRanking())));
+            ret.add(new Percept("score", new Numeral(endPercept.getScore())));
+        }
+        return ret;
     }
 
     @Override
     public Document actionToXML(Action action) {
-        return null;
+
+        // translate parameters to String
+        List<String> parameters = new Vector<>();
+        action.getParameters().forEach(param -> {
+            if (param instanceof Identifier){
+                parameters.add(((Identifier) param).getValue());
+            }
+            else if(param instanceof Numeral){
+                parameters.add(((Numeral) param).getValue().toString());
+            }
+            else{
+                log(Log.CRITICAL, "Cannot translate parameter " + param);
+                parameters.add(""); // add empty parameter so the order is not invalidated
+            }
+        });
+
+        // create massim protocol action
+        massim.messages.Action massimAction =
+                new massim.messages.Action(action.getName(), parameters.toArray(new String[parameters.size()]));
+        massimAction.setID(currentActionId);
+
+        return new Message(null, massimAction).toXML();
     }
 }

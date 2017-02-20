@@ -31,7 +31,7 @@ public class JobData {
     /**
      * For jaxb
      */
-    protected JobData() {}
+    JobData() {}
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ public class JobData {
     /**
      * @return the job ID
      */
-    private String getId(){
+    public String getId(){
         return id;
     }
 
@@ -72,5 +72,12 @@ public class JobData {
      */
     public int getReward(){
         return reward;
+    }
+
+    /**
+     * @return a list of items that are required to complete the job
+     */
+    public List<ItemAmountData> getRequiredItems(){
+        return requiredItems;
     }
 }

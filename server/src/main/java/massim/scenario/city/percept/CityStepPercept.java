@@ -44,6 +44,72 @@ public class CityStepPercept extends RequestActionContent {
         this.jobs = jobsPerTeam.get(world.getTeamForAgent(agent));
     }
 
+    /**
+     * @return information about the entity receiving the percept
+     */
+    public EntityData getSelfData(){
+        return selfData;
+    }
+
+    /**
+     * @return information about the entity's team
+     */
+    public TeamData getTeamData(){
+        return teamData;
+    }
+
+    /**
+     * @return information about all entities in the simulation
+     */
+    public List<EntityData> getEntityData(){
+        return entityData;
+    }
+
+    /**
+     * @return information about all shops
+     */
+    public List<ShopData> getShopData(){
+        return shops;
+    }
+
+    /**
+     * @return information about all workshops
+     */
+    public List<WorkshopData> getWorkshops(){
+        return workshops;
+    }
+
+    /**
+     * @return information about all charging stations
+     */
+    public List<ChargingStationData> getChargingStations(){
+        return chargingStations;
+    }
+
+    /**
+     * @return information about all dumps
+     */
+    public List<DumpData> getDumps(){
+        return dumps;
+    }
+
+    /**
+     * @return information about the storage facilities
+     */
+    public List<StorageData> getStorage(){
+        return storage;
+    }
+
+    /**
+     * @return information about all jobs
+     */
+    public List<JobData> getJobs(){
+        return jobs;
+    }
+
+    /**
+     * @return the sim data object containing info about the simulation
+     */
     public SimData getSimData() {
         return simData;
     }
@@ -52,11 +118,26 @@ public class CityStepPercept extends RequestActionContent {
     @XmlAccessorType(XmlAccessType.NONE)
     public static class SimData{
 
-        @XmlAttribute public int step;
+        @XmlAttribute private int step;
 
+        /**
+         * For jaxb
+         */
         private SimData(){}
+
+        /**
+         * Constructor.
+         * @param step the current step
+         */
         SimData(int step){
             this.step = step;
+        }
+
+        /**
+         * @return the current step
+         */
+        public int getStep(){
+            return step;
         }
     }
 
