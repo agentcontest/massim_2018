@@ -46,4 +46,14 @@ public abstract class AbstractSimulation {
      * @return map from agent names to sim-end percepts
      */
     public abstract Map<String, SimEnd> finish();
+
+    /**
+     * @return a json object containing the simulation results in any form
+     */
+    public abstract JSONObject getResult();
+
+    /**
+     * @return the ID of this simulation
+     */
+    public abstract String getName();
 }

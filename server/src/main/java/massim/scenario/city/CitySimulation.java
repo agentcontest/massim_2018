@@ -218,8 +218,33 @@ public class CitySimulation extends AbstractSimulation {
 
     @Override
     public Map<String, SimEnd> finish() {
+        Map<TeamState, Integer> rankings = getRankings();
+        Map<String, SimEnd> results = new HashMap<>();
+        world.getAgents().forEach(agent -> {
+            TeamState team = world.getTeam(world.getTeamForAgent(agent));
+            results.put(agent, new SimEnd(rankings.get(team), team.getMoney()));
+        });
+        return results;
+    }
 
-        // calculate ranking
+    @Override
+    public JSONObject getResult() {
+        JSONObject result = new JSONObject();
+        Map<TeamState, Integer> rankings = getRankings();
+        world.getTeams().forEach(team -> {
+            JSONObject teamResult = new JSONObject();
+            teamResult.put("score", team.getMoney());
+            teamResult.put("ranking", rankings.get(team));
+            result.put(team.getName(), teamResult);
+        });
+        return result;
+    }
+
+    /**
+     * Calculates the current rankings based on the teams' current money values.
+     * @return a map of the current rankings
+     */
+    private Map<TeamState, Integer> getRankings(){
         Map<TeamState, Integer> rankings = new HashMap<>();
         Map<Long, Set<TeamState>> scoreToTeam = new HashMap<>();
         world.getTeams().forEach(team -> {
@@ -235,14 +260,12 @@ public class CitySimulation extends AbstractSimulation {
             teams.forEach(team -> rankings.put(team, ranking[0]));
             ranking[0] += teams.size();
         });
+        return rankings;
+    }
 
-        // create percepts
-        Map<String, SimEnd> results = new HashMap<>();
-        world.getAgents().forEach(agent -> {
-            TeamState team = world.getTeam(world.getTeamForAgent(agent));
-            results.put(agent, new SimEnd(rankings.get(team), team.getMoney()));
-        });
-        return results;
+    @Override
+    public String getName() {
+        return world.getSimID();
     }
 
     /**

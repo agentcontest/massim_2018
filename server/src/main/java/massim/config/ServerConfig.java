@@ -23,4 +23,7 @@ public class ServerConfig {
     public int backlog;
     public Map<String, String> accounts = new HashMap<>();
     public long agentTimeout;
+    public String logPath;
+    public String resultPath;
+    public String logLevel;
 }

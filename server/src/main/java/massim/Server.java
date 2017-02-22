@@ -3,10 +3,11 @@ package massim;
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
 import massim.protocol.messagecontent.Action;
+import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
-import massim.protocol.messagecontent.RequestAction;
 import massim.scenario.AbstractSimulation;
+import massim.util.JSONUtil;
 import massim.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Created in 2017.
@@ -118,6 +120,19 @@ public class Server {
      */
     private void go(){
 
+        //setup logging
+        switch(config.logLevel){
+            case "debug": Log.setLogLevel(Log.Level.DEBUG); break;
+            case "error": Log.setLogLevel(Log.Level.ERROR); break;
+            case "critical": Log.setLogLevel(Log.Level.CRITICAL); break;
+            default: Log.setLogLevel(Log.Level.NORMAL);
+        }
+        if(config.logPath != null){
+            File logFile = new File(config.logPath + File.separator + "MASSim-log-" + timestamp() + ".log");
+            File dir = logFile.getParentFile();
+            if(!dir.exists()) dir.mkdirs();
+        }
+
         // setup backend
         agentManager = new AgentManager(config.teams, config.agentTimeout);
         try {
@@ -174,17 +189,14 @@ public class Server {
                     Log.log(Log.Level.ERROR, "Not enough teams configured. Stopping MASSim now.");
                     System.exit(0);
                 }
-                int[] indices = new int[config.teamsPerMatch];
-                for (int i = 0; i < indices.length; i++) indices[i] = i;
+                int[] indices = IntStream.rangeClosed(0, config.teamsPerMatch - 1).toArray();
                 boolean nextMatch = true;
                 while (nextMatch){
                     Set<TeamConfig> matchTeams = new HashSet<>();
-                    for (int index : indices) {
-                        matchTeams.add(config.teams.get(index));
-                    }
+                    for (int index : indices) matchTeams.add(config.teams.get(index));
 
-                    runMatch(matchTeams);
-                    // TODO capture and process results
+                    JSONObject result = runMatch(matchTeams);
+                    JSONUtil.writeToFile(result, new File(config.resultPath + File.separator + "result-" + timestamp()));
 
                     // determine the next team constellation
                     for (int i = indices.length - 1; i >= 0; i--) {
@@ -211,11 +223,20 @@ public class Server {
     }
 
     /**
+     * @return a string representation of the current time in the form yyyy-MM-dd-HH-mm-ss
+     */
+    private String timestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+    }
+
+    /**
      * Runs a match for the given teams. Sim configuration is taken from the server config.
      * @param matchTeams a set of all teams to participate in the simulation
+     * @return a JSON object containing the result (scenario specific structure)
      */
-    private void runMatch(Set<TeamConfig> matchTeams) {
+    private JSONObject runMatch(Set<TeamConfig> matchTeams) {
 
+        JSONObject result = new JSONObject();
         for (JSONObject simConfig: config.simConfigs){
             // create and run scenario instance with the given teams
             String className = simConfig.optString("scenarioClass", "");
@@ -238,10 +259,12 @@ public class Server {
                 }
                 Map<String, SimEnd> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
+                result.put(sim.getName(), sim.getResult());
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 Log.log(Log.Level.ERROR, "Could not load scenario class: " + className);
             }
         }
+        return result;
     }
 
     /**
@@ -271,6 +294,12 @@ public class Server {
         Log.log(Log.Level.NORMAL, "Configuring backlog: " + config.backlog);
         config.agentTimeout = serverJSON.optInt("agentTimeout", 4000);
         Log.log(Log.Level.NORMAL, "Configuring agent timeout: " + config.agentTimeout);
+        config.logPath = serverJSON.optString("logPath");
+        Log.log(Log.Level.NORMAL, "Configuring log path: " + config.logPath);
+        config.logLevel = serverJSON.optString("logLevel", "normal");
+        Log.log(Log.Level.NORMAL, "Configuring log level: " + config.logLevel);
+        config.resultPath = serverJSON.optString("resultPath", "results");
+        Log.log(Log.Level.NORMAL, "Configuring result path: " + config.resultPath);
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");
