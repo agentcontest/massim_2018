@@ -1,4 +1,4 @@
-package massim;
+package massim.util;
 
 import java.util.Collections;
 import java.util.List;

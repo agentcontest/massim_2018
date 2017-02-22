@@ -1,7 +1,7 @@
 package massim.scenario.city;
 
-import massim.Log;
-import massim.RNG;
+import massim.util.Log;
+import massim.util.RNG;
 import massim.config.TeamConfig;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
@@ -37,7 +37,7 @@ public class CitySimulation extends AbstractSimulation {
         // build the random generator
         JSONObject randomConf = config.optJSONObject("generate");
         if(randomConf == null){
-            Log.log(Log.ERROR, "No random generation parameters!");
+            Log.log(Log.Level.ERROR, "No random generation parameters!");
             randomConf = new JSONObject();
         }
         generator = new Generator(randomConf);

@@ -1,6 +1,6 @@
 package massim.scenario.city.data;
 
-import massim.Log;
+import massim.util.Log;
 
 /**
  * Represents a map location in the city scenario.
@@ -73,7 +73,7 @@ public class Location {
             double lon = Double.parseDouble(lonString);
             return new Location(lon, lat);
         } catch(NullPointerException | NumberFormatException e){
-            Log.log(Log.ERROR, "Invalid doubles: " + latString + " - " + lonString);
+            Log.log(Log.Level.ERROR, "Invalid doubles: " + latString + " - " + lonString);
             return null;
         }
     }

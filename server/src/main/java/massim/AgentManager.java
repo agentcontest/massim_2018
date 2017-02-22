@@ -3,6 +3,7 @@ package massim;
 import massim.config.TeamConfig;
 import massim.protocol.*;
 import massim.protocol.messagecontent.*;
+import massim.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -107,7 +108,7 @@ class AgentManager {
         try {
             latch.await(2 * agentTimeout, TimeUnit.MILLISECONDS); // timeout ensured by threads; use this one for safety reasons
         } catch (InterruptedException e) {
-            Log.log(Log.ERROR, "Latch interrupted. Actions probably incomplete.");
+            Log.log(Log.Level.ERROR, "Latch interrupted. Actions probably incomplete.");
         }
         return resultMap;
     }
@@ -190,9 +191,9 @@ class AgentManager {
                     if(content instanceof Action) return (Action) content;
                 }
             } catch (InterruptedException | ExecutionException e) {
-                Log.log(Log.ERROR, "Interrupted while waiting for action.");
+                Log.log(Log.Level.ERROR, "Interrupted while waiting for action.");
             } catch (TimeoutException e) {
-                Log.log(Log.NORMAL, "No valid action available in time for agent " + name + ".");
+                Log.log(Log.Level.NORMAL, "No valid action available in time for agent " + name + ".");
             }
             latch.countDown();
             return Action.STD_NO_ACTION;
@@ -233,10 +234,10 @@ class AgentManager {
                 docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 in = socket.getInputStream();
             } catch (IOException e) {
-                Log.log(Log.ERROR,"Unable to get InputStream from Socket. Stop receiving.");
+                Log.log(Log.Level.ERROR,"Unable to get InputStream from Socket. Stop receiving.");
                 return;
             } catch (ParserConfigurationException e) {
-                Log.log(Log.ERROR, "Parser error. Stop receiving.");
+                Log.log(Log.Level.ERROR, "Parser error. Stop receiving.");
                 return;
             }
 
@@ -264,7 +265,7 @@ class AgentManager {
                             // first check if we're breaching maximum packet length
                             packetLen += i - firstNotCopied;
                             if (packetLen > maximumPacketLength) {
-                                Log.log(Log.NORMAL, "Packet too long.");
+                                Log.log(Log.Level.NORMAL, "Packet too long.");
                                 seekNextEnd = true;
                             } else // and possibly write data to packet buffer
                                 packetBuffer.write(buffer, firstNotCopied,i - firstNotCopied + (buffer[i] == 0? 0 : 1));
@@ -298,21 +299,21 @@ class AgentManager {
             }
             Element root = doc.getDocumentElement();
             if (root == null) {
-                Log.log(Log.NORMAL,"Received document with missing root element.");
+                Log.log(Log.Level.NORMAL,"Received document with missing root element.");
             }
             else if (root.getNodeName().equals("message")) {
                 if (root.getAttribute("type").equals("action")) {
-                    Log.log(Log.NORMAL, "processing action");
+                    Log.log(Log.Level.NORMAL, "processing action");
                     long actionID;
                     NodeList actions = root.getElementsByTagName("action");
                     if (actions.getLength() == 0) {
-                        Log.log(Log.ERROR,"No action element inside action message.");
+                        Log.log(Log.Level.ERROR,"No action element inside action message.");
                         return;
                     }
                     try {
                         actionID = Long.parseLong(((Element)actions.item(0)).getAttribute("id"));
                     } catch (NumberFormatException e) {
-                        Log.log(Log.ERROR, "Received invalid or no action id.");
+                        Log.log(Log.Level.ERROR, "Received invalid or no action id.");
                         return;
                     }
                     if (futureActions.containsKey(actionID)){
@@ -320,13 +321,13 @@ class AgentManager {
                     }
                 }
                 else {
-                    Log.log(Log.NORMAL,"Received unknown message type.");
+                    Log.log(Log.Level.NORMAL,"Received unknown message type.");
                     try {
                         transformer.transform(new DOMSource(doc), new StreamResult(System.out));
                     } catch(Exception ignored) {}
                 }
             } else {
-                Log.log(Log.NORMAL,"Received invalid message.");
+                Log.log(Log.Level.NORMAL,"Received invalid message.");
                 try {
                     transformer.transform(new DOMSource(doc),new StreamResult(System.out));
                 } catch(Exception ignored) {}
@@ -352,7 +353,7 @@ class AgentManager {
                     out.write(0);
                     out.flush();
                 } catch (InterruptedException | TransformerException | IOException e) {
-                    Log.log(Log.DEBUG, "Error writing to socket. Stop sending now.");
+                    Log.log(Log.Level.DEBUG, "Error writing to socket. Stop sending now.");
                     break;
                 }
             }
@@ -366,7 +367,7 @@ class AgentManager {
             try {
                 sendThread.join(5000); // give bye-message some time to be sent (but not too much)
             } catch (InterruptedException e) {
-                Log.log(Log.ERROR, "Interrupted while waiting for disconnection.");
+                Log.log(Log.Level.ERROR, "Interrupted while waiting for disconnection.");
             }
             if (sendThread != null) sendThread.interrupt();
             if (receiveThread != null) receiveThread.interrupt();
@@ -385,7 +386,7 @@ class AgentManager {
             try {
                 sendQueue.put(message);
             } catch (InterruptedException e) {
-                Log.log(Log.ERROR, "Interrupted while trying to put message into queue.");
+                Log.log(Log.Level.ERROR, "Interrupted while trying to put message into queue.");
             }
         }
 

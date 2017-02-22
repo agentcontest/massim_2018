@@ -10,7 +10,7 @@ import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 import com.graphhopper.util.shapes.GHPoint3D;
-import massim.RNG;
+import massim.util.RNG;
 import massim.scenario.city.data.Location;
 import massim.scenario.city.data.Route;
 import massim.scenario.city.util.GraphHopperManager;

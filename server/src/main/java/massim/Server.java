@@ -7,6 +7,7 @@ import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.protocol.messagecontent.RequestAction;
 import massim.scenario.AbstractSimulation;
+import massim.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ public class Server {
                                 StandardCharsets.UTF_8)));
                     } catch (java.io.IOException e) {
                         e.printStackTrace();
-                        Log.log(Log.ERROR, "Could not read massim.config file.");
+                        Log.log(Log.Level.ERROR, "Could not read massim.config file.");
                         i--;
                     }
                     break;
@@ -54,12 +55,12 @@ public class Server {
                     try {
                         server.config = parseServerConfig(new JSONObject(args[++i]));
                     } catch (JSONException e) {
-                        Log.log(Log.ERROR, "Passed configuration string invalid.");
+                        Log.log(Log.Level.ERROR, "Passed configuration string invalid.");
                         i--;
                     }
                     break;
                 default:
-                    Log.log(Log.ERROR, "Unknown option: " + args[i]);
+                    Log.log(Log.Level.ERROR, "Unknown option: " + args[i]);
             }
         }
 
@@ -69,13 +70,13 @@ public class Server {
             confDir.mkdirs();
             File[] confFiles = confDir.listFiles();
             if (confFiles == null || confFiles.length == 0) {
-                Log.log(Log.NORMAL, "No massim.config files to load - exit MASSim.");
+                Log.log(Log.Level.NORMAL, "No massim.config files to load - exit MASSim.");
                 System.exit(0);
             }
             else {
-                Log.log(Log.NORMAL, "Choose a number:");
+                Log.log(Log.Level.NORMAL, "Choose a number:");
                 for (int i = 0; i < confFiles.length; i++) {
-                    Log.log(Log.NORMAL, i + " " + confFiles[i]);
+                    Log.log(Log.Level.NORMAL, i + " " + confFiles[i]);
                 }
                 Scanner in = new Scanner(System.in);
                 Integer confNum = null;
@@ -83,18 +84,18 @@ public class Server {
                     try {
                         confNum = Integer.parseInt(in.next());
                         if (confNum < 0 || confNum > confFiles.length - 1){
-                            Log.log(Log.NORMAL, "No massim.config for that number, try again:");
+                            Log.log(Log.Level.NORMAL, "No massim.config for that number, try again:");
                             confNum = null;
                         }
                     } catch (Exception e) {
-                        Log.log(Log.NORMAL, "Invalid number, try again:");
+                        Log.log(Log.Level.NORMAL, "Invalid number, try again:");
                     }
                 }
                 try {
                     server.config = parseServerConfig(
                             new JSONObject(new String( Files.readAllBytes(Paths.get(confFiles[confNum].toURI())))));
                 } catch (IOException e) {
-                    Log.log(Log.ERROR, "Could not read massim.config file, exiting MASSim");
+                    Log.log(Log.Level.ERROR, "Could not read massim.config file, exiting MASSim");
                     System.exit(0);
                 }
             }
@@ -123,13 +124,13 @@ public class Server {
             loginManager = new LoginManager(agentManager, config.port, config.backlog);
             loginManager.start();
         } catch (IOException e) {
-            Log.log(Log.CRITICAL, "Cannot open server socket.");
+            Log.log(Log.Level.CRITICAL, "Cannot open server socket.");
             return;
         }
 
         // delay tournament start according to launch type
         if (config.launch.equals("key")){
-            Log.log(Log.NORMAL,"Please press ENTER to start the tournament.");
+            Log.log(Log.Level.NORMAL,"Please press ENTER to start the tournament.");
             try {
                 System.in.read();
             } catch (IOException ignored) {}
@@ -137,16 +138,16 @@ public class Server {
         else if(config.launch.endsWith("s")){
             try{
                 int interval = Integer.parseInt(config.launch.substring(0, config.launch.length() - 1));
-                Log.log(Log.NORMAL, "Starting tournament in " + interval + " seconds.");
+                Log.log(Log.Level.NORMAL, "Starting tournament in " + interval + " seconds.");
                 Thread.sleep(interval * 1000);
             } catch(Exception e){
-                Log.log(Log.ERROR, "Failed waiting, starting tournament now.");
+                Log.log(Log.Level.ERROR, "Failed waiting, starting tournament now.");
             }
         }
         else{
             DateFormat timeFormat = new SimpleDateFormat("HH:mm");
             Calendar cal = Calendar.getInstance();
-            Log.log(Log.NORMAL, "Current time is: " + cal.getTime().toString());
+            Log.log(Log.Level.NORMAL, "Current time is: " + cal.getTime().toString());
             try {
                 //TODO review this part
                 Calendar startDate = Calendar.getInstance();
@@ -154,14 +155,14 @@ public class Server {
                 int hourOfDay = startDate.get(Calendar.HOUR_OF_DAY);
                 int minute = startDate.get(Calendar.MINUTE);
                 startDate.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE), hourOfDay, minute);
-                Log.log(Log.NORMAL,"Starting time: " + startDate.getTime().toString());
+                Log.log(Log.Level.NORMAL,"Starting time: " + startDate.getTime().toString());
                 long time = startDate.getTimeInMillis();
                 long diffTime = time - cal.getTimeInMillis();
                 diffTime = Math.max(diffTime, 0);
-                Log.log(Log.NORMAL, "The tournament will start in " + diffTime/1000 + " seconds.");
+                Log.log(Log.Level.NORMAL, "The tournament will start in " + diffTime/1000 + " seconds.");
                 Thread.sleep(diffTime);
             } catch (Exception e) {
-                Log.log(Log.ERROR, "Could not parse start time. Starting tournament now.");
+                Log.log(Log.Level.ERROR, "Could not parse start time. Starting tournament now.");
             }
         }
 
@@ -170,7 +171,7 @@ public class Server {
             case "round-robin":
                 // run a match for each team combination
                 if (config.teamsPerMatch > config.teams.size()){
-                    Log.log(Log.ERROR, "Not enough teams configured. Stopping MASSim now.");
+                    Log.log(Log.Level.ERROR, "Not enough teams configured. Stopping MASSim now.");
                     System.exit(0);
                 }
                 int[] indices = new int[config.teamsPerMatch];
@@ -205,7 +206,7 @@ public class Server {
                 //TODO
                 break;
             default:
-                Log.log(Log.ERROR, "Invalid tournament mode: " + config.tournamentMode);
+                Log.log(Log.Level.ERROR, "Invalid tournament mode: " + config.tournamentMode);
         }
     }
 
@@ -219,7 +220,7 @@ public class Server {
             // create and run scenario instance with the given teams
             String className = simConfig.optString("scenarioClass", "");
             if (className.equals("")){
-                Log.log(Log.ERROR, "No scenario class specified.");
+                Log.log(Log.Level.ERROR, "No scenario class specified.");
                 continue;
             }
             try {
@@ -230,7 +231,7 @@ public class Server {
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
                 agentManager.handleInitialPercepts(initialPercepts);
                 for (int i = 0; i < steps; i++){
-                    Log.log(Log.NORMAL, "Simulation at step " + i);
+                    Log.log(Log.Level.NORMAL, "Simulation at step " + i);
                     Map<String, RequestAction> percepts = sim.preStep(i);
                     Map<String, Action> actions = agentManager.requestActions(percepts);
                     sim.step(i, actions); // execute step with agent actions
@@ -238,7 +239,7 @@ public class Server {
                 Map<String, SimEnd> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                Log.log(Log.ERROR, "Could not load scenario class: " + className);
+                Log.log(Log.Level.ERROR, "Could not load scenario class: " + className);
             }
         }
     }
@@ -253,28 +254,28 @@ public class Server {
         ServerConfig config = new ServerConfig();
         JSONObject serverJSON = conf.optJSONObject("server");
         if (serverJSON == null) {
-            Log.log(Log.ERROR, "No server object in configuration.");
+            Log.log(Log.Level.ERROR, "No server object in configuration.");
             serverJSON = new JSONObject();
         }
         config.launch = serverJSON.optString("launch", "key");
-        Log.log(Log.NORMAL, "Configuring launch type: " + config.launch);
+        Log.log(Log.Level.NORMAL, "Configuring launch type: " + config.launch);
         config.tournamentMode = serverJSON.optString("tournamentMode", "round-robin");
-        Log.log(Log.NORMAL, "Configuring tournament mode: " + config.tournamentMode);
+        Log.log(Log.Level.NORMAL, "Configuring tournament mode: " + config.tournamentMode);
         config.teamSize = serverJSON.optInt("teamSize", 16);
-        Log.log(Log.NORMAL, "Configuring team size: " + config.teamSize);
+        Log.log(Log.Level.NORMAL, "Configuring team size: " + config.teamSize);
         config.teamsPerMatch = serverJSON.optInt("teamsPerMatch", 2);
-        Log.log(Log.NORMAL, "Configuring teams per match: " + config.teamsPerMatch);
+        Log.log(Log.Level.NORMAL, "Configuring teams per match: " + config.teamsPerMatch);
         config.port = serverJSON.optInt("port", 12300);
-        Log.log(Log.NORMAL, "Configuring port: " + config.port);
+        Log.log(Log.Level.NORMAL, "Configuring port: " + config.port);
         config.backlog = serverJSON.optInt("backlog", 10000);
-        Log.log(Log.NORMAL, "Configuring backlog: " + config.backlog);
+        Log.log(Log.Level.NORMAL, "Configuring backlog: " + config.backlog);
         config.agentTimeout = serverJSON.optInt("agentTimeout", 4000);
-        Log.log(Log.NORMAL, "Configuring agent timeout: " + config.agentTimeout);
+        Log.log(Log.Level.NORMAL, "Configuring agent timeout: " + config.agentTimeout);
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");
         Set<String> allAgents = new HashSet<>();
-        if (teamJSON == null) Log.log(Log.ERROR, "No teams configured.");
+        if (teamJSON == null) Log.log(Log.Level.ERROR, "No teams configured.");
         else{
             teamJSON.keySet().forEach(name -> {
                 TeamConfig team = new TeamConfig(name);
@@ -283,7 +284,7 @@ public class Server {
                 if (accounts != null){
                     accounts.keySet().forEach(agName -> {
                         if(!allAgents.add(agName))
-                            Log.log(Log.CRITICAL, "Agent " + agName + " occurs in multiple teams.");
+                            Log.log(Log.Level.CRITICAL, "Agent " + agName + " occurs in multiple teams.");
                         team.addAgent(agName, accounts.getString(agName));
                         config.accounts.put(agName, accounts.getString(agName));
                     });
@@ -294,7 +295,7 @@ public class Server {
         // parse matches
         JSONArray matchJSON = conf.optJSONArray("match");
         if (matchJSON == null){
-            Log.log(Log.ERROR, "No match configured.");
+            Log.log(Log.Level.ERROR, "No match configured.");
             System.exit(0);
         }
         for(int i = 0; i < matchJSON.length(); i++){

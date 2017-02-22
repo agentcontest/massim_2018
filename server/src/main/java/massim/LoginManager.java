@@ -1,5 +1,6 @@
 package massim;
 
+import massim.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -46,13 +47,13 @@ class LoginManager {
         thread = new Thread(() -> {
             while (!stopped) {
                 try {
-                    Log.log(Log.DEBUG, "Waiting for connection...");
+                    Log.log(Log.Level.DEBUG, "Waiting for connection...");
                     Socket s = serverSocket.accept();
-                    Log.log(Log.DEBUG,"Got a connection.");
+                    Log.log(Log.Level.DEBUG,"Got a connection.");
                     Thread t = new Thread(() -> handleSocket(s));
                     t.start();
                 } catch (IOException e) {
-                    Log.log(Log.DEBUG,"Stop listening");
+                    Log.log(Log.Level.DEBUG,"Stop listening");
                 }
             }
         });
@@ -96,7 +97,7 @@ class LoginManager {
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(out));
             out.write(0);
         } catch (IOException | TransformerException | TransformerFactoryConfigurationError | ParserConfigurationException e) {
-            Log.log(Log.CRITICAL);
+            Log.log(Log.Level.CRITICAL, "Auth response could not be sent.");
             e.printStackTrace();
         }
     }
@@ -107,7 +108,7 @@ class LoginManager {
      */
     private void handleSocket(Socket s) {
 
-        Log.log(Log.DEBUG, "Retrieve authentication from client.");
+        Log.log(Log.Level.DEBUG, "Retrieve authentication from client.");
         DocumentBuilder docBuilder;
         try {
             docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -126,24 +127,24 @@ class LoginManager {
                 if (b[0] == 0) break;
                 else inString += (new String(b,0,1,"UTF-8"));
             }
-            Log.log(Log.DEBUG, inString);
+            Log.log(Log.Level.DEBUG, inString);
             Document authDoc = docBuilder.parse(new ByteArrayInputStream(inString.getBytes()));
             NodeList nl = authDoc.getElementsByTagName("authentication");
             if (nl.getLength() == 0) {
-                Log.log(Log.ERROR, "Error while parsing authentication");
+                Log.log(Log.Level.ERROR, "Error while parsing authentication");
                 return;
             }
             Element root = (Element)nl.item(0);
             user = root.getAttribute("username");
             pass = root.getAttribute("password");
         } catch (IOException e) {
-            Log.log(Log.ERROR, "IO error while receiving authentication");
+            Log.log(Log.Level.ERROR, "IO error while receiving authentication");
             e.printStackTrace();
         } catch (SAXException e) {
-            Log.log(Log.ERROR, "Error while parsing authentication");
+            Log.log(Log.Level.ERROR, "Error while parsing authentication");
             e.printStackTrace();
         }
-        Log.log(Log.NORMAL, "got authentication: username=" + user + " password=" + pass
+        Log.log(Log.Level.NORMAL, "got authentication: username=" + user + " password=" + pass
                 + " address=" + s.getInetAddress().getHostAddress());
 
         // check credentials and act accordingly
@@ -152,7 +153,7 @@ class LoginManager {
             agentManager.setSocket(s, user);
         }
         else{
-            Log.log(Log.CRITICAL,"Got invalid authentication from: " + s.getInetAddress().getHostAddress());
+            Log.log(Log.Level.CRITICAL,"Got invalid authentication from: " + s.getInetAddress().getHostAddress());
             sendAuthResponse(s,false);
             try { s.close(); } catch (IOException ignored) {}
         }

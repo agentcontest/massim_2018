@@ -1,7 +1,7 @@
 package massim.scenario.city.data;
 
-import massim.Log;
-import massim.RNG;
+import massim.util.Log;
+import massim.util.RNG;
 import massim.config.TeamConfig;
 import massim.scenario.city.CityMap;
 import massim.scenario.city.data.facilities.*;
@@ -50,31 +50,31 @@ public class WorldState {
 
         // parse simulation config
         id = config.optString("id", "Default-simulation");
-        Log.log(Log.NORMAL, "Configuring simulation id: " + id);
+        Log.log(Log.Level.NORMAL, "Configuring simulation id: " + id);
         mapName = config.optString("map", "london");
-        Log.log(Log.NORMAL, "Configuring scenario map: " + mapName);
+        Log.log(Log.Level.NORMAL, "Configuring scenario map: " + mapName);
         seedCapital = config.optLong("seedCapital", 50000L);
-        Log.log(Log.NORMAL, "Configuring scenario seedCapital: " + seedCapital);
+        Log.log(Log.Level.NORMAL, "Configuring scenario seedCapital: " + seedCapital);
         double minLon = config.optDouble("minLon", 0);
-        Log.log(Log.NORMAL, "Configuring scenario minLon: " + minLon);
+        Log.log(Log.Level.NORMAL, "Configuring scenario minLon: " + minLon);
         double maxLon = config.optDouble("maxLon", 0);
-        Log.log(Log.NORMAL, "Configuring scenario maxLon: " + maxLon);
+        Log.log(Log.Level.NORMAL, "Configuring scenario maxLon: " + maxLon);
         double minLat = config.optDouble("minLat", 0);
-        Log.log(Log.NORMAL, "Configuring scenario minLat: " + minLat);
+        Log.log(Log.Level.NORMAL, "Configuring scenario minLat: " + minLat);
         double maxLat = config.optDouble("maxLat", 0);
-        Log.log(Log.NORMAL, "Configuring scenario maxLat: " + maxLat);
+        Log.log(Log.Level.NORMAL, "Configuring scenario maxLat: " + maxLat);
         double proximity = config.optDouble("proximity", 0.0002);
-        Log.log(Log.NORMAL, "Configuring scenario proximity: " + proximity);
+        Log.log(Log.Level.NORMAL, "Configuring scenario proximity: " + proximity);
         Location.setProximity(proximity);
         double cellSize = config.optDouble("cellSize", 0.001);
-        Log.log(Log.NORMAL, "Configuring scenario cellSize: " + cellSize);
+        Log.log(Log.Level.NORMAL, "Configuring scenario cellSize: " + cellSize);
         double centerLat = config.optDouble("centerLat", 0);
-        Log.log(Log.NORMAL, "Configuring scenario centerLat: " + centerLat);
+        Log.log(Log.Level.NORMAL, "Configuring scenario centerLat: " + centerLat);
         double centerLon = config.optDouble("centerLon", 0);
-        Log.log(Log.NORMAL, "Configuring scenario centerLon: " + centerLon);
+        Log.log(Log.Level.NORMAL, "Configuring scenario centerLon: " + centerLon);
         Location mapCenter = new Location(centerLon, centerLat);
         randomFail = config.optInt("randomFail", 1);
-        Log.log(Log.NORMAL, "Configuring random fail probability: " + randomFail);
+        Log.log(Log.Level.NORMAL, "Configuring random fail probability: " + randomFail);
 
         parseRoles(config.optJSONObject("roles"));
 
@@ -140,13 +140,13 @@ public class WorldState {
      */
     private void parseRoles(JSONObject roles) {
         if (roles == null){
-            Log.log(Log.CRITICAL, "No roles defined");
+            Log.log(Log.Level.CRITICAL, "No roles defined");
             return;
         }
         roles.keys().forEachRemaining(roleName -> {
             JSONObject roleJson = roles.optJSONObject(roleName);
             if (roleJson == null) {
-                Log.log(Log.ERROR, "Invalid JSON role object.");
+                Log.log(Log.Level.ERROR, "Invalid JSON role object.");
             }
             else {
                 JSONArray permissionsJson = roleJson.optJSONArray("permissions");

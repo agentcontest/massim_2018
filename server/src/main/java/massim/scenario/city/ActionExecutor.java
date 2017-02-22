@@ -1,6 +1,6 @@
 package massim.scenario.city;
 
-import massim.RNG;
+import massim.util.RNG;
 import massim.protocol.messagecontent.Action;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
