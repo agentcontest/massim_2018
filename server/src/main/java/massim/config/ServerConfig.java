@@ -2,10 +2,7 @@ package massim.config;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Holds all massim.config values relevant for the server part. Initialized with the massim.config JSON object.
@@ -13,6 +10,11 @@ import java.util.Vector;
  * @author ta10
  */
 public class ServerConfig {
+
+    public final static String MODE_ROUND_ROBIN = "round-robin";
+    public final static String MODE_MANUAL = "manual";
+    public final static String MODE_RANDOM = "random";
+
     public String tournamentMode;
     public String launch;
     public int teamSize;
@@ -26,4 +28,5 @@ public class ServerConfig {
     public String logPath;
     public String resultPath;
     public String logLevel;
+    public List<Set<TeamConfig>> manualModeTeams;
 }

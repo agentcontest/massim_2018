@@ -12,6 +12,12 @@
     "logPath" : "logs"
   },
 
+  "manual-mode" : [
+    ["A", "B", "C"],
+    ["B", "C", "D"],
+    ["C", "D", "E"]
+  ],
+
   "match" : [
     {
       "id" : "2017-TestSim-1of1",

@@ -9,6 +9,7 @@ import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
 import massim.util.JSONUtil;
 import massim.util.Log;
+import massim.util.RNG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -35,6 +37,11 @@ public class Server {
 
     private LoginManager loginManager;
     private AgentManager agentManager;
+
+    /**
+     * whether server should stop after the next match (random mode)
+     */
+    private boolean stopped = false;
 
     public static void main(String[] args){
         Server server = new Server();
@@ -183,7 +190,7 @@ public class Server {
 
         // run matches according to tournament mode
         switch(config.tournamentMode){
-            case "round-robin":
+            case ServerConfig.MODE_ROUND_ROBIN:
                 // run a match for each team combination
                 if (config.teamsPerMatch > config.teams.size()){
                     Log.log(Log.Level.ERROR, "Not enough teams configured. Stopping MASSim now.");
@@ -195,8 +202,7 @@ public class Server {
                     Set<TeamConfig> matchTeams = new HashSet<>();
                     for (int index : indices) matchTeams.add(config.teams.get(index));
 
-                    JSONObject result = runMatch(matchTeams);
-                    JSONUtil.writeToFile(result, new File(config.resultPath + File.separator + "result-" + timestamp()));
+                    runMatch(matchTeams);
 
                     // determine the next team constellation
                     for (int i = indices.length - 1; i >= 0; i--) {
@@ -211,11 +217,15 @@ public class Server {
                     }
                 }
                 break;
-            case "manual":
-                //TODO
+            case ServerConfig.MODE_MANUAL:
+                if(config.manualModeTeams != null) config.manualModeTeams.forEach(this::runMatch);
                 break;
-            case "random":
-                //TODO
+            case ServerConfig.MODE_RANDOM:
+                while(!stopped){
+                    List<TeamConfig> teams = new Vector<>(config.teams);
+                    RNG.shuffle(teams);
+                    runMatch(new HashSet<>(teams.subList(0, config.teamsPerMatch)));
+                }
                 break;
             default:
                 Log.log(Log.Level.ERROR, "Invalid tournament mode: " + config.tournamentMode);
@@ -229,12 +239,19 @@ public class Server {
         return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
     }
 
+
+    /**
+     * Stops running matches after the current one finishes (random tournament mode)
+     */
+    public void stop(){
+        stopped = true;
+    }
+
     /**
      * Runs a match for the given teams. Sim configuration is taken from the server config.
      * @param matchTeams a set of all teams to participate in the simulation
-     * @return a JSON object containing the result (scenario specific structure)
      */
-    private JSONObject runMatch(Set<TeamConfig> matchTeams) {
+    private void runMatch(Set<TeamConfig> matchTeams) {
 
         JSONObject result = new JSONObject();
         for (JSONObject simConfig: config.simConfigs){
@@ -264,7 +281,9 @@ public class Server {
                 Log.log(Log.Level.ERROR, "Could not load scenario class: " + className);
             }
         }
-        return result;
+
+        // write match result to file
+        JSONUtil.writeToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
     }
 
     /**
@@ -332,6 +351,34 @@ public class Server {
             if (simConfig != null) {
                 config.simConfigs.add(simConfig);
             }
+        }
+
+        // parse manual mode config (if required)
+        if(config.tournamentMode.equals(ServerConfig.MODE_MANUAL)){
+            Map<String, TeamConfig> teamMap = config.teams.stream()
+                    .collect(Collectors.toMap(TeamConfig::getName, t -> t));
+            List<Set<TeamConfig>> matchTeams = new Vector<>();
+            JSONArray manualConf = conf.optJSONArray("manual-mode");
+            if (manualConf == null){
+                Log.log(Log.Level.CRITICAL, "No teams configured for manual mode. Exiting.");
+                System.exit(0);
+            }
+            for(int i = 0; i < manualConf.length(); i++){
+                JSONArray teamList = manualConf.optJSONArray(i);
+                if(teamList != null){
+                    Set<TeamConfig> parsedTeamNames = new HashSet<>();
+                    for (int j = 0; j < config.teamsPerMatch; j++){
+                        String team = teamList.optString(i, "");
+                        if (team.equals("")) break;
+                        TeamConfig teamConfig = teamMap.get(team);
+
+                        if(teamConfig != null) parsedTeamNames.add(teamMap.get(team));
+                        else Log.log(Log.Level.ERROR, "No team with name " + team + " configured.");
+                    }
+                    if (parsedTeamNames.size() == config.teamsPerMatch) matchTeams.add(parsedTeamNames);
+                }
+            }
+            config.manualModeTeams = matchTeams;
         }
         return config;
     }
