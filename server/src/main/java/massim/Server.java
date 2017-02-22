@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -167,24 +166,20 @@ public class Server {
             }
         }
         else{
-            DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            Calendar cal = Calendar.getInstance();
-            Log.log(Log.Level.NORMAL, "Current time is: " + cal.getTime().toString());
+            Calendar now = Calendar.getInstance();
+            Calendar startAt = Calendar.getInstance();
+            Log.log(Log.Level.NORMAL, "Current time is: " + now.getTime().toString());
             try {
-                //TODO review this part
-                Calendar startDate = Calendar.getInstance();
-                startDate.setTime(timeFormat.parse(config.launch));
-                int hourOfDay = startDate.get(Calendar.HOUR_OF_DAY);
-                int minute = startDate.get(Calendar.MINUTE);
-                startDate.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE), hourOfDay, minute);
-                Log.log(Log.Level.NORMAL,"Starting time: " + startDate.getTime().toString());
-                long time = startDate.getTimeInMillis();
-                long diffTime = time - cal.getTimeInMillis();
-                diffTime = Math.max(diffTime, 0);
-                Log.log(Log.Level.NORMAL, "The tournament will start in " + diffTime/1000 + " seconds.");
-                Thread.sleep(diffTime);
+                startAt.setTime(new SimpleDateFormat("HH:mm").parse(config.launch));
+                startAt.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+                Log.log(Log.Level.NORMAL,"Starting time: " + startAt.getTime().toString());
+                long diffTime = startAt.getTimeInMillis() - now.getTimeInMillis();
+                if(diffTime > 0) {
+                    Log.log(Log.Level.NORMAL, "The tournament will start in " + diffTime / 1000 + " seconds.");
+                    Thread.sleep(diffTime);
+                }
             } catch (Exception e) {
-                Log.log(Log.Level.ERROR, "Could not parse start time. Starting tournament now.");
+                Log.log(Log.Level.ERROR, "Could not determine or wait for start time. Starting tournament now.");
             }
         }
 
