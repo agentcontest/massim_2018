@@ -7,9 +7,9 @@ import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import eismassim.entities.CityEntity;
-import massim.Log;
-import massim.messages.*;
-import massim.util.Conversions;
+import eismassim.util.Conversions;
+import massim.protocol.*;
+import massim.protocol.messagecontent.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -69,7 +69,7 @@ public abstract class EISEntity implements Runnable{
 
     /**
      * @return an array containing all classes representing percepts (extending
-     * {@link massim.messages.RequestActionContent} and {@link massim.messages.SimStartContent} in the entity's
+     * {@link RequestAction} and {@link SimStart} in the entity's
      * scenario)
      */
     protected abstract Class[] getPerceptTypes();
@@ -79,7 +79,7 @@ public abstract class EISEntity implements Runnable{
      * @param startPercept the sim-start message to map
      * @return a list of percepts derived from the sim-start message
      */
-    protected abstract List<Percept> simStartToIIL(SimStartContent startPercept);
+    protected abstract List<Percept> simStartToIIL(SimStart startPercept);
 
     /**
      * Maps the request-action-message to IILang.
@@ -93,7 +93,7 @@ public abstract class EISEntity implements Runnable{
      * @param endPercept the sim-end percept to map
      * @return a collection of percepts derived from the sim-end message
      */
-    protected abstract Collection<Percept> simEndToIIL(SimEndContent endPercept);
+    protected abstract Collection<Percept> simEndToIIL(SimEnd endPercept);
 
     /**
      * Maps an IILang-action to XML.
@@ -228,17 +228,17 @@ public abstract class EISEntity implements Runnable{
             Message msg = Message.parse(doc, getPerceptTypes());
             if (msg == null) continue;
 
-            if (msg.getContent() instanceof SimStartContent) {
+            if (msg.getContent() instanceof SimStart) {
                 simStartPercepts.clear();
                 simStartPercepts.add(new Percept("simStart"));
-                simStartPercepts.addAll(simStartToIIL((SimStartContent) msg.getContent()));
+                simStartPercepts.addAll(simStartToIIL((SimStart) msg.getContent()));
 
                 if (times) annotatePercepts(simStartPercepts, new Numeral(msg.getTimestamp()));
                 if (notifications) EI.sendNotifications(getName(), simStartPercepts);
                 if (queued) perceptsQueue.add(Collections.synchronizedSet(new HashSet<>(simStartPercepts)));
             }
-            else if (msg.getContent() instanceof RequestActionContent) {
-                RequestActionContent rac = (RequestActionContent) msg.getContent();
+            else if (msg.getContent() instanceof RequestAction) {
+                RequestAction rac = (RequestAction) msg.getContent();
                 long id = rac.getId();
 
                 requestActionPercepts.clear();
@@ -250,17 +250,17 @@ public abstract class EISEntity implements Runnable{
                 currentActionId = id;
                 if (queued) perceptsQueue.add(Collections.synchronizedSet(new HashSet<>(requestActionPercepts)));
             }
-            else if (msg.getContent() instanceof SimEndContent) {
+            else if (msg.getContent() instanceof SimEnd) {
                 simStartPercepts.clear();
                 requestActionPercepts.clear();
                 simEndPercepts.clear();
                 simEndPercepts.add(new Percept("simEnd"));
-                simEndPercepts.addAll(simEndToIIL((SimEndContent) msg.getContent()));
+                simEndPercepts.addAll(simEndToIIL((SimEnd) msg.getContent()));
                 if (times) annotatePercepts(simEndPercepts,new Numeral(msg.getTimestamp()));
                 if (notifications) EI.sendNotifications(this.getName(), simEndPercepts);
                 if (queued) perceptsQueue.add(Collections.synchronizedSet(new HashSet<>(simEndPercepts)));
             }
-            else if (msg.getContent() instanceof ByeContent) {
+            else if (msg.getContent() instanceof Bye) {
                 simStartPercepts.clear();
                 requestActionPercepts.clear();
                 byePercepts.clear();
@@ -270,7 +270,7 @@ public abstract class EISEntity implements Runnable{
                 if (queued) perceptsQueue.add(Collections.synchronizedSet(new HashSet<>(byePercepts)));
             }
             else {
-                log(Log.ERROR, "unexpected type " + msg.getContent().getClass());
+                log("unexpected type " + msg.getContent().getClass());
             }
         }
     }
@@ -314,7 +314,7 @@ public abstract class EISEntity implements Runnable{
             ret.addAll(requestActionPercepts);
             ret.addAll(simEndPercepts);
             ret.addAll(byePercepts);
-            if ( useIILang ) log(Log.NORMAL, ret.toString());
+            if ( useIILang ) log(ret.toString());
             return ret;
         }
         else{
@@ -369,20 +369,20 @@ public abstract class EISEntity implements Runnable{
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (UnknownHostException e) {
-            log(Log.ERROR, "unknown host " + e.getMessage());
+            log("unknown host " + e.getMessage());
             return;
         } catch (IOException e) {
-            log(Log.ERROR, e.getMessage());
+            log(e.getMessage());
             return;
         }
-        log(Log.NORMAL, "socket successfully created");
+        log("socket successfully created");
 
         boolean result = authenticate();
         if (result) {
-            log(Log.NORMAL, "authentication acknowledged");
+            log("authentication acknowledged");
         }
         else {
-            log(Log.ERROR, "authentication denied");
+            log("authentication denied");
             return;
         }
 
@@ -390,11 +390,11 @@ public abstract class EISEntity implements Runnable{
         currentActionId = -1;
         lastUsedActionIdPercept = -1;
         connected = true;
-        log(Log.NORMAL, "connection successfully authenticated");
+        log("connection successfully authenticated");
 
         // start a listening thread
         new Thread(this).start();
-        log(Log.NORMAL, "listening for incoming messages");
+        log("listening for incoming messages");
     }
 
     /**
@@ -404,11 +404,11 @@ public abstract class EISEntity implements Runnable{
     private boolean authenticate() {
 
         // create and try to send message
-        Message authReq = new Message(null, new AuthRequestContent(username, password));
+        Message authReq = new Message(null, new AuthRequest(username, password));
         try {
             sendDocument(authReq.toXML());
         } catch (IOException | TransformerException e) {
-            log(Log.ERROR, e.getMessage());
+            log(e.getMessage());
             return false;
         }
 
@@ -424,9 +424,9 @@ public abstract class EISEntity implements Runnable{
         Message responseMsg = Message.parse(xmlResponse);
 
         // check for success
-        if (responseMsg == null || !(responseMsg.getContent() instanceof AuthResponseContent)) return false;
-        AuthResponseContent authResponse = (AuthResponseContent) responseMsg.getContent();
-        return authResponse.getResult() == AuthResponseContent.AuthenticationResult.OK;
+        if (responseMsg == null || !(responseMsg.getContent() instanceof AuthResponse)) return false;
+        AuthResponse authResponse = (AuthResponse) responseMsg.getContent();
+        return authResponse.getResult() == AuthResponse.AuthenticationResult.OK;
     }
 
     /**
@@ -452,16 +452,15 @@ public abstract class EISEntity implements Runnable{
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ignored) {}
-        log(Log.NORMAL, "connection released");
+        log("connection released");
     }
 
     /**
      * Logs a message prefixed with this entity's name
-     * @param type the log type
      * @param s the string to log
      */
-    protected void log(int type, String s) {
-        Log.log(type, "Entity " + name + ": " + s);
+    protected void log(String s) {
+        Log.log("Entity " + name + ": " + s);
     }
 
     /**
@@ -474,7 +473,7 @@ public abstract class EISEntity implements Runnable{
         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(out));
         out.write(0);
         out.flush();
-        if (useXML) log(Log.NORMAL, Conversions.docToString(doc, true) + " sent");
+        if (useXML) log(Conversions.docToString(doc, true) + " sent");
     }
 
     /**
@@ -494,7 +493,7 @@ public abstract class EISEntity implements Runnable{
         }
         byte[] raw = buffer.toByteArray();
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(raw));
-        if (useXML) log(Log.NORMAL, Conversions.docToString(doc, true) + " received");
+        if (useXML) log(Conversions.docToString(doc, true) + " received");
         return doc;
     }
 }

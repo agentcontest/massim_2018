@@ -1,9 +1,9 @@
 package massim.scenario.city.data;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import massim.protocol.scenario.city.data.ItemAmountData;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Container for items.
@@ -73,5 +73,15 @@ public class ItemBox {
      */
     public Set<Item> getStoredTypes(){
         return new HashSet<>(items.keySet());
+    }
+
+    /**
+     * @return a list of all items with their stored amounts (if that amount is > 0)
+     */
+    public List<ItemAmountData> toItemAmountData(){
+        return items.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .map(e -> new ItemAmountData(e.getKey().getName(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }

@@ -1,41 +1,18 @@
 package massim.scenario.city;
 
-import massim.messages.Action;
 import massim.RNG;
+import massim.protocol.messagecontent.Action;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
 
 import java.util.*;
 
+import static massim.protocol.scenario.city.Actions.*;
+
 /**
  * How else to execute agent actions.
  */
 public class ActionExecutor {
-
-    // scenario-specific action names/types
-    public final static String GO_TO = "goto";
-    public final static String RECEIVE = "receive";
-    public final static String GIVE = "give";
-    public final static String STORE = "store";
-    public final static String RETRIEVE = "retrieve";
-    public final static String ASSEMBLE = "assemble";
-    public final static String ASSIST_ASSEMBLE = "assist_assemble";
-    public final static String BUY = "buy";
-    public final static String DELIVER_JOB = "deliver_job";
-    public final static String RETRIEVE_DELIVERED = "retrieve_delivered";
-    public final static String BID_FOR_JOB = "bid_for_job";
-    public final static String DUMP = "dump";
-    public final static String CHARGE = "charge";
-    public final static String CONTINUE = "continue";
-    public final static String ABORT = "abort";
-    public final static String SKIP = "skip";
-
-    /**
-     * Unmodifiable list of all actions in the scenario.
-     */
-    public final static List<String> ALL_ACTIONS = Collections.unmodifiableList(Arrays.asList(GO_TO, RECEIVE, GIVE,
-            STORE, RETRIEVE, ASSEMBLE, ASSIST_ASSEMBLE, BUY, DELIVER_JOB, RETRIEVE_DELIVERED, BID_FOR_JOB, DUMP, CHARGE,
-            CONTINUE, SKIP, Action.NO_ACTION));
 
     // scenario-specific failure-codes
     public final static String SUCCESSFUL = "successful";

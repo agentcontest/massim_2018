@@ -1,7 +1,8 @@
 package massim;
 
 import massim.config.TeamConfig;
-import massim.messages.*;
+import massim.protocol.*;
+import massim.protocol.messagecontent.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -81,7 +82,7 @@ class AgentManager {
      * Sends initial percepts to the agents and stores them for later (possible agent reconnection).
      * @param initialPercepts mapping from agent names to initial percepts
      */
-    void handleInitialPercepts(Map<String, SimStartContent> initialPercepts) {
+    void handleInitialPercepts(Map<String, SimStart> initialPercepts) {
         initialPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
                 agents.get(agName).handleInitialPercept(percept);
@@ -95,7 +96,7 @@ class AgentManager {
      * @param percepts mapping from agent names to percepts of the current simulation state
      * @return mapping from agent names to actions received in response
      */
-    Map<String, Action> requestActions(Map<String, RequestActionContent> percepts) {
+    Map<String, Action> requestActions(Map<String, RequestAction> percepts) {
         // each thread needs to countdown the latch when it finishes
         CountDownLatch latch = new CountDownLatch(percepts.keySet().size());
         Map<String, Action> resultMap = new ConcurrentHashMap<>();
@@ -115,7 +116,7 @@ class AgentManager {
      * Sends sim-end percepts to the agents.
      * @param finalPercepts mapping from agent names to sim-end percepts
      */
-    void handleFinalPercepts(Map<String, SimEndContent> finalPercepts) {
+    void handleFinalPercepts(Map<String, SimEnd> finalPercepts) {
         finalPercepts.forEach((agName, percept) -> {
             if (agents.containsKey(agName)){
                 agents.get(agName).handleFinalPercept(percept);
@@ -162,7 +163,7 @@ class AgentManager {
          * Creates a message for the given initial percept and sends it to the remote agent.
          * @param percept the initial percept to forward
          */
-        void handleInitialPercept(SimStartContent percept) {
+        void handleInitialPercept(SimStart percept) {
             lastSimStartMessage = new Message(System.currentTimeMillis(), percept).toXML();
             sendMessage(lastSimStartMessage);
         }
@@ -174,7 +175,7 @@ class AgentManager {
          * @param latch the latch to count down after the action is acquired (or not)
          * @return the action that was received by the agent (or {@link Action#STD_NO_ACTION})
          */
-        Action requestAction(RequestActionContent percept, CountDownLatch latch) {
+        Action requestAction(RequestAction percept, CountDownLatch latch) {
             long id = messageCounter.getAndIncrement();
             percept.finalize(id, System.currentTimeMillis() + agentTimeout);
             CompletableFuture<Document> futureAction = new CompletableFuture<>();
@@ -201,7 +202,7 @@ class AgentManager {
          * Creates and send a sim-end message to the agent.
          * @param percept the percept to append to the message.
          */
-        void handleFinalPercept(SimEndContent percept) {
+        void handleFinalPercept(SimEnd percept) {
             lastSimStartMessage = null; // now we can stop resending it
             sendMessage(new Message(System.currentTimeMillis(), percept).toXML());
         }
@@ -361,7 +362,7 @@ class AgentManager {
          * Closes socket and stops threads (if they exist).
          */
         private void close() {
-            sendMessage(new Message(System.currentTimeMillis(), new ByeContent()).toXML());
+            sendMessage(new Message(System.currentTimeMillis(), new Bye()).toXML());
             try {
                 sendThread.join(5000); // give bye-message some time to be sent (but not too much)
             } catch (InterruptedException e) {

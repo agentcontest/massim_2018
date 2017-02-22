@@ -2,10 +2,10 @@ package massim;
 
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
-import massim.messages.Action;
-import massim.messages.SimEndContent;
-import massim.messages.SimStartContent;
-import massim.messages.RequestActionContent;
+import massim.protocol.messagecontent.Action;
+import massim.protocol.messagecontent.SimEnd;
+import massim.protocol.messagecontent.SimStart;
+import massim.protocol.messagecontent.RequestAction;
 import massim.scenario.AbstractSimulation;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -227,15 +227,15 @@ public class Server {
                                                                 .loadClass("massim.scenario." + className)
                                                                 .newInstance();
                 int steps = simConfig.optInt("steps", 1000);
-                Map<String, SimStartContent> initialPercepts = sim.init(steps, simConfig, matchTeams);
+                Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
                 agentManager.handleInitialPercepts(initialPercepts);
                 for (int i = 0; i < steps; i++){
                     Log.log(Log.NORMAL, "Simulation at step " + i);
-                    Map<String, RequestActionContent> percepts = sim.preStep(i);
+                    Map<String, RequestAction> percepts = sim.preStep(i);
                     Map<String, Action> actions = agentManager.requestActions(percepts);
                     sim.step(i, actions); // execute step with agent actions
                 }
-                Map<String, SimEndContent> finalPercepts = sim.finish();
+                Map<String, SimEnd> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 Log.log(Log.ERROR, "Could not load scenario class: " + className);

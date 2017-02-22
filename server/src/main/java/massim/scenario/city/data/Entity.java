@@ -1,6 +1,6 @@
 package massim.scenario.city.data;
 
-import massim.messages.Action;
+import massim.protocol.messagecontent.Action;
 import massim.scenario.city.ActionExecutor;
 
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class Entity {
     private Action lastAction = Action.STD_NO_ACTION;
     private String lastActionResult = ActionExecutor.SUCCESSFUL;
 
-    public Entity(Role role, Location location){
+    Entity(Role role, Location location){
         this.role = role;
         items = new BoundedItemBox(role.getMaxLoad());
         this.location = location;

@@ -1,17 +1,16 @@
 package eismassim.entities;
 
 import eis.iilang.*;
+import eis.iilang.Action;
 import eismassim.EISEntity;
-import massim.Log;
-import massim.messages.Message;
-import massim.messages.SimEndContent;
-import massim.messages.SimStartContent;
-import massim.scenario.city.data.jaxb.ActionData;
-import massim.scenario.city.data.jaxb.AuctionJobData;
-import massim.scenario.city.data.jaxb.EntityData;
-import massim.scenario.city.data.jaxb.RoleData;
-import massim.scenario.city.percept.CityInitialPercept;
-import massim.scenario.city.percept.CityStepPercept;
+import massim.protocol.Message;
+import massim.protocol.messagecontent.*;
+import massim.protocol.scenario.city.data.ActionData;
+import massim.protocol.scenario.city.data.AuctionJobData;
+import massim.protocol.scenario.city.data.EntityData;
+import massim.protocol.scenario.city.data.RoleData;
+import massim.protocol.scenario.city.percept.CityInitialPercept;
+import massim.protocol.scenario.city.percept.CityStepPercept;
 import org.w3c.dom.Document;
 
 import java.util.*;
@@ -34,7 +33,7 @@ public class CityEntity extends EISEntity{
     }
 
     @Override
-    protected List<Percept> simStartToIIL(SimStartContent startPercept) {
+    protected List<Percept> simStartToIIL(SimStart startPercept) {
 
         List<Percept> ret = new Vector<>();
         if(!(startPercept instanceof CityInitialPercept)) return ret; // protocol incompatibility
@@ -179,7 +178,7 @@ public class CityEntity extends EISEntity{
     }
 
     @Override
-    protected Collection<Percept> simEndToIIL(SimEndContent endPercept) {
+    protected Collection<Percept> simEndToIIL(SimEnd endPercept) {
         HashSet<Percept> ret = new HashSet<>();
         if (endPercept != null){
             ret.add(new Percept("ranking", new Numeral(endPercept.getRanking())));
@@ -201,14 +200,14 @@ public class CityEntity extends EISEntity{
                 parameters.add(((Numeral) param).getValue().toString());
             }
             else{
-                log(Log.CRITICAL, "Cannot translate parameter " + param);
+                log("Cannot translate parameter " + param);
                 parameters.add(""); // add empty parameter so the order is not invalidated
             }
         });
 
         // create massim protocol action
-        massim.messages.Action massimAction =
-                new massim.messages.Action(action.getName(), parameters.toArray(new String[parameters.size()]));
+        massim.protocol.messagecontent.Action massimAction =
+                new massim.protocol.messagecontent.Action(action.getName(), parameters.toArray(new String[parameters.size()]));
         massimAction.setID(currentActionId);
 
         return new Message(null, massimAction).toXML();

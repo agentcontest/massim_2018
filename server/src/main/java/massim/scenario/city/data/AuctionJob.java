@@ -1,6 +1,11 @@
 package massim.scenario.city.data;
 
+import massim.protocol.scenario.city.data.AuctionJobData;
+import massim.protocol.scenario.city.data.ItemAmountData;
+import massim.protocol.scenario.city.data.JobData;
 import massim.scenario.city.data.facilities.Storage;
+
+import java.util.stream.Collectors;
 
 /**
  * An auctioned job in the City scenario.
@@ -114,5 +119,13 @@ public class AuctionJob extends Job{
      */
     public int getFine() {
         return fine;
+    }
+
+    @Override
+    public JobData toJobData(){
+        return new AuctionJobData(getName(), getStorage().getName(), getEndStep(), getReward(),
+                getRequiredItems().entrySet().stream()
+                .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
+                .collect(Collectors.toList()), fine, lowestBid, auctionTime);
     }
 }

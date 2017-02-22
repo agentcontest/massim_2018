@@ -6,8 +6,7 @@ import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
 import eis.iilang.IILElement;
 import eis.iilang.Percept;
-import massim.Log;
-import massim.scenario.city.ActionExecutor;
+import massim.protocol.scenario.city.Actions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,7 +31,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
     public EnvironmentInterface() {
         super();
         EISEntity.setEnvironmentInterface(this);
-        supportedActions.addAll(ActionExecutor.ALL_ACTIONS);
+        supportedActions.addAll(Actions.ALL_ACTIONS);
         try {
             parseConfig();
         } catch (ParseException e) {
@@ -101,35 +100,35 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
         String host = config.optString("host", "localhost");
         int port = config.optInt("port", 12300);
         String scenario = config.optString("scenario", "city2017");
-        Log.log(Log.NORMAL, "Configuring EIS: " + scenario + "@" + host + ":" + port);
+        Log.log("Configuring EIS: " + scenario + "@" + host + ":" + port);
 
         // annotate percepts with timestamps
         if(config.optBoolean("times", true)){
             EISEntity.enableTimeAnnotations();
-            Log.log(Log.NORMAL, "Timed annotations enabled.");
+            Log.log("Timed annotations enabled.");
         }
 
         // enable scheduling
         if(config.optBoolean("scheduling", true)){
             EISEntity.enableScheduling();
-            Log.log(Log.NORMAL, "Scheduling enabled.");
+            Log.log("Scheduling enabled.");
         }
 
         // enable notifications
         if(config.optBoolean("notifications", true)){
             EISEntity.enableNotifications();
-            Log.log(Log.NORMAL, "Notifications enabled.");
+            Log.log("Notifications enabled.");
         }
 
         // timeout
         int timeout = config.optInt("timeout", 3900);
         EISEntity.setTimeout(timeout);
-        Log.log(Log.NORMAL, "Timeout set to " + timeout);
+        Log.log("Timeout set to " + timeout);
 
         // queue
         if(config.optBoolean("queued", true)){
             EISEntity.enablePerceptQueue();
-            Log.log(Log.NORMAL, "Percept queue enabled.");
+            Log.log("Percept queue enabled.");
         }
 
         // parse entities
@@ -149,17 +148,16 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
             if(config.optBoolean("xml", true)){
                 entity.enableXML();
-                Log.log(Log.NORMAL, "Enable XML for entity " + entity.getName());
+                Log.log("Enable XML for entity " + entity.getName());
             }
             if(config.optBoolean("iilang", true)){
                 entity.enableIILang();
-                Log.log(Log.NORMAL, "Enable IILang for entity " + entity.getName());
+                Log.log("Enable IILang for entity " + entity.getName());
             }
 
             if(entities.put(entity.getName(), entity) != null){
                 // entity by that name already existed
-                Log.log(Log.CRITICAL,
-                        "Entity by name " + entity.getName() + " configured multiple time. Previous one replaced.");
+                Log.log("Entity by name " + entity.getName() + " configured multiple time. Previous one replaced.");
             }
         }
     }
@@ -172,7 +170,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
             // check connections and attempt to reconnect if necessary
             for ( EISEntity e : entities.values() ) {
-                Log.log(Log.NORMAL, "entity \"" + e.getName() + "\" is not connected. trying to connect.");
+                Log.log("entity \"" + e.getName() + "\" is not connected. trying to connect.");
                 if (!e.isConnected()) e.establishConnection();
             }
 

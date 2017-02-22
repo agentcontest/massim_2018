@@ -51,18 +51,6 @@ public class Storage extends Facility{
     }
 
     /**
-     * Stores a number of "delivered" items.
-     * @param item a valid item
-     * @param amount a positive integer - number of items to store
-     * @param team name of the team to store the item for
-     */
-    public void addDelivered(Item item, int amount, String team){
-        if(item == null || amount < 0 || team == null) return;
-        ItemBox box = deliveredItems.get(team);
-        if(box != null) box.store(item, amount);
-    }
-
-    /**
      * @return the free space in this storage
      */
     public int getFreeSpace(){

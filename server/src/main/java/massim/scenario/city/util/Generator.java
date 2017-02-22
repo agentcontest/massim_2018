@@ -26,6 +26,7 @@ public class Generator {
         for(int i = 0; i < 5; i++){
             tools.add(new Tool("Tool"+i, 100, roles.stream().map(Role::getName).collect(Collectors.toList()).toArray(new String[roles.size()])));
         }
+        //TODO add tools to their roles
         return tools;
     }
 

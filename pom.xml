@@ -16,6 +16,7 @@
   <modules>
     <module>server</module>
     <module>eismassim</module>
+    <module>protocol</module>
   </modules>
 
 <build>

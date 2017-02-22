@@ -1,10 +1,13 @@
 package massim.scenario.city.data;
 
+import massim.protocol.scenario.city.data.ItemAmountData;
+import massim.protocol.scenario.city.data.JobData;
 import massim.scenario.city.data.facilities.Storage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * A job in the City scenario.
@@ -160,6 +163,16 @@ public class Job {
      */
     public JobStatus getStatus() {
         return status;
+    }
+
+    /**
+     * @return a data object of this job for serialization
+     */
+    public JobData toJobData(){
+        return new JobData(name, storage.getName(), endStep, reward, requiredItems.entrySet().stream()
+                .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
+                .collect(Collectors.toList())
+        );
     }
 
     /**

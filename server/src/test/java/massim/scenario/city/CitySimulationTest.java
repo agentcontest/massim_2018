@@ -2,11 +2,11 @@ package massim.scenario.city;
 
 import massim.Server;
 import massim.config.ServerConfig;
-import massim.messages.Message;
-import massim.messages.SimStartContent;
-import massim.messages.RequestActionContent;
-import massim.scenario.city.percept.CityInitialPercept;
-import massim.scenario.city.percept.CityStepPercept;
+import massim.protocol.Message;
+import massim.protocol.messagecontent.RequestAction;
+import massim.protocol.messagecontent.SimStart;
+import massim.protocol.scenario.city.percept.CityInitialPercept;
+import massim.protocol.scenario.city.percept.CityStepPercept;
 import massim.util.Conversions;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,7 +44,7 @@ public class CitySimulationTest {
         assert(matches != null && matches.length() > 0);
 
         // check initial percept
-        Map<String, SimStartContent> percepts = sim.init(100, matches.getJSONObject(0),
+        Map<String, SimStart> percepts = sim.init(100, matches.getJSONObject(0),
                 new HashSet<>(serverConfig.teams.subList(0, serverConfig.teamsPerMatch))); //just use the first teams
         CityInitialPercept percept = (CityInitialPercept) percepts.values().iterator().next();
         long time = System.currentTimeMillis();
@@ -68,8 +68,8 @@ public class CitySimulationTest {
 //        sim.simAddJob();
 
         // check step percept
-        Map<String, RequestActionContent> stepPercepts = sim.preStep(0);
-        RequestActionContent stepPercept = stepPercepts.get("agentA1");
+        Map<String, RequestAction> stepPercepts = sim.preStep(0);
+        RequestAction stepPercept = stepPercepts.get("agentA1");
         assert(stepPercept instanceof CityStepPercept);
         Message outgoing = new Message(System.currentTimeMillis(), stepPercept);
         doc = outgoing.toXML(CityStepPercept.class);
