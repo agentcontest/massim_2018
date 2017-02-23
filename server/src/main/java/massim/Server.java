@@ -137,6 +137,7 @@ public class Server {
             File logFile = new File(config.logPath + File.separator + "MASSim-log-" + timestamp() + ".log");
             File dir = logFile.getParentFile();
             if(!dir.exists()) dir.mkdirs();
+            Log.setLogFile(logFile);
         }
 
         // setup backend
