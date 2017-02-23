@@ -9,7 +9,8 @@
     "agentTimeout" : 4000,
     "resultPath" : "results",
     "logLevel" : "normal",
-    "logPath" : "logs"
+    "logPath" : "logs",
+    "maxPacketLength" : 65536
   },
 
   "manual-mode" : [

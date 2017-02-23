@@ -29,4 +29,5 @@ public class ServerConfig {
     public String resultPath;
     public String logLevel;
     public List<Set<TeamConfig>> manualModeTeams;
+    public int maxPacketLength;
 }

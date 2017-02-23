@@ -141,7 +141,7 @@ public class Server {
         }
 
         // setup backend
-        agentManager = new AgentManager(config.teams, config.agentTimeout);
+        agentManager = new AgentManager(config.teams, config.agentTimeout, config.maxPacketLength);
         try {
             loginManager = new LoginManager(agentManager, config.port, config.backlog);
             loginManager.start();
@@ -315,6 +315,8 @@ public class Server {
         Log.log(Log.Level.NORMAL, "Configuring log level: " + config.logLevel);
         config.resultPath = serverJSON.optString("resultPath", "results");
         Log.log(Log.Level.NORMAL, "Configuring result path: " + config.resultPath);
+        config.maxPacketLength = serverJSON.optInt("maxPacketLength", 65536);
+        Log.log(Log.Level.NORMAL, "Configuring max packet length: " + config.maxPacketLength);
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");

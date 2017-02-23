@@ -1,7 +1,8 @@
 package massim;
 
 import massim.config.TeamConfig;
-import massim.protocol.*;
+import massim.protocol.Message;
+import massim.protocol.MessageContent;
 import massim.protocol.messagecontent.*;
 import massim.util.Log;
 import org.w3c.dom.Document;
@@ -36,17 +37,21 @@ class AgentManager {
 
     private long agentTimeout;
     private boolean disconnecting = false;
+    private int maxPacketLength;
 
     /**
      * Creates a new agent manager responsible for sending and receiving messages.
      * @param teams a list of all teams to configure the manager for
      * @param agentTimeout the timeout to use for request-action messages (to wait for actions) in milliseconds
+     * @param maxPacketLength the maximum size of packets to <b>process</b> (they are received anyway, just not parsed
+     *                        in case they are too big)
      */
-    AgentManager(List<TeamConfig> teams, long agentTimeout) {
+    AgentManager(List<TeamConfig> teams, long agentTimeout, int maxPacketLength) {
         teams.forEach(team -> team.getAgentNames().forEach((name) -> {
             agents.put(name, new AgentProxy(name, team.getName(), team.getPassword(name)));
         }));
         this.agentTimeout = agentTimeout;
+        this.maxPacketLength = maxPacketLength;
     }
 
     /**
@@ -227,61 +232,49 @@ class AgentManager {
             receiveThread.start();
         }
 
+        /**
+         * Reads XML documents (0-terminated) from the socket. If any "packet" is bigger than
+         * {@link #maxPacketLength}, the read bytes are immediately discarded until the next 0 byte.
+         */
         private void receive() {
             DocumentBuilder docBuilder;
             InputStream in;
             try {
                 docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                in = socket.getInputStream();
-            } catch (IOException e) {
-                Log.log(Log.Level.ERROR,"Unable to get InputStream from Socket. Stop receiving.");
-                return;
-            } catch (ParserConfigurationException e) {
-                Log.log(Log.Level.ERROR, "Parser error. Stop receiving.");
-                return;
-            }
+                in = new BufferedInputStream(socket.getInputStream());
 
-            /*
-             * TODO: does this make sense at all? Try a simpler approach.
-             */
-            ByteArrayOutputStream packetBuffer = new ByteArrayOutputStream();
-            boolean seekNextEnd = false; // is the terminating null-byte overdue?
-            int packetLen = 0; // length of current packet so far
-            try {
-                int maximumPacketLength = 65536;
-                while (!disconnecting) { // we can stop receiving when disconnect is triggered
-                    // Read at least 1 byte or as many as available, limited by maximum packet length
-                    int amount = in.available();
-                    amount = Math.max(amount, 1);
-                    amount = Math.min(amount, maximumPacketLength);
-                    byte[] buffer = new byte[amount];
-                    in.read(buffer);
-
-                    // process read bytes
-                    int firstNotCopied = 0;
-                    for (int i = 0; i < amount; i++) {
-                        // if we've found a null byte or if we're at the end of the buffer (or both)
-                        if ((buffer[i] == 0 || i == amount - 1) && !seekNextEnd) {
-                            // first check if we're breaching maximum packet length
-                            packetLen += i - firstNotCopied;
-                            if (packetLen > maximumPacketLength) {
-                                Log.log(Log.Level.NORMAL, "Packet too long.");
-                                seekNextEnd = true;
-                            } else // and possibly write data to packet buffer
-                                packetBuffer.write(buffer, firstNotCopied,i - firstNotCopied + (buffer[i] == 0? 0 : 1));
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream(maxPacketLength);
+                int readBytes = 0;
+                boolean skipping = false;
+                while (!disconnecting){
+                    int b = in.read();
+                    if (!skipping && b != 0) buffer.write(b);
+                    if(b == -1) break; // stream ended
+                    if (b == 0){
+                        if (skipping){
+                            skipping = false; // new packet next up
                         }
-                        if (buffer[i] == 0) { // if we've found a null byte some packet has to end here.
-                            //convert packet to XML
-                            Document doc = docBuilder.parse(new ByteArrayInputStream(packetBuffer.toByteArray()));
+                        else {
+                            // document complete
+                            Document doc = docBuilder.parse(new ByteArrayInputStream(buffer.toByteArray()));
                             handleReceivedDoc(doc);
-                            packetBuffer = new ByteArrayOutputStream();
-                            seekNextEnd = false;
-                            packetLen = 0;
-                            firstNotCopied = i + 1;
+                            buffer = new ByteArrayOutputStream();
+                            readBytes = 0;
                         }
                     }
+                    if (readBytes++ >= maxPacketLength){
+                        buffer = new ByteArrayOutputStream();
+                        readBytes = 0;
+                        skipping = true;
+                    }
                 }
-            } catch (IOException | SAXException ignored) {}
+            } catch (IOException e) {
+                Log.log(Log.Level.ERROR, "Error receiving document. Stop receiving.");
+            } catch (ParserConfigurationException e) {
+                Log.log(Log.Level.ERROR, "Parser error. Stop receiving.");
+            } catch (SAXException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
@@ -293,13 +286,13 @@ class AgentManager {
             Transformer transformer;
             try {
                 transformer = factory.newTransformer();
-                transformer.setOutputProperty("indent","yes");
+                transformer.setOutputProperty("indent", "yes");
             } catch (TransformerConfigurationException e) {
                 return;
             }
             Element root = doc.getDocumentElement();
             if (root == null) {
-                Log.log(Log.Level.NORMAL,"Received document with missing root element.");
+                Log.log(Log.Level.NORMAL, "Received document with missing root element.");
             }
             else if (root.getNodeName().equals("message")) {
                 if (root.getAttribute("type").equals("action")) {
@@ -307,7 +300,7 @@ class AgentManager {
                     long actionID;
                     NodeList actions = root.getElementsByTagName("action");
                     if (actions.getLength() == 0) {
-                        Log.log(Log.Level.ERROR,"No action element inside action message.");
+                        Log.log(Log.Level.ERROR, "No action element inside action message.");
                         return;
                     }
                     try {
@@ -321,7 +314,7 @@ class AgentManager {
                     }
                 }
                 else {
-                    Log.log(Log.Level.NORMAL,"Received unknown message type.");
+                    Log.log(Log.Level.NORMAL, "Received unknown message type.");
                     try {
                         transformer.transform(new DOMSource(doc), new StreamResult(System.out));
                     } catch(Exception ignored) {}
@@ -329,7 +322,7 @@ class AgentManager {
             } else {
                 Log.log(Log.Level.NORMAL,"Received invalid message.");
                 try {
-                    transformer.transform(new DOMSource(doc),new StreamResult(System.out));
+                    transformer.transform(new DOMSource(doc), new StreamResult(System.out));
                 } catch(Exception ignored) {}
             }
         }
