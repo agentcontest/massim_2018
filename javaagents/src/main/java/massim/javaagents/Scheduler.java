@@ -55,19 +55,12 @@ public class Scheduler implements AgentListener, EnvironmentListener{
     }
 
     /**
-     * Create a new scheduler based on the standard java agents configuration file.
-     */
-    Scheduler() {
-        parseConfig("javaagentsconfig.json");
-    }
-
-    /**
      * Parses the java agents config.
      * @param path the path to the config
      */
     private void parseConfig(String path) {
         try {
-            JSONObject config = new JSONObject(new String(Files.readAllBytes(Paths.get(path))));
+            JSONObject config = new JSONObject(new String(Files.readAllBytes(Paths.get(path, "javaagentsconfig.json"))));
             JSONObject agents = config.optJSONObject("agents");
             if(agents != null){
                 agents.keySet().forEach(agName -> {

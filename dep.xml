@@ -16,14 +16,7 @@
         <!-- MASSim-server -->
         <fileSet>
             <directory>server/target</directory>
-            <outputDirectory>server/target</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>server/target/dependency</directory>
-            <outputDirectory>server/target/dependency</outputDirectory>
+            <outputDirectory>server</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
@@ -43,35 +36,41 @@
             </includes>
         </fileSet>
 
-        <!-- Java-agents -->
+        <!-- Protocol -->
         <fileSet>
-            <directory>javaagents/target</directory>
-            <outputDirectory>javaagents/target</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>javaagents/target/dependency</directory>
-            <outputDirectory>javaagents/target/dependency</outputDirectory>
+            <directory>protocol/target</directory>
+            <outputDirectory>protocol</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
 
-        <!-- EISMASSim -->
+        <!-- Java-agents -->
         <fileSet>
-            <directory>eismassim/target</directory>
-            <outputDirectory>eismassim/target</outputDirectory>
+            <directory>javaagents/target</directory>
+            <outputDirectory>javaagents</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>eismassim/target/dependency</directory>
-            <outputDirectory>eismassim/target/dependency</outputDirectory>
+            <directory>javaagents/conf</directory>
+            <outputDirectory>javaagents/conf</outputDirectory>
+        </fileSet>
+
+        <!-- EISMASSim -->
+        <fileSet>
+            <directory>eismassim/target</directory>
+            <outputDirectory>eismassim</outputDirectory>
             <includes>
                 <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>eismassim/conf</directory>
+            <outputDirectory>eismassim/conf</outputDirectory>
+            <includes>
+                <include>*.json</include>
             </includes>
         </fileSet>
     </fileSets>
