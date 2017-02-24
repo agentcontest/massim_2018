@@ -193,14 +193,16 @@ class AgentManager {
                 Message msg = Message.parse(doc, Action.class);
                 if(msg != null){
                     MessageContent content = msg.getContent();
-                    if(content instanceof Action) return (Action) content;
+                    if(content instanceof Action) {
+                        latch.countDown();
+                        return (Action) content;
+                    }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.log(Log.Level.ERROR, "Interrupted while waiting for action.");
             } catch (TimeoutException e) {
                 Log.log(Log.Level.NORMAL, "No valid action available in time for agent " + name + ".");
             }
-            latch.countDown();
             return Action.STD_NO_ACTION;
         }
 
@@ -296,7 +298,6 @@ class AgentManager {
             }
             else if (root.getNodeName().equals("message")) {
                 if (root.getAttribute("type").equals("action")) {
-                    Log.log(Log.Level.NORMAL, "processing action");
                     long actionID;
                     NodeList actions = root.getElementsByTagName("action");
                     if (actions.getLength() == 0) {
@@ -305,6 +306,7 @@ class AgentManager {
                     }
                     try {
                         actionID = Long.parseLong(((Element)actions.item(0)).getAttribute("id"));
+                        Log.log(Log.Level.NORMAL, "Received action with id " + actionID + " from " + name);
                     } catch (NumberFormatException e) {
                         Log.log(Log.Level.ERROR, "Received invalid or no action id.");
                         return;
