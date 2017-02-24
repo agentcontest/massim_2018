@@ -75,7 +75,7 @@ public class Action extends MessageContent {
     }
 
     /**
-     * @return the ID of this action (i.e.s request-action message)
+     * @return the ID of this action (i.e. request-action message) or -1 if no ID has been set
      */
     public long getID(){
         return id;

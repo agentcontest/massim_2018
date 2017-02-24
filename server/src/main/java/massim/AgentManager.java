@@ -6,15 +6,11 @@ import massim.protocol.MessageContent;
 import massim.protocol.messagecontent.*;
 import massim.util.Log;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -284,48 +280,21 @@ class AgentManager {
          * @param doc the document that needs to be processed
          */
         private void handleReceivedDoc(Document doc) {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer;
-            try {
-                transformer = factory.newTransformer();
-                transformer.setOutputProperty("indent", "yes");
-            } catch (TransformerConfigurationException e) {
+
+            Message message = Message.parse(doc);
+            if(message == null) {
+                Log.log(Log.Level.ERROR, "Received invalid message.");
                 return;
             }
-            Element root = doc.getDocumentElement();
-            if (root == null) {
-                Log.log(Log.Level.NORMAL, "Received document with missing root element.");
+            if(message.getContent() instanceof Action){
+                long actionID = ((Action) message.getContent()).getID();
+                if(actionID != -1 && futureActions.containsKey(actionID)){
+                    futureActions.get(actionID).complete(doc);
+                }
+                else Log.log(Log.Level.ERROR, "Invalid action id " + actionID + " from " + name);
             }
-            else if (root.getNodeName().equals("message")) {
-                if (root.getAttribute("type").equals("action")) {
-                    long actionID;
-                    NodeList actions = root.getElementsByTagName("action");
-                    if (actions.getLength() == 0) {
-                        Log.log(Log.Level.ERROR, "No action element inside action message.");
-                        return;
-                    }
-                    try {
-                        actionID = Long.parseLong(((Element)actions.item(0)).getAttribute("id"));
-                        Log.log(Log.Level.NORMAL, "Received action with id " + actionID + " from " + name);
-                    } catch (NumberFormatException e) {
-                        Log.log(Log.Level.ERROR, "Received invalid or no action id.");
-                        return;
-                    }
-                    if (futureActions.containsKey(actionID)){
-                        futureActions.get(actionID).complete(doc);
-                    }
-                }
-                else {
-                    Log.log(Log.Level.NORMAL, "Received unknown message type.");
-                    try {
-                        transformer.transform(new DOMSource(doc), new StreamResult(System.out));
-                    } catch(Exception ignored) {}
-                }
-            } else {
-                Log.log(Log.Level.NORMAL,"Received invalid message.");
-                try {
-                    transformer.transform(new DOMSource(doc), new StreamResult(System.out));
-                } catch(Exception ignored) {}
+            else{
+                Log.log(Log.Level.NORMAL, "Received unknown message type from " + name);
             }
         }
 
