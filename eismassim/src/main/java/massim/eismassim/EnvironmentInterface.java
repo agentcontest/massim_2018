@@ -1,4 +1,4 @@
-package eismassim;
+package massim.eismassim;
 
 import eis.EIDefaultImpl;
 import eis.exceptions.*;

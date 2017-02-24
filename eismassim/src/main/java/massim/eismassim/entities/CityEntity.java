@@ -1,8 +1,8 @@
-package eismassim.entities;
+package massim.eismassim.entities;
 
 import eis.iilang.*;
 import eis.iilang.Action;
-import eismassim.EISEntity;
+import massim.eismassim.EISEntity;
 import massim.protocol.Message;
 import massim.protocol.messagecontent.*;
 import massim.protocol.scenario.city.data.ActionData;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * An EIS compatible entity for the 2017 MAPC City scenario.
  */
-public class CityEntity extends EISEntity{
+public class CityEntity extends EISEntity {
 
     /**
      * Creates a new CityEntity. To create a new one, call factory method

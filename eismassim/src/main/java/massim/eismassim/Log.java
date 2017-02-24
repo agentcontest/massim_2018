@@ -1,4 +1,4 @@
-package eismassim;
+package massim.eismassim;
 
 /**
  * Very simple Logger.

@@ -17,6 +17,7 @@
     <module>server</module>
     <module>eismassim</module>
     <module>protocol</module>
+      <module>javaagents</module>
   </modules>
 
 <build>

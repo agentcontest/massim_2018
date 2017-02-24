@@ -5,10 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>massim</groupId>
-    <artifactId>eismassim</artifactId>
-    <version>3.0</version>
-
-    <packaging>jar</packaging>
+    <artifactId>javaagents</artifactId>
+    <version>2017-1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>massim.eismassim.EnvironmentInterface</Main-Class>
+                            <Main-Class>massim.javaagents.Main</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -51,29 +49,11 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>com.github.eishub</groupId>
-            <artifactId>eis</artifactId>
-            <version>aead20e8f0a453d47efc4f44a4d39c2f7593353f</version>
-        </dependency>
-        <dependency>
             <groupId>massim</groupId>
-            <artifactId>protocol</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20160810</version>
+            <artifactId>eismassim</artifactId>
+            <version>3.0</version>
         </dependency>
     </dependencies>
 

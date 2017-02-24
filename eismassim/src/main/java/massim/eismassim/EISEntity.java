@@ -1,4 +1,4 @@
-package eismassim;
+package massim.eismassim;
 
 import eis.exceptions.ActException;
 import eis.exceptions.PerceiveException;
@@ -6,8 +6,8 @@ import eis.iilang.Action;
 import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
-import eismassim.entities.CityEntity;
-import eismassim.util.Conversions;
+import massim.eismassim.entities.CityEntity;
+import massim.eismassim.util.Conversions;
 import massim.protocol.*;
 import massim.protocol.messagecontent.*;
 import org.w3c.dom.Document;

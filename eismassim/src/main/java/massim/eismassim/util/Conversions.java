@@ -1,4 +1,4 @@
-package eismassim.util;
+package massim.eismassim.util;
 
 import org.w3c.dom.Document;
 
