@@ -4,7 +4,6 @@ import eis.iilang.Identifier;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import massim.javaagents.MailBox;
-import massim.protocol.messagecontent.Action;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class BasicAgent extends Agent {
     public void handlePercept(Percept percept) {}
 
     @Override
-    public Action step() {
+    public eis.iilang.Action step() {
         List<Percept> percepts = getPercepts();
         percepts.stream()
                 .filter(p -> p.getName().equals("step"))
@@ -35,6 +34,6 @@ public class BasicAgent extends Agent {
                     Parameter param = p.getParameters().getFirst();
                     if(param instanceof Identifier) say("Step " + ((Identifier) param).getValue());
         });
-        return new Action("skip");
+        return new eis.iilang.Action("skip");
     }
 }

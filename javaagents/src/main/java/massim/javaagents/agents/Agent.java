@@ -2,7 +2,6 @@ package massim.javaagents.agents;
 
 import eis.iilang.Percept;
 import massim.javaagents.MailBox;
-import massim.protocol.messagecontent.Action;
 
 import java.util.List;
 import java.util.Vector;
@@ -36,7 +35,7 @@ public abstract class Agent {
     /**
      * Called for each step.
      */
-    public abstract Action step();
+    public abstract eis.iilang.Action step();
 
     /**
      * @return the name of the agent
@@ -74,7 +73,7 @@ public abstract class Agent {
      * Prints a message to std out prefixed with the agent's name.
      * @param message the message to say
      */
-    protected void say(String message){
+    void say(String message){
         System.out.println("[ " + name + " ]  " + message);
     }
 

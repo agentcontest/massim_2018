@@ -3,6 +3,7 @@ package massim.javaagents;
 import eis.AgentListener;
 import eis.EnvironmentInterfaceStandard;
 import eis.EnvironmentListener;
+import eis.exceptions.ActException;
 import eis.exceptions.AgentException;
 import eis.exceptions.PerceiveException;
 import eis.exceptions.RelationException;
@@ -131,7 +132,14 @@ public class Scheduler implements AgentListener, EnvironmentListener{
         });
 
         // step all agents which have new percepts
-        newPerceptAgents.forEach(Agent::step);
+        newPerceptAgents.forEach(agent -> {
+            eis.iilang.Action action = agent.step();
+            try {
+                eis.performAction(agent.getName(), action);
+            } catch (ActException e) {
+                System.out.println("Could not perform action " + action.getName() + " for " + agent.getName());
+            }
+        });
 
         if(newPerceptAgents.size() == 0) try {
             Thread.sleep(1000); // wait a bit in case no agents have been executed
