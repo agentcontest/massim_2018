@@ -3,7 +3,7 @@
   "host": "localhost",
   "port": 12300,
   "scheduling": true,
-  "timeout": 3999,
+  "timeout": 40000,
   "times": false,
   "notifications": false,
   "queued": false,

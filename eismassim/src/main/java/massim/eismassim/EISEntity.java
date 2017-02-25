@@ -314,7 +314,7 @@ public abstract class EISEntity implements Runnable{
             ret.addAll(requestActionPercepts);
             ret.addAll(simEndPercepts);
             ret.addAll(byePercepts);
-            if ( useIILang ) log(ret.toString());
+            if (useIILang) log(ret.toString());
             return ret;
         }
         else{
