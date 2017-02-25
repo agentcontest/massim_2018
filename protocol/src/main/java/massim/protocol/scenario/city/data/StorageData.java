@@ -2,6 +2,7 @@ package massim.protocol.scenario.city.data;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Holds JAXB annotated data of a storage facility.
@@ -60,6 +61,6 @@ public class StorageData extends FacilityData {
      * @return a list of items currently stored/stored-delivered
      */
     public List<StoredData> getStoredItems(){
-        return items;
+        return items == null? new Vector<>() : items;
     }
 }

@@ -36,7 +36,7 @@ public abstract class FacilityData {
      * @return the name of the facility
      */
     public String getName(){
-        return name;
+        return name == null? "" : name;
     }
 
     /**

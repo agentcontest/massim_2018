@@ -37,7 +37,7 @@ public class ItemAmountData {
      * @return the item's name
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**

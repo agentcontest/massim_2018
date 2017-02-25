@@ -42,7 +42,7 @@ public class StockData {
      * @return name of the offered item
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**

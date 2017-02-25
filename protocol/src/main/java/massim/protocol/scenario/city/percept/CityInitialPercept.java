@@ -6,6 +6,7 @@ import massim.protocol.scenario.city.data.RoleData;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Represents a sim-start percept in the City scenario.
@@ -66,7 +67,7 @@ public class CityInitialPercept extends SimStart {
     }
 
     public List<ItemData> getItemData(){
-        return items;
+        return items == null? new Vector<>() : items;
     }
 
     public String getMapName(){

@@ -2,6 +2,7 @@ package massim.protocol.scenario.city.data;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Holds the data of an entity.
@@ -84,21 +85,21 @@ public class EntityData {
      * @return the name of the entity
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**
      * @return the battery charge of the entity
      */
     public Integer getCharge() {
-        return charge;
+        return charge == null? 0 : charge;
     }
 
     /**
      * @return the currently used up volume of the entity
      */
     public Integer getLoad() {
-        return load;
+        return load == null? 0 : load;
     }
 
     /**
@@ -126,41 +127,41 @@ public class EntityData {
      * @return the facility the entity currently is in (or null)
      */
     public String getFacility() {
-        return facility;
+        return facility == null? "" : facility;
     }
 
     /**
      * @return the length of the entity's current route
      */
     public Integer getRouteLength() {
-        return routeLength;
+        return routeLength == null? 0: routeLength;
     }
 
     /**
      * @return name of the entity's team
      */
     public String getTeam() {
-        return team;
+        return team == null? "" : team;
     }
 
     /**
      * @return the entity's role
      */
     public String getRole() {
-        return role;
+        return role == null? "" : role;
     }
 
     /**
      * @return list of items the entity is carrying
      */
     public List<ItemAmountData> getItems() {
-        return items;
+        return items == null? new Vector<>() : items;
     }
 
     /**
      * @return if the entity has a route, the waypoints of that route, else null
      */
     public List<WayPointData> getRoute() {
-        return route;
+        return route == null? new Vector<>() : route;
     }
 }

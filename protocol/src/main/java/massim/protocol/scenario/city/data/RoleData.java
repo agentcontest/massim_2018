@@ -4,6 +4,7 @@ package massim.protocol.scenario.city.data;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Holds data of a role for serialization.
@@ -52,7 +53,7 @@ public class RoleData {
      * @return the name of the role
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**
@@ -80,6 +81,6 @@ public class RoleData {
      * @return all tools usable by the role
      */
     public List<String> getTools() {
-        return tools;
+        return tools == null? new Vector<>() : tools;
     }
 }

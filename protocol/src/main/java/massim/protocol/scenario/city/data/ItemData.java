@@ -2,6 +2,7 @@ package massim.protocol.scenario.city.data;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Holds complete info of an item for serialization.
@@ -45,7 +46,7 @@ public class ItemData {
      * @return the item's name
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**
@@ -59,13 +60,13 @@ public class ItemData {
      * @return a list of the required items to craft this item or null if no items are required
      */
     public List<ItemAmountData> getParts() {
-        return parts;
+        return parts == null? new Vector<>() : parts;
     }
 
     /**
      * @return a list of all tools necessary to craft this item or null if no tools required
      */
     public List<String> getTools() {
-        return tools;
+        return tools == null? new Vector<>() : tools;
     }
 }

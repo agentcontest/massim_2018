@@ -49,7 +49,8 @@ public class CityEntity extends EISEntity {
         // prepare list of tools
         RoleData role = simStart.getRoleData();
         ParameterList paramTools = new ParameterList();
-        role.getTools().forEach(tool -> paramTools.add(new Identifier(tool)));
+        if(role.getTools() != null)
+            role.getTools().forEach(tool -> paramTools.add(new Identifier(tool)));
 
         // add role percept
         ret.add(new Percept("role",
@@ -63,7 +64,8 @@ public class CityEntity extends EISEntity {
             params.add(new Numeral(item.getVolume()));
 
             ParameterList requiredTools = new ParameterList();
-            item.getTools().forEach(tool -> requiredTools.add(new Identifier(tool)));
+            if(item.getTools() != null)
+                item.getTools().forEach(tool -> requiredTools.add(new Identifier(tool)));
             params.add(new Function("tools", requiredTools));
 
             ParameterList requiredParts = new ParameterList();
@@ -99,7 +101,8 @@ public class CityEntity extends EISEntity {
         ActionData lastAction = self.getLastAction();
         ret.add(new Percept("lastAction", new Identifier(lastAction.getType())));
         ParameterList lastActionParams = new ParameterList();
-        lastAction.getParams().forEach(param -> lastActionParams.add(new Identifier(param)));
+        if(lastAction.getParams() != null)
+            lastAction.getParams().forEach(param -> lastActionParams.add(new Identifier(param)));
         ret.add(new Percept("lastActionParams", lastActionParams));
         ret.add(new Percept("lastActionResult", new Identifier(lastAction.getResult())));
 

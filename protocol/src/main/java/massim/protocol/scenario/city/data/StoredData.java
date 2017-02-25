@@ -42,7 +42,7 @@ public class StoredData {
      * @return the name of the item
      */
     public String getName() {
-        return name;
+        return name == null? "" : name;
     }
 
     /**

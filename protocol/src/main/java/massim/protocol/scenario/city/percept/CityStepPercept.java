@@ -6,6 +6,7 @@ import massim.protocol.scenario.city.data.*;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * A regular percept that is sent each step in the City scenario.
@@ -77,49 +78,49 @@ public class CityStepPercept extends RequestAction {
      * @return information about all entities in the simulation
      */
     public List<EntityData> getEntityData(){
-        return entityData;
+        return entityData == null? new Vector<>() : entityData;
     }
 
     /**
      * @return information about all shops
      */
     public List<ShopData> getShopData(){
-        return shops;
+        return shops == null? new Vector<>() : shops;
     }
 
     /**
      * @return information about all workshops
      */
     public List<WorkshopData> getWorkshops(){
-        return workshops;
+        return workshops == null? new Vector<>() : workshops;
     }
 
     /**
      * @return information about all charging stations
      */
     public List<ChargingStationData> getChargingStations(){
-        return chargingStations;
+        return chargingStations == null? new Vector<>() : chargingStations;
     }
 
     /**
      * @return information about all dumps
      */
     public List<DumpData> getDumps(){
-        return dumps;
+        return dumps == null? new Vector<>() : dumps;
     }
 
     /**
      * @return information about the storage facilities
      */
     public List<StorageData> getStorage(){
-        return storage;
+        return storage == null? new Vector<>() : storage;
     }
 
     /**
      * @return information about all jobs
      */
     public List<JobData> getJobs(){
-        return jobs;
+        return jobs == null? new Vector<>() : jobs;
     }
 
     /**

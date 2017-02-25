@@ -2,6 +2,7 @@ package massim.protocol.scenario.city.data;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Holds data of an action (that was already executed).
@@ -40,20 +41,20 @@ public class ActionData {
      * @return the type of the action
      */
     public String getType() {
-        return type;
+        return type ==  null? "" : type;
     }
 
     /**
      * @return the result of the action
      */
     public String getResult() {
-        return result;
+        return result == null? "" : result;
     }
 
     /**
      * @return a list of the actions parameters or null in case of 0 parameters
      */
     public List<String> getParams() {
-        return params;
+        return params == null? new Vector<>() : params;
     }
 }

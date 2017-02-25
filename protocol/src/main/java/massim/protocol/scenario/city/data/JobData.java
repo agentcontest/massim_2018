@@ -58,7 +58,7 @@ public class JobData {
      * @return the storage associated with this job
      */
     public String getStorage() {
-        return storage;
+        return storage == null? "" : storage;
     }
 
     /**
