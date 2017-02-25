@@ -178,7 +178,7 @@ public class CitySimulation extends AbstractSimulation {
             percepts.put(agent,
                     new CityStepPercept(
                             new EntityData(true, entity.getCurrentBattery(), entity.getCurrentLoad(),
-                                    new ActionData(entity.getLastAction().getType(),
+                                    new ActionData(entity.getLastAction().getActionType(),
                                             entity.getLastAction().getParameters(), entity.getLastActionResult()),
                                     facilityName,
                                     waypoints,
