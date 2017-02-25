@@ -25,17 +25,43 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
     private Set<String> supportedActions = new HashSet<>();
     private Map<String, EISEntity> entities = new HashMap<>();
 
+    private String configFile = "eismassimconfig.json";
+
     /**
      * Constructor.
+     * Might be used by {@link eis.EILoader}.
      */
     public EnvironmentInterface() {
         super();
+        setup();
+    }
+
+    /**
+     * Additional constructor for when the config file does not rest in the current working directory.
+     * @param configFile the actual path to the config file (including the file name)
+     */
+    public EnvironmentInterface(String configFile){
+        super();
+        this.configFile = configFile;
+        setup();
+    }
+
+    /**
+     * Setup method to be called at the end of each constructor.
+     */
+    private void setup(){
         EISEntity.setEnvironmentInterface(this);
         supportedActions.addAll(Actions.ALL_ACTIONS);
         try {
             parseConfig();
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+        IILElement.toProlog = true;
+        try {
+            setState(EnvironmentState.PAUSED);
+        } catch (ManagementException e1) {
+            e1.printStackTrace();
         }
         entities.values().forEach(entity -> {
             try {
@@ -44,12 +70,6 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
                 e.printStackTrace();
             }
         });
-        IILElement.toProlog = true;
-        try {
-            setState(EnvironmentState.PAUSED);
-        } catch (ManagementException e1) {
-            e1.printStackTrace();
-        }
     }
 
     @Override
@@ -91,7 +111,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
         JSONObject config = new JSONObject();
         try {
-            config = new JSONObject(new String(Files.readAllBytes(Paths.get("eismassimconfig.json"))));
+            config = new JSONObject(new String(Files.readAllBytes(Paths.get(configFile))));
         } catch (IOException e) {
             e.printStackTrace();
         }

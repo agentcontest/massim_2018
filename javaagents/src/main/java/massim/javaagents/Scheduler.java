@@ -102,10 +102,10 @@ public class Scheduler implements AgentListener, EnvironmentListener{
 
             try {
                 ei.associateEntity(agent.getName(), agentConf.entity);
+                System.out.println("associated agent \"" + agent.getName() + "\" with entity \"" + agentConf.entity + "\"");
             } catch (RelationException e) {
                 e.printStackTrace();
             }
-            System.out.println("associated agent \"" + agent.getName() + "\" with entity \"" + agentConf.entity + "\"");
 
             ei.attachAgentListener(agent.getName(), this);
             agents.put(agentConf.name, agent);
@@ -117,15 +117,25 @@ public class Scheduler implements AgentListener, EnvironmentListener{
      * Steps all agents and relevant infrastructure.
      */
     void step() {
+        // retrieve percepts for all agents
+        List<Agent> newPerceptAgents = new Vector<>();
         agents.values().forEach(ag -> {
             List<Percept> percepts = new Vector<>();
             try {
                 eis.getAllPercepts(ag.getName()).values().forEach(percepts::addAll);
+                newPerceptAgents.add(ag);
             } catch (PerceiveException e) {
-                e.printStackTrace();
+                System.out.println("No percepts for " + ag.getName());
             }
             ag.setPercepts(percepts);
         });
+
+        // step all agents which have new percepts
+        newPerceptAgents.forEach(Agent::step);
+
+        if(newPerceptAgents.size() == 0) try {
+            Thread.sleep(1000); // wait a bit in case no agents have been executed
+        } catch (InterruptedException ignored) {}
     }
 
     @Override

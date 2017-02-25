@@ -8,11 +8,11 @@
   "notifications": false,
   "queued": false,
   "entities": [
-    {"name": "connectionA1", "username": "a1", "password": "1", "iilang": "yes", "xml": "yes"},
-    {"name": "connectionA2", "username": "a2", "password": "1", "iilang": "yes", "xml": "yes"},
-    {"name": "connectionA3", "username": "a3", "password": "1", "iilang": "yes", "xml": "yes"},
-    {"name": "connectionA4", "username": "a4", "password": "1", "iilang": "yes", "xml": "yes"},
-    {"name": "connectionA5", "username": "a5", "password": "1", "iilang": "yes", "xml": "yes"},
-    {"name": "connectionA6", "username": "a6", "password": "1", "iilang": "yes", "xml": "yes"}
+    {"name": "connectionA1", "username": "agentA1", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA2", "username": "agentA2", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA3", "username": "agentA3", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA4", "username": "agentA4", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA5", "username": "agentA5", "password": "1", "iilang": "yes", "xml": "yes"},
+    {"name": "connectionA6", "username": "agentA6", "password": "1", "iilang": "yes", "xml": "yes"}
   ]
 }

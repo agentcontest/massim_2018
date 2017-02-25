@@ -1,12 +1,11 @@
 package massim.javaagents;
 
-import eis.EILoader;
 import eis.EnvironmentInterfaceStandard;
 import eis.exceptions.ManagementException;
 import eis.iilang.EnvironmentState;
+import massim.eismassim.EnvironmentInterface;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -16,9 +15,10 @@ public class Main {
 
     public static void main( String[] args ) {
 
+        String configDir = "";
+
         System.out.println("PHASE 1: INSTANTIATING SCHEDULER");
-        Scheduler scheduler = null;
-        if (args.length != 0) scheduler = new Scheduler(args[0]);
+        if (args.length != 0) configDir = args[0];
         else {
             System.out.println("PHASE 1.2: CHOOSE CONFIGURATION");
             File confDir = new File("conf");
@@ -46,18 +46,14 @@ public class Main {
                         System.out.println("Invalid number, try again:");
                     }
                 }
-                scheduler = new Scheduler(confFiles[confNum].getPath());
+                configDir = confFiles[confNum].getPath();
             }
         }
+        Scheduler scheduler = new Scheduler(configDir);
 
         System.out.println("PHASE 2: INSTANTIATING ENVIRONMENT");
-        EnvironmentInterfaceStandard ei = null;
-        try {
-            ei = EILoader.fromClassName("massim.eismassim.EnvironmentInterface");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
+        EnvironmentInterfaceStandard ei = new EnvironmentInterface(configDir + File.separator + "eismassimconfig.json");
+
         try {
             ei.start();
         } catch (ManagementException e) {
@@ -69,7 +65,7 @@ public class Main {
 
         System.out.println("PHASE 4: RUNNING");
         int step = 0;
-        while (!(ei.getState() == EnvironmentState.KILLED)) {
+        while ((ei.getState() == EnvironmentState.RUNNING)) {
             System.out.println("SCHEDULER STEP " + step);
             scheduler.step();
             step++;
