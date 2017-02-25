@@ -87,7 +87,27 @@
             "density" : 0.8
           }
         },
-        "items" : {},
+        "items" : {
+          "baseItemsMin" : 5,
+          "baseItemsMax" : 7,
+          "levelDecreaseMin" : 1,
+          "levelDecreaseMax" : 2,
+          "graphDepthMin" : 3,
+          "graphDepthMax" : 4,
+          "resourcesMin" : 2,
+          "resourcesMax" : 4,
+          "minVol" : 10,
+          "maxVol" : 100,
+          "valueMin" : 10,
+          "valueMax" : 100,
+          "minReq" : 1,
+          "maxReq" : 3,
+          "reqAmountMin" : 1,
+          "reqAmountMax" : 3,
+          "toolsMin" : 3,
+          "toolsMax" : 10,
+          "toolProbability" : 0.5
+        },
         "jobs" : {}
       }
     }
