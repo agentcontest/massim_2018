@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utility to generate random elements with.
@@ -120,14 +121,46 @@ public class Generator {
     }
 
     /**
-     * Generates exactly 5 tools. All are the same except for the name. This is probably something that should be changed.
-     * @return 5 tools
+     * Generates a number of tools dependent on config parameters
+     * @return a list of tools
      */
     public List<Tool> generateTools(List<Role> roles){
-        //TODO
+
+        /*//TODO
         List<Tool> tools = new Vector<>();
         for(int i = 0; i < 5; i++){
             tools.add(new Tool("Tool"+i, 100, roles.stream().map(Role::getName).collect(Collectors.toList()).toArray(new String[roles.size()])));
+        }
+        //TODO add tools to their roles
+        return tools;*/
+
+        //TODO add randomSeed
+        //TODO toolsMin=5 for now until dummyGenerateItems is replaced
+        int toolAmount = ThreadLocalRandom.current().nextInt(5, toolsMax + 1);
+        List<Tool> tools = new Vector<>();
+        for(int i=0; i<toolAmount; i++){
+            String name = "tool"+i;
+            int volume = ThreadLocalRandom.current().nextInt(minVol, maxVol + 1);
+            String role1;
+            String role2;
+            int randomRole = ThreadLocalRandom.current().nextInt(0,roles.size());
+            if(roles.get(randomRole).getMaxLoad()>volume) {
+                role1=roles.get(randomRole).getName();
+            }
+            else{
+                role1="Truck";
+            }
+            if(ThreadLocalRandom.current().nextInt(100)<50){
+                randomRole = ThreadLocalRandom.current().nextInt(0,roles.size());
+                if(roles.get(randomRole).getMaxLoad()>volume) {
+                    role2=roles.get(randomRole).getName();
+                    tools.add(new Tool(name, volume, role1, role2));
+                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " roles=" + tools.get(i).getRoles());
+                    continue;
+                }
+            }
+            tools.add(new Tool(name, volume, roles.get(randomRole).getName()));
+            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " roles=" + tools.get(i).getRoles());
         }
         //TODO add tools to their roles
         return tools;
