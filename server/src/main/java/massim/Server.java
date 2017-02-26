@@ -261,7 +261,9 @@ public class Server {
                 AbstractSimulation sim = (AbstractSimulation) AbstractSimulation.class.getClassLoader()
                                                                 .loadClass("massim.scenario." + className)
                                                                 .newInstance();
+
                 int steps = simConfig.optInt("steps", 1000);
+                RNG.initialize(simConfig.optLong("randomSeed", System.currentTimeMillis()));
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
                 agentManager.handleInitialPercepts(initialPercepts);
                 for (int i = 0; i < steps; i++){
