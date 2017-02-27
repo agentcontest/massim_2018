@@ -2,6 +2,8 @@ package massim;
 
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
+import massim.monitor.Monitor;
+import massim.protocol.WorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
@@ -36,6 +38,7 @@ public class Server {
 
     private LoginManager loginManager;
     private AgentManager agentManager;
+    private Monitor monitor;
 
     /**
      * whether server should stop after the next match (random mode)
@@ -45,6 +48,7 @@ public class Server {
     public static void main(String[] args){
         Server server = new Server();
 
+        boolean monitor = false;
         // parse command line arguments
         for (int i = 0; i < args.length; i++) {
             switch (args[i]){
@@ -67,6 +71,10 @@ public class Server {
                         i--;
                     }
                     break;
+                case "--monitor":
+                    monitor = true;
+                    break;
+
                 default:
                     Log.log(Log.Level.ERROR, "Unknown option: " + args[i]);
             }
@@ -108,6 +116,7 @@ public class Server {
                 }
             }
         }
+        server.config.monitor = monitor;
 
         server.go();
         server.close();
@@ -149,6 +158,9 @@ public class Server {
             Log.log(Log.Level.CRITICAL, "Cannot open server socket.");
             return;
         }
+
+        // setup monitor
+        if(config.monitor) monitor = new Monitor();
 
         // delay tournament start according to launch type
         if (config.launch.equals("key")){
@@ -264,14 +276,22 @@ public class Server {
 
                 int steps = simConfig.optInt("steps", 1000);
                 RNG.initialize(simConfig.optLong("randomSeed", System.currentTimeMillis()));
+
+                // handle initial state
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
+                handleSnapshot(sim.getSnapshot());
                 agentManager.handleInitialPercepts(initialPercepts);
+
+                // handle steps
                 for (int i = 0; i < steps; i++){
                     Log.log(Log.Level.NORMAL, "Simulation at step " + i);
                     Map<String, RequestAction> percepts = sim.preStep(i);
                     Map<String, Action> actions = agentManager.requestActions(percepts);
                     sim.step(i, actions); // execute step with agent actions
+                    handleSnapshot(sim.getSnapshot());
                 }
+
+                // handle final state
                 Map<String, SimEnd> finalPercepts = sim.finish();
                 agentManager.handleFinalPercepts(finalPercepts);
                 result.put(sim.getName(), sim.getResult());
@@ -282,6 +302,13 @@ public class Server {
 
         // write match result to file
         JSONUtil.writeToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
+    }
+
+    /**
+     * If configured, notifies the monitor of the new state and writes a replay file.
+     * @param snapshot a snapshot of the current sim state.
+     */
+    private void handleSnapshot(WorldData snapshot) {
     }
 
     /**
@@ -319,6 +346,8 @@ public class Server {
         Log.log(Log.Level.NORMAL, "Configuring result path: " + config.resultPath);
         config.maxPacketLength = serverJSON.optInt("maxPacketLength", 65536);
         Log.log(Log.Level.NORMAL, "Configuring max packet length: " + config.maxPacketLength);
+        config.replayPath = serverJSON.optString("replayPath");
+        Log.log(Log.Level.NORMAL, "Configuring replay path: " + config.replayPath);
 
         // parse teams
         JSONObject teamJSON = conf.optJSONObject("teams");

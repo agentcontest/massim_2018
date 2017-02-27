@@ -24,9 +24,9 @@ public abstract class FacilityData {
     /**
      * Constructor for JAXB
      */
-    protected FacilityData(){};
+    FacilityData(){};
 
-    public FacilityData(String name, double lat, double lon) {
+    FacilityData(String name, double lat, double lon) {
         this.name = name;
         this.lat = lat;
         this.lon = lon;

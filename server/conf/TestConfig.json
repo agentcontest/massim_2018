@@ -10,6 +10,7 @@
     "resultPath" : "results",
     "logLevel" : "normal",
     "logPath" : "logs",
+    "replayPath" : "replays",
     "maxPacketLength" : 65536
   },
 

@@ -18,6 +18,7 @@
     <module>eismassim</module>
     <module>protocol</module>
       <module>javaagents</module>
+      <module>monitor</module>
   </modules>
 
 <build>

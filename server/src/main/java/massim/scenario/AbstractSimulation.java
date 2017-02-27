@@ -1,6 +1,7 @@
 package massim.scenario;
 
 import massim.config.TeamConfig;
+import massim.protocol.WorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
@@ -56,4 +57,9 @@ public abstract class AbstractSimulation {
      * @return the ID of this simulation
      */
     public abstract String getName();
+
+    /**
+     * @return a snapshot of the current world state
+     */
+    public abstract WorldData getSnapshot();
 }

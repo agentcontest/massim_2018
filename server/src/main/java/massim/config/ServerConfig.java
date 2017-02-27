@@ -27,7 +27,29 @@ public class ServerConfig {
     public long agentTimeout;
     public String logPath;
     public String resultPath;
+
+    /**
+     * The level at which to log.
+     */
     public String logLevel;
+
+    /**
+     * All teams to participate in any simulation.
+     */
     public List<Set<TeamConfig>> manualModeTeams;
+
+    /**
+     * The maximum length of a received XML document (in bytes). Larger files will not be processed.
+     */
     public int maxPacketLength;
+
+    /**
+     * The path were replays should be saved. If null, replay won't be saved.
+     */
+    public String replayPath;
+
+    /**
+     * Whether to run the live monitor as well.
+     */
+    public boolean monitor;
 }

@@ -1,5 +1,6 @@
 package massim.scenario.city;
 
+import massim.protocol.WorldData;
 import massim.util.Log;
 import massim.util.RNG;
 import massim.config.TeamConfig;
@@ -266,6 +267,11 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public String getName() {
         return world.getSimID();
+    }
+
+    @Override
+    public WorldData getSnapshot() {
+        return new CityWorldData(""); // TODO
     }
 
     /**
