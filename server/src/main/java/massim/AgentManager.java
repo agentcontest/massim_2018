@@ -104,7 +104,11 @@ class AgentManager {
         Map<String, Action> resultMap = new ConcurrentHashMap<>();
         percepts.forEach((agName, percept) -> {
             // start a new thread to get each action
-            new Thread(() -> resultMap.put(agName, agents.get(agName).requestAction(percept, latch))).start();
+            new Thread(() -> {
+                Action action = agents.get(agName).requestAction(percept);
+                latch.countDown();
+                resultMap.put(agName, action);
+            }).start();
         });
         try {
             latch.await(2 * agentTimeout, TimeUnit.MILLISECONDS); // timeout ensured by threads; use this one for safety reasons
@@ -174,10 +178,9 @@ class AgentManager {
          * Creates a request-action message and sends it to the agent.
          * Should be called within a new thread, as it blocks up to {@link #agentTimeout} milliseconds.
          * @param percept the step percept to forward
-         * @param latch the latch to count down after the action is acquired (or not)
          * @return the action that was received by the agent (or {@link Action#STD_NO_ACTION})
          */
-        Action requestAction(RequestAction percept, CountDownLatch latch) {
+        Action requestAction(RequestAction percept) {
             long id = messageCounter.getAndIncrement();
             percept.finalize(id, System.currentTimeMillis() + agentTimeout);
             CompletableFuture<Document> futureAction = new CompletableFuture<>();
@@ -190,7 +193,6 @@ class AgentManager {
                 if(msg != null){
                     MessageContent content = msg.getContent();
                     if(content instanceof Action) {
-                        latch.countDown();
                         return (Action) content;
                     }
                 }
