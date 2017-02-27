@@ -3,11 +3,11 @@ package massim.scenario.city.util;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
 import massim.util.Log;
+import massim.util.RNG;
 import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utility to generate random elements with.
@@ -134,24 +134,22 @@ public class Generator {
         //TODO add tools to their roles
         return tools;*/
 
-        //TODO add randomSeed
-        //TODO toolsMin=5 for now until dummyGenerateItems is replaced
-        int toolAmount = ThreadLocalRandom.current().nextInt(5, toolsMax + 1);
+        int toolAmount = RNG.nextInt((toolsMax-toolsMin)+1) + toolsMin;
         List<Tool> tools = new Vector<>();
         for(int i=0; i<toolAmount; i++){
             String name = "tool"+i;
-            int volume = ThreadLocalRandom.current().nextInt(minVol, maxVol + 1);
+            int volume = RNG.nextInt((maxVol-minVol)+1) + minVol;
             String role1;
             String role2;
-            int randomRole = ThreadLocalRandom.current().nextInt(0,roles.size());
+            int randomRole = RNG.nextInt(roles.size());
             if(roles.get(randomRole).getMaxLoad()>volume) {
                 role1=roles.get(randomRole).getName();
             }
             else{
                 role1="Truck";
             }
-            if(ThreadLocalRandom.current().nextInt(100)<50){
-                randomRole = ThreadLocalRandom.current().nextInt(0,roles.size());
+            if(RNG.nextInt(100)<50){
+                randomRole = RNG.nextInt(roles.size());
                 if(roles.get(randomRole).getMaxLoad()>volume) {
                     role2=roles.get(randomRole).getName();
                     tools.add(new Tool(name, volume, role1, role2));
@@ -167,8 +165,62 @@ public class Generator {
     }
 
     public List<Item> generateItems(List<Tool> tools) {
-        //TODO
-        return dummyGenerateItems(tools);
+        int baseItemAmount = RNG.nextInt((baseItemsMax-baseItemsMin) + 1) + baseItemsMin;
+        int resourcesAmount = RNG.nextInt((resourcesMax-resourcesMin) + 1) + resourcesMin;
+
+        List<Item> items = new Vector<Item>();
+        Vector<Item> baseItems = new Vector<Item>();
+        Vector<Vector<Item>> itemGraph = new Vector<Vector<Item>>();
+        List<Item> resources = new Vector<Item>();
+
+        //generate base items
+        for(int i=0; i<=baseItemAmount-1;i++){
+            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol, new HashSet<>());
+            items.add(item);
+            baseItems.add(item);
+        }
+
+        //generate resources
+        for(int i=0; i<=resourcesAmount-1;i++){
+            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol, new HashSet<>());
+            items.add(item);
+            resources.add(item);
+            baseItems.add(item);
+        }
+
+        itemGraph.add(baseItems);
+
+        //generate assembled items
+        int graphDepth = RNG.nextInt((graphDepthMax-graphDepthMin) + 1) + graphDepthMin;
+        int levelAmount = baseItemAmount; //only base items without resources otherwise graph gets to big!
+        int counter = baseItemAmount + resourcesAmount;
+
+        for(int i=1; i<=graphDepth; i++){
+            levelAmount = levelAmount - (RNG.nextInt((levelDecreaseMax-levelDecreaseMin) + 1) + levelDecreaseMin);
+            Vector<Item> levelItems = new Vector<Item>();
+            for(int j=1; j<=levelAmount;j++){
+                Item item = new Item("item"+counter, 1, new HashSet<>());
+                items.add(item);
+                levelItems.add(item);
+                counter++;
+            }
+            itemGraph.add(levelItems);
+        }
+
+        //TODO add required tools and required items to assembled items
+        //TODO compute volume of assembled items
+
+        int counter2=0;
+        for(Vector<Item> itemList: itemGraph){
+            Log.log(Log.Level.NORMAL, "Configuring items: item graph level " + counter2);
+            for(Item item: itemList){
+                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume());
+            }
+            counter2++;
+        }
+        return items;
+
+        //return dummyGenerateItems(tools);
     }
 
     public List<Facility> generateFacilities(List<Item> items, WorldState world) {
