@@ -44,13 +44,13 @@ public class Generator {
         JSONObject facilities = randomConf.optJSONObject("facilities");
         if(facilities == null){
             Log.log(Log.Level.ERROR, "No facilities in configuration.");
-        }else{
+        }else {
 
             //parse charging stations
             JSONObject chargingStations = facilities.optJSONObject("chargingStations");
-            if(chargingStations == null){
+            if (chargingStations == null) {
                 Log.log(Log.Level.ERROR, "No charging stations in configuration.");
-            }else{
+            } else {
                 String density = chargingStations.optString("density", "0.8");
                 Log.log(Log.Level.NORMAL, "Configuring facilities charging station density: " + density);
             }
@@ -62,7 +62,6 @@ public class Generator {
 
             //parse storage
         }
-
 
         //parse items
         JSONObject items = randomConf.optJSONObject("items");
@@ -187,7 +186,6 @@ public class Generator {
             resources.add(item);
             baseItems.add(item);
         }
-
         itemGraph.add(baseItems);
 
         //generate assembled items
@@ -199,7 +197,60 @@ public class Generator {
             levelAmount = levelAmount - (RNG.nextInt((levelDecreaseMax-levelDecreaseMin) + 1) + levelDecreaseMin);
             Vector<Item> levelItems = new Vector<Item>();
             for(int j=1; j<=levelAmount;j++){
-                Item item = new Item("item"+counter, 1, new HashSet<>());
+
+                //generate required items
+                Map<Item, Integer> requiredItems = new HashMap<>();
+                int requiredAmount = RNG.nextInt((maxReq-minReq) + 1) + minReq;
+                //add item from one level beneath, if level beneath is level 0, take a resource
+                Vector<Item> tmpItems;
+                if (i - 1 == 0) {
+                    tmpItems = new Vector<Item>(resources);
+                } else {
+                    tmpItems = new Vector<Item>(itemGraph.get(i - 1));
+                }
+                RNG.shuffle(tmpItems);
+                requiredItems.put(tmpItems.get(0),RNG.nextInt((reqAmountMax-reqAmountMin) + 1) + reqAmountMin);
+                requiredAmount = requiredAmount - 1;
+                //get list of possible levels and possible items
+                Vector<Vector<Item>> possibleLevels = new Vector<Vector<Item>>();
+                for (int k = 0; k < i; k++) {
+                    possibleLevels.add(itemGraph.get(k));
+                }
+                ArrayList<Item> possibleItems = new ArrayList<Item>();
+                for (Vector<Item> level : possibleLevels) {
+                    for (Item possibleItem : level) {
+                        possibleItems.add(possibleItem);
+                    }
+                }
+                possibleItems.remove(tmpItems.get(0)); //remove the item that was already added in the first step
+                RNG.shuffle(possibleItems);
+                //add amount of required items
+                for (int l = 0; l < requiredAmount; l++) {
+                    requiredItems.put(possibleItems.get(l), RNG.nextInt((reqAmountMax-reqAmountMin) + 1) + reqAmountMin);
+                }
+
+                //generate required tools
+                Vector<Tool> requiredTools = new Vector<Tool>();
+                if(RNG.nextDouble()<toolProbability){
+                    RNG.shuffle(tools);
+                    requiredTools.add(tools.get(0));
+                    if(RNG.nextDouble()<toolProbability){
+                        requiredTools.add(tools.get(1));
+                    }
+                }
+
+                //TODO compute volume of assembled item
+                int volume = 0;
+
+
+                //generate assembled item
+                Item item = new Item("item"+counter, volume, new HashSet<>());
+                for(Item reqItem: requiredItems.keySet()){
+                    item.addRequirement(reqItem, requiredItems.get(reqItem));
+                }
+                for(Tool reqTool: requiredTools){
+                    item.addRequiredTool(reqTool);
+                }
                 items.add(item);
                 levelItems.add(item);
                 counter++;
@@ -207,14 +258,20 @@ public class Generator {
             itemGraph.add(levelItems);
         }
 
-        //TODO add required tools and required items to assembled items
-        //TODO compute volume of assembled items
-
         int counter2=0;
         for(Vector<Item> itemList: itemGraph){
             Log.log(Log.Level.NORMAL, "Configuring items: item graph level " + counter2);
             for(Item item: itemList){
-                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume());
+                Vector<String> reqItems = new Vector<String>();
+                for(Item reqItem: item.getRequiredItems().keySet()){
+                    reqItems.add(reqItem.getName());
+                    //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
+                }
+                Vector<String> reqTools = new Vector<String>();
+                for(Tool reqTool: item.getRequiredTools()){
+                    reqTools.add(reqTool.getName());
+                }
+                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() + " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
             }
             counter2++;
         }
