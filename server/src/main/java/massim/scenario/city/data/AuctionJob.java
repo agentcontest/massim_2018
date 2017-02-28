@@ -122,10 +122,12 @@ public class AuctionJob extends Job{
     }
 
     @Override
-    public JobData toJobData(){
+    public JobData toJobData(boolean withDelivered){
         return new AuctionJobData(getName(), getStorage().getName(), getEndStep(), getReward(),
                 getRequiredItems().entrySet().stream()
-                .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
-                .collect(Collectors.toList()), fine, lowestBid, auctionTime);
+                    .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
+                    .collect(Collectors.toList()),
+                fine, lowestBid, auctionTime,
+                withDelivered? getDeliveredData() : null);
     }
 }

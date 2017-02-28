@@ -53,30 +53,37 @@ public class EntityData {
     private EntityData() {}
 
     /**
-     * Constructor
-     * @param self whether the data is for the entity itself or for another one
+     * Constructor. Make sure to only give the parameters you want serialized.
+     * @param currentBattery current charge
+     * @param currentLoad currently used capacity
+     * @param lastAction last action used
+     * @param facilityName facility the agent currently is in, if so
+     * @param route current route of the agent if available.
+     *              only included if it contains at least one waypoint.
+     * @param items items currently carried
+     * @param agentName name of the agent
+     * @param team name of the agent's team
+     * @param role role of the agent
+     * @param lat latitude
+     * @param lon longitude
      */
-    public EntityData(boolean self, Integer currentBattery, Integer currentLoad, ActionData lastAction,
+    public EntityData(Integer currentBattery, Integer currentLoad, ActionData lastAction,
                       String facilityName, List<WayPointData> route, List<ItemAmountData> items,
                       String agentName, String team, String role, double lat, double lon) {
-        if (self) {
-            this.charge = currentBattery;
-            this.load = currentLoad;
-            this.lastAction = lastAction;
-            this.facility = facilityName;
-            if(route != null){
-                if (route.size() > 0 ) {
-                    routeLength = route.size();
-                    this.route = route;
-                }
+        this.charge = currentBattery;
+        this.load = currentLoad;
+        this.lastAction = lastAction;
+        this.facility = facilityName;
+        if(route != null){
+            if (route.size() > 0 ) {
+                routeLength = route.size();
+                this.route = route;
             }
-            this.items = items;
-
-        } else {
-            this.team = team;
-            this.role = role;
         }
-        name = agentName;
+        this.items = items;
+        this.team = team;
+        this.role = role;
+        this.name = agentName;
         this.lat = lat;
         this.lon = lon;
     }

@@ -49,7 +49,6 @@ public class Action extends MessageContent {
         if(parameters.length > 0){
             params = new LinkedList<>();
             params.addAll(Arrays.asList(parameters));
-
         }
     }
 

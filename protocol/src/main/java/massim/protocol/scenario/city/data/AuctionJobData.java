@@ -34,8 +34,8 @@ public class AuctionJobData extends JobData {
      * @param auctionTime amount of steps for auction process
      */
     public AuctionJobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems,
-                          int fine, Integer lowestBid, int auctionTime) {
-        super(name, storage, end, reward, requiredItems);
+                          int fine, Integer lowestBid, int auctionTime, List<CompletionData> deliveredItems) {
+        super(name, storage, end, reward, requiredItems, deliveredItems);
         this.fine = fine;
         this.lowestBid = lowestBid;
         this.auctionTime = auctionTime;

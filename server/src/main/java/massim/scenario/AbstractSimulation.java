@@ -1,7 +1,8 @@
 package massim.scenario;
 
 import massim.config.TeamConfig;
-import massim.protocol.WorldData;
+import massim.protocol.DynamicWorldData;
+import massim.protocol.StaticWorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
@@ -59,7 +60,14 @@ public abstract class AbstractSimulation {
     public abstract String getName();
 
     /**
+     * Called after each {@link #step(int, Map)}
      * @return a snapshot of the current world state
      */
-    public abstract WorldData getSnapshot();
+    public abstract DynamicWorldData getSnapshot();
+
+    /**
+     * Must return a valid object after {@link #init(int, JSONObject, Set)} has been called.
+     * @return all world data that does not change during the simulation
+     */
+    public abstract StaticWorldData getStaticData();
 }

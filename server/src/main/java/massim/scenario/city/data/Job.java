@@ -5,6 +5,7 @@ import massim.protocol.scenario.city.data.JobData;
 import massim.scenario.city.data.facilities.Storage;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -166,13 +167,30 @@ public class Job {
     }
 
     /**
+     * @param withDelivered whether info on which items where delivered by which team should be included
+     *                      (i.e whether {@link JobData#deliveredItems} should be filled)
      * @return a data object of this job for serialization
      */
-    public JobData toJobData(){
+    public JobData toJobData(boolean withDelivered){
         return new JobData(name, storage.getName(), endStep, reward, requiredItems.entrySet().stream()
                 .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
-                .collect(Collectors.toList())
+                .collect(Collectors.toList()),
+                withDelivered? getDeliveredData() : null
         );
+    }
+
+    /**
+     * @return a snapshot of the currently delivered items
+     */
+    protected List<JobData.CompletionData> getDeliveredData(){
+        return deliveredItems.entrySet().stream()
+                .map(e -> new JobData.CompletionData(
+                        e.getKey(),
+                        e.getValue().getStoredTypes().stream()
+                                .map(item -> new ItemAmountData(item.getName(), e.getValue().getItemCount(item)))
+                                .filter(iad -> iad.getAmount() != 0)
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
     }
 
     /**

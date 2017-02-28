@@ -20,6 +20,9 @@ public class StorageData extends FacilityData {
     @XmlElement(name = "item")
     private List<StoredData> items;
 
+    @XmlElement(name = "stored")
+    private List<TeamStoredData> teamItems;
+
     /**
      * For JAXB
      */
@@ -28,19 +31,22 @@ public class StorageData extends FacilityData {
     }
 
     /**
-     * Constructor.
+     * Constructor. Exactly one of stored/teamStored should be null.
      * @param name name of the storage
      * @param lat latitude
      * @param lon longitude
      * @param capacity max capacity of the storage
      * @param freeSpace unused capacity
-     * @param stored items stored for the team receiving this data
+     * @param stored items stored for the team receiving this data (may be null)
+     * @param teamStored item stored for all teams (may be null)
      */
-    public StorageData(String name, double lat, double lon, int capacity, int freeSpace, List<StoredData> stored) {
+    public StorageData(String name, double lat, double lon, int capacity, int freeSpace, List<StoredData> stored,
+                       List<TeamStoredData> teamStored) {
         super(name, lat, lon);
         totalCapacity = capacity;
         usedCapacity = capacity - freeSpace;
-        if(stored != null && stored.size() > 0) this.items = stored;
+        this.items = stored;
+        teamItems = teamStored;
     }
 
     /**
@@ -58,9 +64,45 @@ public class StorageData extends FacilityData {
     }
 
     /**
-     * @return a list of items currently stored/stored-delivered
+     * @return a list of items currently stored/stored-delivered for one team only, may be null
      */
     public List<StoredData> getStoredItems(){
         return items == null? new Vector<>() : items;
+    }
+
+    /**
+     * @return stored items per team, may be null
+     */
+    public List<TeamStoredData> getAllStoredItems(){
+        return teamItems == null? new Vector<>() : teamItems;
+    }
+
+    /**
+     * Stores how many items are stored for one team.
+     */
+    @XmlRootElement(name = "item")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class TeamStoredData{
+
+        @XmlAttribute(name="team")
+        public String teamName;
+
+        @XmlElement(name="item")
+        public List<StoredData> stored;
+
+        /**
+         * For jaxb.
+         */
+        private TeamStoredData(){}
+
+        /**
+         * Constructor.
+         * @param team the eam the items are stored for
+         * @param teamStored information about how many items of which type are stored
+         */
+        public TeamStoredData(String team, List<StoredData> teamStored){
+            teamName = team;
+            stored = teamStored;
+        }
     }
 }

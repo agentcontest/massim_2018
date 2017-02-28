@@ -1,12 +1,12 @@
 package massim.scenario.city.data.facilities;
 
+import massim.protocol.scenario.city.data.StorageData;
+import massim.protocol.scenario.city.data.StoredData;
 import massim.scenario.city.data.Item;
 import massim.scenario.city.data.ItemBox;
 import massim.scenario.city.data.Location;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A storage facility in the City scenario.
@@ -123,5 +123,56 @@ public class Storage extends Facility{
      */
     public int getCapacity() {
         return capacity;
+    }
+
+    /**
+     * Builds a snapshot of this storage.
+     * @param teams the teams to include the stored item data of; note that the format for a single team differs from
+     *              that of multiple teams
+     * @return an object capturing the current state of the storage
+     */
+    public StorageData toStorageData(List<String> teams){
+
+        List<StoredData> stored = null;
+        List<StorageData.TeamStoredData> teamStored = null;
+
+        if(teams.size() > 1){
+            teamStored = new Vector<>();
+            for(String team: teams){
+                List<StoredData> tempStored = getStoredForTeam(team);
+                if(tempStored.size() > 0) teamStored.add(new StorageData.TeamStoredData(team, tempStored));
+            }
+        }
+        else if (teams.size() == 1){
+            stored = getStoredForTeam(teams.get(0));
+        }
+
+        return new StorageData(getName(), getLocation().getLat(), getLocation().getLon(), capacity, getFreeSpace(),
+                stored, teamStored);
+    }
+
+    /**
+     * Builds a snapshot of what this storage currently stores for a given team.
+     * @param team the team to check delivered/stored items for
+     * @return the stored and delivered items for one team
+     */
+    private List<StoredData> getStoredForTeam(String team){
+        List<StoredData> stored = new Vector<>();
+        ItemBox dBox = deliveredItems.get(team);
+        Map<Item, Integer> sBox = storedItems.get(team);
+        Set<Item> items = new HashSet<>();
+        if(dBox != null) items.addAll(dBox.getStoredTypes());
+        if(sBox != null) items.addAll(sBox.keySet());
+
+        if(items.size() > 0) {
+            for (Item item : items) {
+                // add an entry if item is either stored or delivered for the team
+                int storedAmount = getStored(item, team);
+                int deliveredAmount = getDelivered(item, team);
+                if (storedAmount > 0 || deliveredAmount > 0)
+                    stored.add(new StoredData(item.getName(), storedAmount, deliveredAmount));
+            }
+        }
+        return stored;
     }
 }

@@ -1,5 +1,6 @@
 package massim.scenario.city;
 
+import massim.util.Log;
 import massim.util.RNG;
 import massim.protocol.messagecontent.Action;
 import massim.scenario.city.data.*;
@@ -83,6 +84,10 @@ public class ActionExecutor {
         }
 
         Action action = actions.get(agent);
+        if(action == null){
+            Log.log(Log.Level.CRITICAL, "No action for agent " + agent + " provided.");
+            action = Action.STD_NO_ACTION;
+        }
         entity.setLastAction(action);
         List<String> params = action.getParameters();
         switch (action.getActionType()){

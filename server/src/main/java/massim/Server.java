@@ -3,13 +3,15 @@ package massim;
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
 import massim.monitor.Monitor;
+import massim.protocol.DynamicWorldData;
+import massim.protocol.StaticWorldData;
 import massim.protocol.WorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
-import massim.util.JSONUtil;
+import massim.util.IOUtil;
 import massim.util.Log;
 import massim.util.RNG;
 import org.json.JSONArray;
@@ -261,6 +263,8 @@ public class Server {
      */
     private void runMatch(Set<TeamConfig> matchTeams) {
 
+        String startTime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+
         JSONObject result = new JSONObject();
         for (JSONObject simConfig: config.simConfigs){
             // create and run scenario instance with the given teams
@@ -279,7 +283,7 @@ public class Server {
 
                 // handle initial state
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
-                handleSnapshot(sim.getSnapshot());
+                handleSimState(sim.getName(), startTime, sim.getStaticData());
                 agentManager.handleInitialPercepts(initialPercepts);
 
                 // handle steps
@@ -288,7 +292,7 @@ public class Server {
                     Map<String, RequestAction> percepts = sim.preStep(i);
                     Map<String, Action> actions = agentManager.requestActions(percepts);
                     sim.step(i, actions); // execute step with agent actions
-                    handleSnapshot(sim.getSnapshot());
+                    handleSimState(sim.getName(), startTime, sim.getSnapshot());
                 }
 
                 // handle final state
@@ -301,14 +305,28 @@ public class Server {
         }
 
         // write match result to file
-        JSONUtil.writeToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
+        IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
     }
 
     /**
-     * If configured, notifies the monitor of the new state and writes a replay file.
-     * @param snapshot a snapshot of the current sim state.
+     * Handles snapshots of the world state, i.e. notifies monitor and saves replays (if configured).
+     * @param simID the ID of the current sim
+     * @param startTime string representation of the simulation's start time
+     * @param world the world state
      */
-    private void handleSnapshot(WorldData snapshot) {
+    private void handleSimState(String simID, String startTime, WorldData world) {
+        if(monitor != null) monitor.updateState(world);
+        if(config.replayPath != null){
+            // determine file name
+            String file = "";
+            if(world instanceof StaticWorldData) file = "static";
+            else if(world instanceof DynamicWorldData) file = "step-" + String.valueOf(((DynamicWorldData) world).step);
+            // save to file
+            IOUtil.writeXMLToFile(
+                    world.toXML(world.getClass()),
+                    Paths.get(config.replayPath, startTime + "-" + simID, file + ".xml").toFile(),
+                    true);
+        }
     }
 
     /**

@@ -349,4 +349,11 @@ public class WorldState {
     public List<Tool> getTools() {
         return new ArrayList<>(tools);
     }
+
+    /**
+     * @return a new list containing all roles in this simulation
+     */
+    public List<Role> getRoles(){
+        return new Vector<>(roles.values());
+    }
 }

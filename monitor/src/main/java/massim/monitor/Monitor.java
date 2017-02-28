@@ -1,7 +1,8 @@
 package massim.monitor;
 
 import massim.protocol.WorldData;
-import massim.protocol.scenario.city.data.CityWorldData;
+import massim.protocol.scenario.city.data.DynamicCityData;
+import massim.protocol.scenario.city.data.StaticCityData;
 
 /**
  * The web monitor for the MASSim server.
@@ -30,12 +31,16 @@ public class Monitor {
      * Called by the massim server after each step.
      */
     public void updateState(WorldData worldData){
-        if(!(worldData instanceof CityWorldData)){
+
+        if (worldData instanceof StaticCityData){
+            // TODO
+        }
+        else if (worldData instanceof DynamicCityData){
+            // TODO
+        }
+        else{
             System.out.println("Monitor: wrong scenario");
             return;
         }
-
-        CityWorldData world = (CityWorldData) worldData;
-        // TODO
     }
 }

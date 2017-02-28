@@ -1,9 +1,8 @@
 package massim.scenario.city;
 
-import massim.protocol.WorldData;
-import massim.util.Log;
-import massim.util.RNG;
 import massim.config.TeamConfig;
+import massim.protocol.DynamicWorldData;
+import massim.protocol.StaticWorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
@@ -17,6 +16,8 @@ import massim.scenario.city.data.facilities.Facility;
 import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
 import massim.scenario.city.util.Generator;
+import massim.util.Log;
+import massim.util.RNG;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -31,6 +32,9 @@ public class CitySimulation extends AbstractSimulation {
     private WorldState world;
     private ActionExecutor actionExecutor;
     private Generator generator;
+
+    private StaticCityData staticData;
+    private DynamicCityData lastSnapShot;
 
     @Override
     public Map<String, SimStart> init(int steps, JSONObject config, Set<TeamConfig> matchTeams) {
@@ -60,6 +64,16 @@ public class CitySimulation extends AbstractSimulation {
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
+        // create the static data object
+        staticData = new StaticCityData(world.getSimID(), world.getSteps(), world.getMapName(), world.getSeedCapital(),
+                                        world.getTeams().stream()
+                                                        .map(TeamState::getName)
+                                                        .collect(Collectors.toList()),
+                                        world.getRoles().stream()
+                                                        .map(Role::getRoleData)
+                                                        .collect(Collectors.toList()),
+                                        itemData);
+
         // determine initial percepts
         Map<String, SimStart> initialPercepts = new HashMap<>();
         world.getAgents().forEach(agName -> initialPercepts.put(agName,
@@ -78,25 +92,63 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public Map<String, RequestAction> preStep(int stepNo) {
 
-        // step job generator
+         // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
+
         // activate jobs for this step
-        world.getJobs().stream().filter(job -> job.getBeginStep() == stepNo).forEach(Job::activate);
+        world.getJobs().stream()
+                .filter(job -> job.getBeginStep() == stepNo)
+                .forEach(Job::activate);
 
         /* create percept data */
         // create team data
         Map<String, TeamData> teamData = new HashMap<>();
         world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(team.getMoney())));
 
-        // create entity data
+        // create entity data as visible to other entities (containing name, team, role and location)
         List<EntityData> entities = new Vector<>();
         world.getAgents().forEach(agent -> {
             Entity entity = world.getEntity(agent);
-            entities.add(new EntityData(false, null, null, null, null, null, null,
+            entities.add(new EntityData(null, null, null, null, null, null,
                     agent, world.getTeamForAgent(agent),
                     entity.getRole().getName(),
                     entity.getLocation().getLat(),
                     entity.getLocation().getLon()));
+        });
+
+        // create complete snapshots of entities
+        Map<String, EntityData> completeEntities = new HashMap<>();
+        world.getAgents().forEach(agent -> {
+            Entity entity = world.getEntity(agent);
+            // check if entity is in some facility
+            String facilityName = null;
+            Facility facility = world.getFacilityByLocation(entity.getLocation());
+            if(facility != null) facilityName = facility.getName();
+            // check if entity has a route
+            List<WayPointData> waypoints = new Vector<>();
+            if(entity.getRoute() != null){
+                int i = 0;
+                for (Location loc: entity.getRoute().getWaypoints()) {
+                    waypoints.add(new WayPointData(i++, loc.getLat(), loc.getLon()));
+                }
+            }
+            // create entity snapshot
+            completeEntities.put(agent,
+                    new EntityData(
+                            entity.getCurrentBattery(),
+                            entity.getCurrentLoad(),
+                            new ActionData(entity.getLastAction().getActionType(),
+                                           entity.getLastAction().getParameters(),
+                                           entity.getLastActionResult()),
+                            facilityName,
+                            waypoints,
+                            entity.getInventory().toItemAmountData(),
+                            agent,
+                            world.getTeamForAgent(agent),
+                            entity.getRole().getName(),
+                            entity.getLocation().getLat(),
+                            entity.getLocation().getLon()
+                    ));
         });
 
         // create facility data
@@ -112,12 +164,15 @@ public class CitySimulation extends AbstractSimulation {
                 .collect(Collectors.toList());
 
         // workshops
-        List<WorkshopData> workshops = world.getWorkshops().stream().map(ws -> new WorkshopData(ws.getName(),
-                ws.getLocation().getLat(), ws.getLocation().getLon())).collect(Collectors.toList());
+        List<WorkshopData> workshops = world.getWorkshops().stream()
+                .map(ws -> new WorkshopData(ws.getName(), ws.getLocation().getLat(), ws.getLocation().getLon()))
+                .collect(Collectors.toList());
 
         // charging stations
-        List<ChargingStationData> stations = world.getChargingStations().stream().map(cs -> new ChargingStationData(
-                cs.getName(), cs.getLocation().getLat(), cs.getLocation().getLon(), cs.getRate())).collect(Collectors.toList());
+        List<ChargingStationData> stations = world.getChargingStations().stream()
+                .map(cs -> new ChargingStationData(cs.getName(), cs.getLocation().getLat(),
+                                                   cs.getLocation().getLon(), cs.getRate()))
+                .collect(Collectors.toList());
 
         // dumps
         List<DumpData> dumps = world.getDumps().stream().map(dump -> new DumpData(
@@ -135,8 +190,13 @@ public class CitySimulation extends AbstractSimulation {
                     int delivered = storage.getDelivered(item, team.getName());
                     if(stored > 0 || delivered > 0) items.add(new StoredData(item.getName(), stored, delivered));
                 }
-                StorageData sd = new StorageData(storage.getName(), storage.getLocation().getLat(),
-                        storage.getLocation().getLon(), storage.getCapacity(), storage.getFreeSpace(), items);
+                StorageData sd = new StorageData(storage.getName(),
+                                                 storage.getLocation().getLat(),
+                                                 storage.getLocation().getLon(),
+                                                 storage.getCapacity(),
+                                                 storage.getFreeSpace(),
+                                                 items,
+                                                 null);
                 storageData.add(sd);
             }
             storageMap.put(team.getName(), storageData);
@@ -147,7 +207,7 @@ public class CitySimulation extends AbstractSimulation {
                 // add active regular jobs and auction jobs in auctioning phase
                 .filter(job -> ( (!(job instanceof AuctionJob)) && job.isActive() )
                             || ( job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
-                .map(Job::toJobData)
+                .map(job -> job.toJobData(false))
                 .collect(Collectors.toList());
 
         Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
@@ -158,35 +218,33 @@ public class CitySimulation extends AbstractSimulation {
                     .filter(job -> job instanceof AuctionJob
                             && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                             && job.isActive())
-                    .forEach(job -> teamJobs.add(job.toJobData()));
+                    .forEach(job -> teamJobs.add(job.toJobData(true)));
         });
 
-        //create and deliver percepts
+        // create snapshot of the world
+        lastSnapShot = new DynamicCityData(
+                stepNo,
+                new ArrayList<>(completeEntities.values()),
+                shops,
+                workshops,
+                stations,
+                dumps,
+                world.getJobs().stream()
+                        .map(job -> job.toJobData(true))
+                        .collect(Collectors.toList()),
+                world.getStorages().stream()
+                        .map(s -> s.toStorageData(world.getTeams().stream()
+                                .map(TeamState::getName)
+                                .collect(Collectors.toList())))
+                        .collect(Collectors.toList()));
+
+        // create and deliver percepts
         Map<String, RequestAction> percepts = new HashMap<>();
         world.getAgents().forEach(agent -> {
             String team = world.getTeamForAgent(agent);
-            Entity entity = world.getEntity(agent);
-            String facilityName = null;
-            Facility facility = world.getFacilityByLocation(entity.getLocation());
-            if(facility != null) facilityName = facility.getName();
-            List<WayPointData> waypoints = new Vector<>();
-            if(entity.getRoute() != null){
-                int i = 0;
-                for (Location loc: entity.getRoute().getWaypoints()) {
-                    waypoints.add(new WayPointData(i++, loc.getLat(), loc.getLon()));
-                }
-            }
             percepts.put(agent,
                     new CityStepPercept(
-                            new EntityData(true, entity.getCurrentBattery(), entity.getCurrentLoad(),
-                                    new ActionData(entity.getLastAction().getActionType(),
-                                            entity.getLastAction().getParameters(), entity.getLastActionResult()),
-                                    facilityName,
-                                    waypoints,
-                                    entity.getInventory().toItemAmountData(),
-                                    agent, team, entity.getRole().getName(),
-                                    entity.getLocation().getLat(), entity.getLocation().getLon()
-                            ),
+                            completeEntities.get(agent),
                             team, stepNo, teamData.get(team), entities, shops, workshops, stations, dumps,
                             storageMap.get(team), jobsPerTeam
             ));
@@ -253,8 +311,8 @@ public class CitySimulation extends AbstractSimulation {
             scoreToTeam.get(team.getMoney()).add(team);
         });
         List<Long> scoreRanking = new ArrayList<>(scoreToTeam.keySet());
-        Collections.sort(scoreRanking); // sort ascending
-        Collections.reverse(scoreRanking); // now descending
+        Collections.sort(scoreRanking);     // sort ascending
+        Collections.reverse(scoreRanking);  // now descending
         final int[] ranking = {1};
         scoreRanking.forEach(score -> {
             Set<TeamState> teams = scoreToTeam.get(score);
@@ -270,8 +328,13 @@ public class CitySimulation extends AbstractSimulation {
     }
 
     @Override
-    public WorldData getSnapshot() {
-        return new CityWorldData(""); // TODO
+    public DynamicWorldData getSnapshot() {
+        return lastSnapShot;
+    }
+
+    @Override
+    public StaticWorldData getStaticData() {
+        return staticData;
     }
 
     /**

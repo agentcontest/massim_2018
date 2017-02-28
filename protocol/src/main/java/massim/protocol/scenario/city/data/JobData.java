@@ -23,8 +23,14 @@ public class JobData {
     @XmlAttribute
     private int reward;
 
-    @XmlElement(name = "items")
+    @XmlElement(name = "required")
     private List<ItemAmountData> requiredItems = new Vector<>();
+
+    /**
+     * May be null.
+     */
+    @XmlElement(name="delivered")
+    private List<CompletionData> deliveredItems;
 
     /**
      * For jaxb
@@ -39,12 +45,14 @@ public class JobData {
      * @param reward reward amount
      * @param requiredItems items required for job completion
      */
-    public JobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems) {
+    public JobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems,
+                   List<CompletionData> deliveredItems) {
         id = name;
         this.storage = storage;
         this.end = end;
         this.reward = reward;
         if(requiredItems != null) this.requiredItems.addAll(requiredItems);
+        this.deliveredItems = deliveredItems;
     }
 
     /**
@@ -80,5 +88,42 @@ public class JobData {
      */
     public List<ItemAmountData> getRequiredItems(){
         return requiredItems;
+    }
+
+    /**
+     * @return which team delivered which items to this job. May be null if no team delivered items yet
+     * (or that data is not desired here)
+     */
+    public List<CompletionData> getDeliveredItems(){
+        return deliveredItems;
+    }
+
+    /**
+     * Stores how many items of which type a team already delivered.
+     */
+    @XmlRootElement(name = "delivered")
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class CompletionData {
+
+        @XmlAttribute
+        public String team;
+
+        @XmlElement(name="item")
+        public List<ItemAmountData> delivered;
+
+        /**
+         * For jaxb.
+         */
+        private CompletionData(){}
+
+        /**
+         * Constructor.
+         * @param team name of the team
+         * @param deliveredItems items delivered to the job by one team
+         */
+        public CompletionData(String team, List<ItemAmountData> deliveredItems){
+            this.team = team;
+            delivered = deliveredItems;
+        }
     }
 }

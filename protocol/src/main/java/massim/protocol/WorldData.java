@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.Arrays;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlSeeAlso({StaticWorldData.class, DynamicWorldData.class})
 public abstract class WorldData {
 
     /**
