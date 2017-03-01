@@ -108,6 +108,16 @@ public class Message {
      * @return the variable content of this message
      */
     public MessageContent getContent(){
-        return content;
+        return content != null? content : new DefaultMessageContent();
+    }
+
+    /**
+     * Used if no valid message content could be deserialized.
+     */
+    public class DefaultMessageContent extends MessageContent{
+        @Override
+        public String getType() {
+            return "DefaultMessageContent";
+        }
     }
 }
