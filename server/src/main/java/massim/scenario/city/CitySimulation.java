@@ -29,12 +29,11 @@ import java.util.stream.Collectors;
  */
 public class CitySimulation extends AbstractSimulation {
 
+    private int currentStep = -1;
     private WorldState world;
     private ActionExecutor actionExecutor;
     private Generator generator;
-
     private StaticCityData staticData;
-    private DynamicCityData lastSnapShot;
 
     @Override
     public Map<String, SimStart> init(int steps, JSONObject config, Set<TeamConfig> matchTeams) {
@@ -92,6 +91,8 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public Map<String, RequestAction> preStep(int stepNo) {
 
+        currentStep = stepNo;
+
          // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));
 
@@ -117,66 +118,13 @@ public class CitySimulation extends AbstractSimulation {
         });
 
         // create complete snapshots of entities
-        Map<String, EntityData> completeEntities = new HashMap<>();
-        world.getAgents().forEach(agent -> {
-            Entity entity = world.getEntity(agent);
-            // check if entity is in some facility
-            String facilityName = null;
-            Facility facility = world.getFacilityByLocation(entity.getLocation());
-            if(facility != null) facilityName = facility.getName();
-            // check if entity has a route
-            List<WayPointData> waypoints = new Vector<>();
-            if(entity.getRoute() != null){
-                int i = 0;
-                for (Location loc: entity.getRoute().getWaypoints()) {
-                    waypoints.add(new WayPointData(i++, loc.getLat(), loc.getLon()));
-                }
-            }
-            // create entity snapshot
-            completeEntities.put(agent,
-                    new EntityData(
-                            entity.getCurrentBattery(),
-                            entity.getCurrentLoad(),
-                            new ActionData(entity.getLastAction().getActionType(),
-                                           entity.getLastAction().getParameters(),
-                                           entity.getLastActionResult()),
-                            facilityName,
-                            waypoints,
-                            entity.getInventory().toItemAmountData(),
-                            agent,
-                            world.getTeamForAgent(agent),
-                            entity.getRole().getName(),
-                            entity.getLocation().getLat(),
-                            entity.getLocation().getLon()
-                    ));
-        });
+        Map<String, EntityData> completeEntities = buildEntityData();
 
-        // create facility data
-        // shops
-        List<ShopData> shops = world.getShops().stream()
-                .map(shop ->
-                    new ShopData(
-                        shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon(),
-                        shop.getRestock(),
-                        shop.getOfferedItems().stream()
-                            .map(item -> new StockData(item.getName(), shop.getPrice(item), shop.getItemCount(item)))
-                            .collect(Collectors.toList())))
-                .collect(Collectors.toList());
-
-        // workshops
-        List<WorkshopData> workshops = world.getWorkshops().stream()
-                .map(ws -> new WorkshopData(ws.getName(), ws.getLocation().getLat(), ws.getLocation().getLon()))
-                .collect(Collectors.toList());
-
-        // charging stations
-        List<ChargingStationData> stations = world.getChargingStations().stream()
-                .map(cs -> new ChargingStationData(cs.getName(), cs.getLocation().getLat(),
-                                                   cs.getLocation().getLon(), cs.getRate()))
-                .collect(Collectors.toList());
-
-        // dumps
-        List<DumpData> dumps = world.getDumps().stream().map(dump -> new DumpData(
-                dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon())).collect(Collectors.toList());
+        /* create facility data */
+        List<ShopData> shops = buildShopData();
+        List<WorkshopData> workshops = buildWorkshopData();
+        List<ChargingStationData> stations = buildChargingStationData();
+        List<DumpData> dumps = buildDumpData();
 
         // storage
         Map<String, List<StorageData>> storageMap = new HashMap<>();
@@ -221,23 +169,6 @@ public class CitySimulation extends AbstractSimulation {
                     .forEach(job -> teamJobs.add(job.toJobData(true)));
         });
 
-        // create snapshot of the world
-        lastSnapShot = new DynamicCityData(
-                stepNo,
-                new ArrayList<>(completeEntities.values()),
-                shops,
-                workshops,
-                stations,
-                dumps,
-                world.getJobs().stream()
-                        .map(job -> job.toJobData(true))
-                        .collect(Collectors.toList()),
-                world.getStorages().stream()
-                        .map(s -> s.toStorageData(world.getTeams().stream()
-                                .map(TeamState::getName)
-                                .collect(Collectors.toList())))
-                        .collect(Collectors.toList()));
-
         // create and deliver percepts
         Map<String, RequestAction> percepts = new HashMap<>();
         world.getAgents().forEach(agent -> {
@@ -250,6 +181,94 @@ public class CitySimulation extends AbstractSimulation {
             ));
         });
         return percepts;
+    }
+
+    /**
+     * Builds dump data objects for all dumps.
+     * @return a list of those objects
+     */
+    private List<DumpData> buildDumpData() {
+        return world.getDumps().stream()
+                .map(dump -> new DumpData(dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds charging station data objects for all charging stations.
+     * @return a list of those objects
+     */
+    private List<ChargingStationData> buildChargingStationData() {
+        return world.getChargingStations().stream()
+                .map(cs -> new ChargingStationData(cs.getName(), cs.getLocation().getLat(),
+                        cs.getLocation().getLon(), cs.getRate()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds workshop data objects for all workshops.
+     * @return a list of those objects
+     */
+    private List<WorkshopData> buildWorkshopData() {
+        return world.getWorkshops().stream()
+                .map(ws -> new WorkshopData(ws.getName(), ws.getLocation().getLat(), ws.getLocation().getLon()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds shop data objects for all shops.
+     * @return a list of those objects
+     */
+    private List<ShopData> buildShopData() {
+        return world.getShops().stream()
+                .map(shop ->
+                        new ShopData(
+                                shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon(),
+                                shop.getRestock(),
+                                shop.getOfferedItems().stream()
+                                        .map(item -> new StockData(item.getName(), shop.getPrice(item), shop.getItemCount(item)))
+                                        .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds an {@link EntityData} object for each entity in the simulation.
+     * @return mapping from agent/entity names to the data objects
+     */
+    private Map<String,EntityData> buildEntityData() {
+        Map<String, EntityData> result = new HashMap<>();
+        world.getAgents().forEach(agent -> {
+            Entity entity = world.getEntity(agent);
+            // check if entity is in some facility
+            String facilityName = null;
+            Facility facility = world.getFacilityByLocation(entity.getLocation());
+            if(facility != null) facilityName = facility.getName();
+            // check if entity has a route
+            List<WayPointData> waypoints = new Vector<>();
+            if(entity.getRoute() != null){
+                int i = 0;
+                for (Location loc: entity.getRoute().getWaypoints()) {
+                    waypoints.add(new WayPointData(i++, loc.getLat(), loc.getLon()));
+                }
+            }
+            // create entity snapshot
+            result.put(agent,
+                    new EntityData(
+                            entity.getCurrentBattery(),
+                            entity.getCurrentLoad(),
+                            new ActionData(entity.getLastAction().getActionType(),
+                                    entity.getLastAction().getParameters(),
+                                    entity.getLastActionResult()),
+                            facilityName,
+                            waypoints,
+                            entity.getInventory().toItemAmountData(),
+                            agent,
+                            world.getTeamForAgent(agent),
+                            entity.getRole().getName(),
+                            entity.getLocation().getLat(),
+                            entity.getLocation().getLon()
+                    ));
+        });
+        return result;
     }
 
     @Override
@@ -329,7 +348,21 @@ public class CitySimulation extends AbstractSimulation {
 
     @Override
     public DynamicWorldData getSnapshot() {
-        return lastSnapShot;
+        return new DynamicCityData(
+                currentStep,
+                new ArrayList<>(buildEntityData().values()),
+                buildShopData(),
+                buildWorkshopData(),
+                buildChargingStationData(),
+                buildDumpData(),
+                world.getJobs().stream()
+                        .map(job -> job.toJobData(true))
+                        .collect(Collectors.toList()),
+                world.getStorages().stream()
+                        .map(s -> s.toStorageData(world.getTeams().stream()
+                                .map(TeamState::getName)
+                                .collect(Collectors.toList())))
+                        .collect(Collectors.toList()));
     }
 
     @Override
