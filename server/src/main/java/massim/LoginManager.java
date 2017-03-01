@@ -14,10 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -101,17 +98,17 @@ class LoginManager {
      */
     private void handleSocket(Socket s) {
         try {
-            String inString = "";
             InputStream is = s.getInputStream();
-            byte b[] = new byte[1];
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int b;
             while (true) {
-                b[0] = (byte)is.read();
-                if (b[0] == 0) break;
-                else inString += (new String(b, 0, 1, "UTF-8"));
+                b = is.read();
+                if (b == 0) break; // message completely read
+                else if (b == -1) return; // stream ended
+                else buffer.write(b);
             }
-            Log.log(Log.Level.DEBUG, inString);
             Document authDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
-                    new ByteArrayInputStream(inString.getBytes()));
+                    new ByteArrayInputStream(buffer.toByteArray()));
             Message receivedMsg = Message.parse(authDoc);
             if(receivedMsg != null){
                 if(receivedMsg.getContent() != null && receivedMsg.getContent() instanceof AuthRequest) {
