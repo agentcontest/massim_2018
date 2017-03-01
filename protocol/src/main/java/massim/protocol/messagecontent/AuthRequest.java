@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * An AUTHENTICATION-REQUEST message for Agent-2-Server communication.
  */
-@XmlRootElement(name = "authentication")
+@XmlRootElement(name = "auth-request")
 @XmlAccessorType(XmlAccessType.NONE) //use only annotated things for XML
 public class AuthRequest extends MessageContent {
 

@@ -1,14 +1,12 @@
 package massim;
 
 import massim.protocol.Message;
+import massim.protocol.messagecontent.AuthRequest;
 import massim.protocol.messagecontent.AuthResponse;
 import massim.util.Log;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -102,17 +100,6 @@ class LoginManager {
      * @param s the socket to use
      */
     private void handleSocket(Socket s) {
-
-        Log.log(Log.Level.DEBUG, "Retrieve authentication from client.");
-        DocumentBuilder docBuilder;
-        try {
-            docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-            return;
-        }
-        String user = "";
-        String pass = "";
         try {
             String inString = "";
             InputStream is = s.getInputStream();
@@ -120,37 +107,38 @@ class LoginManager {
             while (true) {
                 b[0] = (byte)is.read();
                 if (b[0] == 0) break;
-                else inString += (new String(b,0,1,"UTF-8"));
+                else inString += (new String(b, 0, 1, "UTF-8"));
             }
             Log.log(Log.Level.DEBUG, inString);
-            Document authDoc = docBuilder.parse(new ByteArrayInputStream(inString.getBytes()));
-            NodeList nl = authDoc.getElementsByTagName("authentication");
-            if (nl.getLength() == 0) {
-                Log.log(Log.Level.ERROR, "Error while parsing authentication");
-                return;
-            }
-            Element root = (Element)nl.item(0);
-            user = root.getAttribute("username");
-            pass = root.getAttribute("password");
-        } catch (IOException e) {
-            Log.log(Log.Level.ERROR, "IO error while receiving authentication");
-            e.printStackTrace();
-        } catch (SAXException e) {
-            Log.log(Log.Level.ERROR, "Error while parsing authentication");
-            e.printStackTrace();
-        }
-        Log.log(Log.Level.NORMAL, "got authentication: username=" + user + " password=" + pass
-                + " address=" + s.getInetAddress().getHostAddress());
+            Document authDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+                    new ByteArrayInputStream(inString.getBytes()));
+            Message receivedMsg = Message.parse(authDoc);
+            if(receivedMsg.getContent() instanceof AuthRequest){
+                AuthRequest auth = (AuthRequest) receivedMsg.getContent();
+                Log.log(Log.Level.NORMAL, "got authentication: username=" + auth.getUsername() + " password="
+                        + auth.getPassword() + " address=" + s.getInetAddress().getHostAddress());
 
-        // check credentials and act accordingly
-        if (agentManager.auth(user, pass)) {
-            sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
-            agentManager.setSocket(s, user);
-        }
-        else{
-            Log.log(Log.Level.CRITICAL,"Got invalid authentication from: " + s.getInetAddress().getHostAddress());
-            sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
-            try { s.close(); } catch (IOException ignored) {}
+                // check credentials and act accordingly
+                if (agentManager.auth(auth.getUsername(), auth.getPassword())) {
+                    sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
+                    agentManager.setSocket(s, auth.getUsername());
+                }
+                else{
+                    Log.log(Log.Level.ERROR, "Got invalid authentication from: " + s.getInetAddress().getHostAddress());
+                    sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
+                    try { s.close(); } catch (IOException ignored) {}
+                }
+            }
+            else{
+                Log.log(Log.Level.ERROR, "Received " + receivedMsg.getContent().getType() + " message, " +
+                                         "expected auth-request.");
+            }
+        } catch (IOException e) {
+            Log.log(Log.Level.ERROR, "Error while receiving authentication message");
+            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException e) {
+            Log.log(Log.Level.ERROR, "Error while parsing authentication message");
+            e.printStackTrace();
         }
     }
 }
