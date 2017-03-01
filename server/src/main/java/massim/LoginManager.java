@@ -113,25 +113,26 @@ class LoginManager {
             Document authDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
                     new ByteArrayInputStream(inString.getBytes()));
             Message receivedMsg = Message.parse(authDoc);
-            if(receivedMsg.getContent() instanceof AuthRequest){
-                AuthRequest auth = (AuthRequest) receivedMsg.getContent();
-                Log.log(Log.Level.NORMAL, "got authentication: username=" + auth.getUsername() + " password="
-                        + auth.getPassword() + " address=" + s.getInetAddress().getHostAddress());
-
-                // check credentials and act accordingly
-                if (agentManager.auth(auth.getUsername(), auth.getPassword())) {
-                    sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
-                    agentManager.setSocket(s, auth.getUsername());
-                }
-                else{
-                    Log.log(Log.Level.ERROR, "Got invalid authentication from: " + s.getInetAddress().getHostAddress());
-                    sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
-                    try { s.close(); } catch (IOException ignored) {}
+            if(receivedMsg != null){
+                if(receivedMsg.getContent() != null && receivedMsg.getContent() instanceof AuthRequest) {
+                    AuthRequest auth = (AuthRequest) receivedMsg.getContent();
+                    Log.log(Log.Level.NORMAL, "got authentication: username=" + auth.getUsername() + " password="
+                            + auth.getPassword() + " address=" + s.getInetAddress().getHostAddress());
+                    // check credentials and act accordingly
+                    if (agentManager.auth(auth.getUsername(), auth.getPassword())) {
+                        sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
+                        agentManager.setSocket(s, auth.getUsername());
+                    } else {
+                        Log.log(Log.Level.ERROR, "Got invalid authentication from: " + s.getInetAddress().getHostAddress());
+                        sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
+                        try {
+                            s.close();
+                        } catch (IOException ignored) {}
+                    }
                 }
             }
             else{
-                Log.log(Log.Level.ERROR, "Received " + receivedMsg.getContent().getType() + " message, " +
-                                         "expected auth-request.");
+                Log.log(Log.Level.ERROR, "Received wrong message, expected auth-request.");
             }
         } catch (IOException e) {
             Log.log(Log.Level.ERROR, "Error while receiving authentication message");
