@@ -63,11 +63,8 @@ class AgentManager {
      * @param s the new socket opened for the agent
      * @param agentName the name of the agent
      */
-    void setSocket(Socket s, String agentName){
-        if (agents.containsKey(agentName)){
-            agents.get(agentName).setSocket(s);
-            agents.get(agentName).resendSimStartMessage();
-        }
+    void handleNewConnection(Socket s, String agentName){
+        if (agents.containsKey(agentName)) agents.get(agentName).handleNewConnection(s);
     }
 
     /**
@@ -217,15 +214,16 @@ class AgentManager {
          * Sets a new endpoint for sending and receiving messages. If a socket is already present, it is replaced and closed.
          * @param newSocket the new socket to use for this agent
          */
-        private void setSocket(Socket newSocket){
+        private void handleNewConnection(Socket newSocket){
             // potentially close old socket
             if (sendThread != null) sendThread.interrupt();
             if (receiveThread != null) receiveThread.interrupt();
-            if (socket != null){
-                try { socket.close(); } catch (IOException ignored) {}
-            }
+            if (socket != null) try { socket.close(); } catch (IOException ignored) {}
             // set new socket and open new threads
             socket = newSocket;
+            sendQueue.clear();
+            // resend sim start message if available
+            if(lastSimStartMessage != null) sendQueue.addFirst(lastSimStartMessage);
             sendThread = new Thread(this::send);
             sendThread.start();
             receiveThread = new Thread(this::receive);
@@ -353,16 +351,6 @@ class AgentManager {
                 sendQueue.put(message);
             } catch (InterruptedException e) {
                 Log.log(Log.Level.ERROR, "Interrupted while trying to put message into queue.");
-            }
-        }
-
-        /**
-         * If there already exists a sim start message, it is added to the front of the {@link #sendQueue}.
-         */
-        void resendSimStartMessage() {
-            Document message = lastSimStartMessage;
-            if (message != null && !sendQueue.contains(message)){
-                sendQueue.addFirst(message);
             }
         }
     }

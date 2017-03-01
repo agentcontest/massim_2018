@@ -121,7 +121,7 @@ class LoginManager {
                     // check credentials and act accordingly
                     if (agentManager.auth(auth.getUsername(), auth.getPassword())) {
                         sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
-                        agentManager.setSocket(s, auth.getUsername());
+                        agentManager.handleNewConnection(s, auth.getUsername());
                     } else {
                         Log.log(Log.Level.ERROR, "Got invalid authentication from: " + s.getInetAddress().getHostAddress());
                         sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
