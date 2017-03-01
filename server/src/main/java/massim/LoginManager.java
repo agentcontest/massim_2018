@@ -1,5 +1,7 @@
 package massim;
 
+import massim.protocol.Message;
+import massim.protocol.messagecontent.AuthResponse;
 import massim.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,20 +85,13 @@ class LoginManager {
      * @param s the socket to send on
      * @param result whether the authentication was successful
      */
-    private void sendAuthResponse(Socket s, boolean result) {
+    private void sendAuthResponse(Socket s, AuthResponse.AuthenticationResult result) {
         try {
             OutputStream out = s.getOutputStream();
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Element elRoot = doc.createElement("message");
-            elRoot.setAttribute("type","auth-response");
-            elRoot.setAttribute("timestamp", String.valueOf(System.currentTimeMillis()));
-            doc.appendChild(elRoot);
-            Element elAuth = doc.createElement("authentication");
-            elAuth.setAttribute("result", result? "ok" : "fail");
-            elRoot.appendChild(elAuth);
+            Document doc = new Message(System.currentTimeMillis(), new AuthResponse(result)).toXML();
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(out));
             out.write(0);
-        } catch (IOException | TransformerException | TransformerFactoryConfigurationError | ParserConfigurationException e) {
+        } catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
             Log.log(Log.Level.CRITICAL, "Auth response could not be sent.");
             e.printStackTrace();
         }
@@ -149,12 +144,12 @@ class LoginManager {
 
         // check credentials and act accordingly
         if (agentManager.auth(user, pass)) {
-            sendAuthResponse(s, true);
+            sendAuthResponse(s, AuthResponse.AuthenticationResult.OK);
             agentManager.setSocket(s, user);
         }
         else{
             Log.log(Log.Level.CRITICAL,"Got invalid authentication from: " + s.getInetAddress().getHostAddress());
-            sendAuthResponse(s,false);
+            sendAuthResponse(s, AuthResponse.AuthenticationResult.FAILED);
             try { s.close(); } catch (IOException ignored) {}
         }
     }
