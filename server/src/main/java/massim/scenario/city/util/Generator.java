@@ -36,6 +36,8 @@ public class Generator {
     private int toolsMax;
     private double toolProbability;
 
+    private int truckCapacity;
+
 
     public Generator(JSONObject randomConf){
         // TODO parse random parameters from config
@@ -124,16 +126,15 @@ public class Generator {
      * @return a list of tools
      */
     public List<Tool> generateTools(List<Role> roles){
-
-        /*//TODO
-        List<Tool> tools = new Vector<>();
-        for(int i = 0; i < 5; i++){
-            tools.add(new Tool("Tool"+i, 100, roles.stream().map(Role::getName).collect(Collectors.toList()).toArray(new String[roles.size()])));
-        }
-        //TODO add tools to their roles
-        return tools;*/
-
         int toolAmount = RNG.nextInt((toolsMax-toolsMin)+1) + toolsMin;
+
+        //get maxLoad of truck
+        for(Role role: roles){
+            if(role.getName().equals("Truck")){
+                truckCapacity = role.getMaxLoad();
+            }
+        }
+
         List<Tool> tools = new Vector<>();
         for(int i=0; i<toolAmount; i++){
             String name = "tool"+i;
@@ -145,6 +146,9 @@ public class Generator {
                 role1=roles.get(randomRole).getName();
             }
             else{
+                if(volume>truckCapacity){
+                    volume = (int) (truckCapacity * 0.9);
+                }
                 role1="Truck";
             }
             if(RNG.nextInt(100)<50){
@@ -159,7 +163,20 @@ public class Generator {
             tools.add(new Tool(name, volume, roles.get(randomRole).getName()));
             Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " roles=" + tools.get(i).getRoles());
         }
-        //TODO add tools to their roles
+
+        //add tools to roles
+        for(Tool tool: tools){
+            for(String roleName: tool.getRoles()){
+                for(Role role: roles){
+                    if(role.getName().equals(roleName)){
+                        List<Tool> toolList = new Vector<>();
+                        toolList.add(tool);
+                        role.addTools(toolList);
+                    }
+                }
+            }
+        }
+
         return tools;
     }
 
@@ -167,10 +184,10 @@ public class Generator {
         int baseItemAmount = RNG.nextInt((baseItemsMax-baseItemsMin) + 1) + baseItemsMin;
         int resourcesAmount = RNG.nextInt((resourcesMax-resourcesMin) + 1) + resourcesMin;
 
-        List<Item> items = new Vector<Item>();
-        Vector<Item> baseItems = new Vector<Item>();
-        Vector<Vector<Item>> itemGraph = new Vector<Vector<Item>>();
-        List<Item> resources = new Vector<Item>();
+        List<Item> items = new Vector<>();
+        Vector<Item> baseItems = new Vector<>();
+        Vector<Vector<Item>> itemGraph = new Vector<>();
+        List<Item> resources = new Vector<>();
 
         //generate base items
         for(int i=0; i<=baseItemAmount-1;i++){
@@ -195,7 +212,7 @@ public class Generator {
 
         for(int i=1; i<=graphDepth; i++){
             levelAmount = levelAmount - (RNG.nextInt((levelDecreaseMax-levelDecreaseMin) + 1) + levelDecreaseMin);
-            Vector<Item> levelItems = new Vector<Item>();
+            Vector<Item> levelItems = new Vector<>();
             for(int j=1; j<=levelAmount;j++){
 
                 //generate required items
@@ -204,19 +221,19 @@ public class Generator {
                 //add item from one level beneath, if level beneath is level 0, take a resource
                 Vector<Item> tmpItems;
                 if (i - 1 == 0) {
-                    tmpItems = new Vector<Item>(resources);
+                    tmpItems = new Vector<>(resources);
                 } else {
-                    tmpItems = new Vector<Item>(itemGraph.get(i - 1));
+                    tmpItems = new Vector<>(itemGraph.get(i - 1));
                 }
                 RNG.shuffle(tmpItems);
                 requiredItems.put(tmpItems.get(0),RNG.nextInt((reqAmountMax-reqAmountMin) + 1) + reqAmountMin);
                 requiredAmount = requiredAmount - 1;
                 //get list of possible levels and possible items
-                Vector<Vector<Item>> possibleLevels = new Vector<Vector<Item>>();
+                Vector<Vector<Item>> possibleLevels = new Vector<>();
                 for (int k = 0; k < i; k++) {
                     possibleLevels.add(itemGraph.get(k));
                 }
-                ArrayList<Item> possibleItems = new ArrayList<Item>();
+                ArrayList<Item> possibleItems = new ArrayList<>();
                 for (Vector<Item> level : possibleLevels) {
                     for (Item possibleItem : level) {
                         possibleItems.add(possibleItem);
@@ -230,7 +247,7 @@ public class Generator {
                 }
 
                 //generate required tools
-                Vector<Tool> requiredTools = new Vector<Tool>();
+                Vector<Tool> requiredTools = new Vector<>();
                 if(RNG.nextDouble()<toolProbability){
                     RNG.shuffle(tools);
                     requiredTools.add(tools.get(0));
@@ -239,9 +256,17 @@ public class Generator {
                     }
                 }
 
-                //TODO compute volume of assembled item
+                //compute volume of assembled item
                 int volume = 0;
-
+                for(Item reqItem: requiredItems.keySet()){
+                    volume= volume + (reqItem.getVolume() * requiredItems.get(reqItem));
+                }
+                //subtract random percentage (up to 50%)
+                volume = volume - (int) ((RNG.nextDouble()) * 0.5 * volume);
+                //ensure that at least the truck can carry this item
+                if(volume>truckCapacity){
+                    volume = (int) (truckCapacity * 0.9);
+                }
 
                 //generate assembled item
                 Item item = new Item("item"+counter, volume, new HashSet<>());
@@ -262,12 +287,12 @@ public class Generator {
         for(Vector<Item> itemList: itemGraph){
             Log.log(Log.Level.NORMAL, "Configuring items: item graph level " + counter2);
             for(Item item: itemList){
-                Vector<String> reqItems = new Vector<String>();
+                Vector<String> reqItems = new Vector<>();
                 for(Item reqItem: item.getRequiredItems().keySet()){
                     reqItems.add(reqItem.getName());
                     //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
                 }
-                Vector<String> reqTools = new Vector<String>();
+                Vector<String> reqTools = new Vector<>();
                 for(Tool reqTool: item.getRequiredTools()){
                     reqTools.add(reqTool.getName());
                 }
@@ -276,8 +301,6 @@ public class Generator {
             counter2++;
         }
         return items;
-
-        //return dummyGenerateItems(tools);
     }
 
     public List<Facility> generateFacilities(List<Item> items, WorldState world) {
@@ -306,26 +329,6 @@ public class Generator {
      */
     private Location getRandomLocation(WorldState world){
         return world.getMap().getRandomLocation(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000);
-    }
-
-    /**
-     * TODO: delete later
-     * @param tools this should be a list of exactly 5 tools which is mostly random anyway
-     */
-    private List<Item> dummyGenerateItems(List<Tool> tools) {
-        List<Item> ret = new Vector<>();
-        for (int i = 0; i < 20; i++){
-            Item item = new Item("item"+i, 100, new HashSet<>());
-            ret.add(item);
-        }
-        for (int i = 0; i < 10; i++){
-            Item item = new Item("itemB" + i, 100, new HashSet<>());
-            item.addRequirement(ret.get(2 * i), 1);
-            item.addRequirement(ret.get(2 * i + 1), 1);
-            item.addRequiredTool(tools.get(i/2));
-            ret.add(item);
-        }
-        return ret;
     }
 
     /**
