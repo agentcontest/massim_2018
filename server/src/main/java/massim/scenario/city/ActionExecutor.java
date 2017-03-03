@@ -1,5 +1,6 @@
 package massim.scenario.city;
 
+import massim.protocol.scenario.city.data.JobData;
 import massim.util.Log;
 import massim.util.RNG;
 import massim.protocol.messagecontent.Action;
@@ -362,8 +363,7 @@ public class ActionExecutor {
                 }
 
                 final int[] itemsUsed = {0};
-                job.getRequiredItems().entrySet().forEach(entry -> {
-                    Item it = entry.getKey();
+                job.getRequiredItems().forEach((it, qty) -> {
                     int used = job.deliver(it, entity.getItemCount(it), world.getTeamForAgent(agent));
                     entity.removeItem(it, used);
                     itemsUsed[0] += used;
@@ -375,6 +375,9 @@ public class ActionExecutor {
                         // add reward to completing team
                         int reward = job.getReward();
                         world.getTeam(teamName).addMoney(reward);
+                        // if job posted by another team, subtract payment
+                        if (!job.getPoster().equals(JobData.POSTER_SYSTEM))
+                            world.getTeam(job.getPoster()).subMoney(reward);
                         entity.setLastActionResult(SUCCESSFUL);
                         break;
                     } else {

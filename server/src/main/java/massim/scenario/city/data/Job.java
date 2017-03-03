@@ -25,7 +25,7 @@ public class Job {
     private int endStep;
     private String poster;
 
-    private Map<Item, Integer> requiredItems = new HashMap<>();
+    private ItemBox requiredItems = new ItemBox();
     private Map<String, ItemBox> deliveredItems = new HashMap<>();
 
     /**
@@ -53,11 +53,7 @@ public class Job {
     }
 
     public void addRequiredItem(Item item, int amount){
-        requiredItems.put(item, amount);
-    }
-
-    public Map<Item, Integer> getRequiredItems(){
-        return requiredItems;
+        requiredItems.store(item, amount);
     }
 
     /**
@@ -70,7 +66,7 @@ public class Job {
     public int deliver(Item item, int amount, String team) {
         if(!(status == JobStatus.ACTIVE)) return 0;
         ItemBox box = getDelivered(team);
-        int missing = requiredItems.get(item) - box.getItemCount(item);
+        int missing = requiredItems.getItemCount(item) - box.getItemCount(item);
         int store = Math.min(missing, amount);
         box.store(item, store);
         return store;
@@ -81,7 +77,7 @@ public class Job {
      * @param team name of the team
      * @return the box
      */
-    public ItemBox getDelivered(String team){
+    private ItemBox getDelivered(String team){
         deliveredItems.putIfAbsent(team, new ItemBox());
         return deliveredItems.get(team);
     }
@@ -103,20 +99,17 @@ public class Job {
     public boolean checkCompletion(String team) {
         if(status == JobStatus.ACTIVE) {
             ItemBox delivered = getDelivered(team);
-            boolean completed = true;
-            for (Map.Entry<Item, Integer> entry : requiredItems.entrySet()) {
-                // check if all quantities suffice
-                if (delivered.getItemCount(entry.getKey()) < entry.getValue()) {
-                    completed = false;
-                    break;
-                }
-            }
+            boolean completed = delivered.isSubset(requiredItems);
             if(completed){
                 status = JobStatus.COMPLETED;
-                // transfer items
+                // transfer partially delivered items
                 deliveredItems.entrySet().stream()
                         .filter(entry -> !entry.getKey().equals(team)) // completing team does not get any items
                         .forEach(entry -> storage.addDelivered(entry.getValue(), entry.getKey()));
+                // transfer required items to posting team
+                if(!getPoster().equals(JobData.POSTER_SYSTEM)){
+                    storage.addDelivered(requiredItems, getPoster());
+                }
                 return true;
             }
         }
@@ -176,9 +169,8 @@ public class Job {
      * @return a data object of this job for serialization
      */
     public JobData toJobData(boolean withDelivered, boolean withPoster){
-        return new JobData(name, storage.getName(), endStep, reward, requiredItems.entrySet().stream()
-                .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
-                .collect(Collectors.toList()),
+        return new JobData(name, storage.getName(), endStep, reward,
+                requiredItems.toItemAmountData(),
                 withDelivered? getDeliveredData() : null,
                 withPoster? getPoster() : null
         );
@@ -189,6 +181,13 @@ public class Job {
      */
     public String getPoster(){
         return poster;
+    }
+
+    /**
+     * @return a box containing all items required to complete this job. this box should not be modified!
+     */
+    public ItemBox getRequiredItems(){
+        return requiredItems;
     }
 
     /**

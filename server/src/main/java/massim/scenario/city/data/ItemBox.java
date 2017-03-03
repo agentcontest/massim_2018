@@ -3,6 +3,7 @@ package massim.scenario.city.data;
 import massim.protocol.scenario.city.data.ItemAmountData;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -76,12 +77,31 @@ public class ItemBox {
     }
 
     /**
-     * @return a list of all items with their stored amounts (if that amount is > 0)
+     * @return a list of all items with their stored quantities (if that amount is > 0)
      */
     public List<ItemAmountData> toItemAmountData(){
         return items.entrySet().stream()
                 .filter(e -> e.getValue() > 0)
                 .map(e -> new ItemAmountData(e.getKey().getName(), e.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Applys the given consumer to all pairs of items with their quantities in this box.
+     * @param consumer the consumer to process the data
+     */
+    public void forEach(BiConsumer<Item, Integer> consumer){
+        items.forEach(consumer);
+    }
+
+    /**
+     * @param compareBox another box
+     * @return true, if all item quantities in this box are at least present in a given other box
+     */
+    public boolean isSubset(ItemBox compareBox){
+        for(Item item: getStoredTypes()){
+            if(compareBox.getItemCount(item) < getItemCount(item)) return false;
+        }
+        return true;
     }
 }
