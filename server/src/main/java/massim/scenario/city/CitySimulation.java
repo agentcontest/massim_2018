@@ -155,7 +155,7 @@ public class CitySimulation extends AbstractSimulation {
                 // add active regular jobs and auction jobs in auctioning phase
                 .filter(job -> ( (!(job instanceof AuctionJob)) && job.isActive() )
                             || ( job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
-                .map(job -> job.toJobData(false))
+                .map(job -> job.toJobData(false, false))
                 .collect(Collectors.toList());
 
         Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
@@ -166,7 +166,7 @@ public class CitySimulation extends AbstractSimulation {
                     .filter(job -> job instanceof AuctionJob
                             && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                             && job.isActive())
-                    .forEach(job -> teamJobs.add(job.toJobData(true)));
+                    .forEach(job -> teamJobs.add(job.toJobData(true, false)));
         });
 
         // create and deliver percepts
@@ -356,7 +356,7 @@ public class CitySimulation extends AbstractSimulation {
                 buildChargingStationData(),
                 buildDumpData(),
                 world.getJobs().stream()
-                        .map(job -> job.toJobData(true))
+                        .map(job -> job.toJobData(true, true))
                         .collect(Collectors.toList()),
                 world.getStorages().stream()
                         .map(s -> s.toStorageData(world.getTeams().stream()

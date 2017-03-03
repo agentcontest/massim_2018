@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  */
 public class Job {
 
-    public final static String POSTER_SYSTEM = "system";
-
     private final static AtomicInteger counter = new AtomicInteger();
 
     JobStatus status = JobStatus.FUTURE;
@@ -174,18 +172,20 @@ public class Job {
     /**
      * @param withDelivered whether info on which items where delivered by which team should be included
      *                      (i.e whether {@link JobData#deliveredItems} should be filled)
+     * @param withPoster whether poster info should be included
      * @return a data object of this job for serialization
      */
-    public JobData toJobData(boolean withDelivered){
+    public JobData toJobData(boolean withDelivered, boolean withPoster){
         return new JobData(name, storage.getName(), endStep, reward, requiredItems.entrySet().stream()
                 .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
                 .collect(Collectors.toList()),
-                withDelivered? getDeliveredData() : null
+                withDelivered? getDeliveredData() : null,
+                withPoster? getPoster() : null
         );
     }
 
     /**
-     * @return who created/posted this job ({@link #POSTER_SYSTEM or any team name})
+     * @return who created/posted this job ({@link JobData#POSTER_SYSTEM or any team name})
      */
     public String getPoster(){
         return poster;

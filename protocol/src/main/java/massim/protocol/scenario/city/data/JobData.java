@@ -11,6 +11,8 @@ import java.util.Vector;
 @XmlAccessorType(XmlAccessType.NONE)
 public class JobData {
 
+    public static final String POSTER_SYSTEM = "system";
+
     @XmlAttribute
     private String id;
 
@@ -22,6 +24,9 @@ public class JobData {
 
     @XmlAttribute
     private int reward;
+
+    @XmlAttribute
+    private String poster;
 
     @XmlElement(name = "required")
     private List<ItemAmountData> requiredItems = new Vector<>();
@@ -44,15 +49,17 @@ public class JobData {
      * @param end end step
      * @param reward reward amount
      * @param requiredItems items required for job completion
+     * @param poster the job's origin
      */
     public JobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems,
-                   List<CompletionData> deliveredItems) {
+                   List<CompletionData> deliveredItems, String poster) {
         id = name;
         this.storage = storage;
         this.end = end;
         this.reward = reward;
         if(requiredItems != null) this.requiredItems.addAll(requiredItems);
         this.deliveredItems = deliveredItems;
+        this.poster = poster;
     }
 
     /**
@@ -96,6 +103,13 @@ public class JobData {
      */
     public List<CompletionData> getDeliveredItems(){
         return deliveredItems;
+    }
+
+    /**
+     * @return the poster of this job or an empty string if that info is not available
+     */
+    public String getPoster(){
+        return poster == null? "" : poster;
     }
 
     /**

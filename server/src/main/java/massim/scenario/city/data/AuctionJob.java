@@ -31,7 +31,7 @@ public class AuctionJob extends Job{
      * @param fine the amount of money the assigned team has to pay if it does not finish the job in time
      */
     public AuctionJob(int reward, Storage storage, int begin, int end, int auctionTime, int fine) {
-        super(reward, storage, begin, end, POSTER_SYSTEM); // auctions can only be created by the system
+        super(reward, storage, begin, end, JobData.POSTER_SYSTEM); // auctions can only be created by the system
         this.auctionTime = auctionTime;
         this.fine = fine;
     }
@@ -81,13 +81,6 @@ public class AuctionJob extends Job{
     }
 
     /**
-     * @return the currently lowest bid for this job (may be null)
-     */
-    public Integer getLowestBid(){
-        return lowestBid;
-    }
-
-    /**
      * Bids a certain reward for this job.
      * @param team the team that is bidding
      * @param amount the amount to bid
@@ -99,13 +92,6 @@ public class AuctionJob extends Job{
         }
     }
 
-    /**
-     * @return the team that currently holds the lowest bid or an empty string, if no team has posted a valid bid yet
-     */
-    public String getCurrentAuctionWinner(){
-        return currentAuctionWinner != null? currentAuctionWinner.getName(): "";
-    }
-
     @Override
     public void terminate(){
         if(!(status == JobStatus.COMPLETED) && assignedTeam != null){
@@ -114,20 +100,14 @@ public class AuctionJob extends Job{
         super.terminate();
     }
 
-    /**
-     * @return the fine associated with this auction job
-     */
-    public int getFine() {
-        return fine;
-    }
-
     @Override
-    public JobData toJobData(boolean withDelivered){
+    public JobData toJobData(boolean withDelivered, boolean withPoster){
         return new AuctionJobData(getName(), getStorage().getName(), getEndStep(), getReward(),
                 getRequiredItems().entrySet().stream()
                     .map(entry -> new ItemAmountData(entry.getKey().getName(), entry.getValue()))
                     .collect(Collectors.toList()),
                 fine, lowestBid, auctionTime,
-                withDelivered? getDeliveredData() : null);
+                withDelivered? getDeliveredData() : null,
+                withPoster? getPoster() : null);
     }
 }
