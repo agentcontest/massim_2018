@@ -12,8 +12,8 @@ public class Tool extends Item{
 
     private Set<String> roles = new HashSet<>();
 
-    public Tool(String id, int volume, String ... roles){
-        super(id, volume, new HashSet<>());
+    public Tool(String id, int volume, int value, String ... roles){
+        super(id, volume, value, new HashSet<>());
         this.roles.addAll(Arrays.asList(roles));
     }
 

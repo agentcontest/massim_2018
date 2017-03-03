@@ -13,11 +13,15 @@ public class Item {
     private int volume;
     private Map<Item, Integer> requiredItems = new HashMap<>();
     private Set<Tool> toolsNeeded = new HashSet<>();
+    private int value;
+    private int assembleValue;
 
-    public Item(String id, int volume, Set<Tool> tools){
+    public Item(String id, int volume, int value, Set<Tool> tools){
         this.id = id;
         this.volume = volume;
         toolsNeeded.addAll(tools);
+        this.value = value;
+        this.assembleValue = 0;
     }
 
     /**
@@ -62,5 +66,28 @@ public class Item {
      */
     public boolean needsAssembly(){
         return requiredItems.keySet().size() > 0 || toolsNeeded.size() > 0;
+    }
+
+    /**
+     * @return the item's value
+     */
+    public int getValue(){ return value; }
+
+    /**
+     * @return the item's assembleValue
+     */
+    public int getAssembleValue(){
+        if(assembleValue==0){
+            if(needsAssembly()){
+                int aValue = 1;
+                for(Item item: requiredItems.keySet()){
+                    aValue = aValue + requiredItems.get(item) * (item.getAssembleValue());
+                }
+                this.assembleValue = aValue;
+                return aValue;
+            }
+            return 0;
+        }
+        return assembleValue;
     }
 }

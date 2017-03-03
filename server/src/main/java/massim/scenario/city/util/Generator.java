@@ -139,6 +139,7 @@ public class Generator {
         for(int i=0; i<toolAmount; i++){
             String name = "tool"+i;
             int volume = RNG.nextInt((maxVol-minVol)+1) + minVol;
+            int value = RNG.nextInt((valueMax-valueMin) + 1) + valueMin;
             String role1;
             String role2;
             int randomRole = RNG.nextInt(roles.size());
@@ -155,13 +156,13 @@ public class Generator {
                 randomRole = RNG.nextInt(roles.size());
                 if(roles.get(randomRole).getMaxLoad()>volume) {
                     role2=roles.get(randomRole).getName();
-                    tools.add(new Tool(name, volume, role1, role2));
-                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " roles=" + tools.get(i).getRoles());
+                    tools.add(new Tool(name, volume, value, role1, role2));
+                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() + " roles=" + tools.get(i).getRoles());
                     continue;
                 }
             }
-            tools.add(new Tool(name, volume, roles.get(randomRole).getName()));
-            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " roles=" + tools.get(i).getRoles());
+            tools.add(new Tool(name, volume, value, roles.get(randomRole).getName()));
+            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() + " roles=" + tools.get(i).getRoles());
         }
 
         //add tools to roles
@@ -191,14 +192,14 @@ public class Generator {
 
         //generate base items
         for(int i=0; i<=baseItemAmount-1;i++){
-            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol, new HashSet<>());
+            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol, RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
             items.add(item);
             baseItems.add(item);
         }
 
         //generate resources
         for(int i=0; i<=resourcesAmount-1;i++){
-            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol, new HashSet<>());
+            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol,RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
             items.add(item);
             resources.add(item);
             baseItems.add(item);
@@ -230,8 +231,13 @@ public class Generator {
                 requiredAmount = requiredAmount - 1;
                 //get list of possible levels and possible items
                 Vector<Vector<Item>> possibleLevels = new Vector<>();
-                for (int k = 0; k < i; k++) {
-                    possibleLevels.add(itemGraph.get(k));
+                if(i - 1 == 0){
+                    possibleLevels.add(itemGraph.get(0));
+                }else{
+                    //only use items up to level i-2 to avoid high assembleValues
+                    for (int k = 0; k < i-1; k++) {
+                        possibleLevels.add(itemGraph.get(k));
+                    }
                 }
                 ArrayList<Item> possibleItems = new ArrayList<>();
                 for (Vector<Item> level : possibleLevels) {
@@ -256,7 +262,7 @@ public class Generator {
                     }
                 }
 
-                //compute volume of assembled item
+                //calculate volume of assembled item
                 int volume = 0;
                 for(Item reqItem: requiredItems.keySet()){
                     volume= volume + (reqItem.getVolume() * requiredItems.get(reqItem));
@@ -269,13 +275,14 @@ public class Generator {
                 }
 
                 //generate assembled item
-                Item item = new Item("item"+counter, volume, new HashSet<>());
+                Item item = new Item("item"+counter, volume, 0, new HashSet<>());
                 for(Item reqItem: requiredItems.keySet()){
                     item.addRequirement(reqItem, requiredItems.get(reqItem));
                 }
                 for(Tool reqTool: requiredTools){
                     item.addRequiredTool(reqTool);
                 }
+                item.getAssembleValue();
                 items.add(item);
                 levelItems.add(item);
                 counter++;
@@ -289,14 +296,14 @@ public class Generator {
             for(Item item: itemList){
                 Vector<String> reqItems = new Vector<>();
                 for(Item reqItem: item.getRequiredItems().keySet()){
-                    reqItems.add(reqItem.getName());
+                    reqItems.add(new String(item.getRequiredItems().get(reqItem) + "x " + reqItem.getName()));
                     //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
                 }
                 Vector<String> reqTools = new Vector<>();
                 for(Tool reqTool: item.getRequiredTools()){
                     reqTools.add(reqTool.getName());
                 }
-                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() + " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
+                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() + " value=" + item.getValue() + " assembleValue=" + item.getAssembleValue() + " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
             }
             counter2++;
         }
