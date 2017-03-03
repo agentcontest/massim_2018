@@ -506,6 +506,17 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
+                // check if team has reached post limit
+                String team = world.getTeamForAgent(agent);
+                long postedJobs = world.getJobs().stream()
+                        .filter(j -> j.getPoster().equals(team))
+                        .filter(Job::isActive)
+                        .count();
+                if(postedJobs > world.getPostJobLimit()){
+                    entity.setLastActionResult(FAILED_JOB_STATUS);
+                    break;
+                }
+                // check item requirements
                 Map<Item, Integer> requirements = new HashMap<>();
                 for (int i = 3; i < params.size(); i += 2){
                     item = world.getItem(params.get(i));
