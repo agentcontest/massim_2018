@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
  */
 public class Job {
 
+    public final static String POSTER_SYSTEM = "system";
+
     private final static AtomicInteger counter = new AtomicInteger();
 
     JobStatus status = JobStatus.FUTURE;
@@ -23,6 +25,7 @@ public class Job {
     private int reward;
     private int beginStep;
     private int endStep;
+    private String poster;
 
     private Map<Item, Integer> requiredItems = new HashMap<>();
     private Map<String, ItemBox> deliveredItems = new HashMap<>();
@@ -33,12 +36,14 @@ public class Job {
      * @param storage the storage associated with this job
      * @param begin in which step to start the job
      * @param end the last step of the job
+     * @param poster the origin of the job (the system or any team)
      */
-    public Job(int reward, Storage storage, int begin, int end){
+    public Job(int reward, Storage storage, int begin, int end, String poster){
         this.reward = reward;
         this.storage = storage;
         this.beginStep = begin;
         this.endStep = end;
+        this.poster = poster;
     }
 
     public boolean isActive(){
@@ -180,9 +185,16 @@ public class Job {
     }
 
     /**
+     * @return who created/posted this job ({@link #POSTER_SYSTEM or any team name})
+     */
+    public String getPoster(){
+        return poster;
+    }
+
+    /**
      * @return a snapshot of the currently delivered items
      */
-    protected List<JobData.CompletionData> getDeliveredData(){
+    List<JobData.CompletionData> getDeliveredData(){
         return deliveredItems.entrySet().stream()
                 .map(e -> new JobData.CompletionData(
                         e.getKey(),

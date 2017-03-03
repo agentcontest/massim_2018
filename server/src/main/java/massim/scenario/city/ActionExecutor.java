@@ -522,7 +522,7 @@ public class ActionExecutor {
                     requirements.put(item, amount);
                 }
                 // create job with the parsed details (starting next step)
-                job = new Job(reward, (Storage) fac, stepNo + 1, stepNo + duration);
+                job = new Job(reward, (Storage) fac, stepNo + 1, stepNo + duration, world.getTeamForAgent(agent));
                 requirements.entrySet().forEach(e -> job.addRequiredItem(e.getKey(), e.getValue()));
                 world.addJob(job);
                 break;

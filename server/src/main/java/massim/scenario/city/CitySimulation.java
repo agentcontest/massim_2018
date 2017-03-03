@@ -410,10 +410,10 @@ public class CitySimulation extends AbstractSimulation {
      * @param start when the job should start. if the step has already passed, the job will not be activated at all
      * @param end the job's deadline
      */
-    public void simAddJob(Map<String, Integer> requirements, int reward, String storageName, int start, int end){
+    public void simAddJob(Map<String, Integer> requirements, int reward, String storageName, int start, int end, String poster){
         Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
         if(!storage.isPresent()) return;
-        Job job = new Job(reward, storage.get(), start, end);
+        Job job = new Job(reward, storage.get(), start, end, poster);
         requirements.forEach((itemName, amount) -> {
             Item item = world.getItem(itemName);
             if(item == null) return;

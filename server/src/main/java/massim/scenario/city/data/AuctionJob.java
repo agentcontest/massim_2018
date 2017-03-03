@@ -31,7 +31,7 @@ public class AuctionJob extends Job{
      * @param fine the amount of money the assigned team has to pay if it does not finish the job in time
      */
     public AuctionJob(int reward, Storage storage, int begin, int end, int auctionTime, int fine) {
-        super(reward, storage, begin, end);
+        super(reward, storage, begin, end, POSTER_SYSTEM); // auctions can only be created by the system
         this.auctionTime = auctionTime;
         this.fine = fine;
     }
