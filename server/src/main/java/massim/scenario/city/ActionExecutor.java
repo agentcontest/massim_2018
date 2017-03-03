@@ -71,8 +71,9 @@ public class ActionExecutor {
      * Execute an action for a given agent.
      * @param agent the name of the agent
      * @param actions the actions of all agents
+     * @param stepNo the current step
      */
-    void execute(String agent, Map<String, Action> actions) {
+    void execute(String agent, Map<String, Action> actions, int stepNo) {
 
         Entity entity = world.getEntity(agent);
 
@@ -467,18 +468,65 @@ public class ActionExecutor {
 
             case CONTINUE:
             case SKIP:
-                if (entity.getRoute() != null){
+                if (entity.getRoute() != null)
                     entity.setLastActionResult(entity.advanceRoute()? SUCCESSFUL : FAILED_NO_ROUTE);
-                    break;
-                }
-                else{ // nothing happens successfully
+                else // nothing happens successfully
                     entity.setLastActionResult(SUCCESSFUL);
-                    break;
-                }
+                break;
+
             case ABORT:
                 entity.clearRoute();
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
+
+            case POST_JOB:
+                if(params.size() < 5 || params.size() % 2 == 0){ // needs at least 5 parameters (and an odd number)
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                int reward = -1;
+                int duration = -1;
+                try{
+                    reward = Integer.parseInt(params.get(0));
+                    duration = Integer.parseInt(params.get(1));
+                } catch (NumberFormatException ignored){}
+                if(reward < 1 || duration < 1){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                Facility fac = world.getFacility(params.get(2));
+                if(fac == null){
+                    entity.setLastActionResult(FAILED_UNKNOWN_FACILITY);
+                    break;
+                }
+                else if(!(fac instanceof Storage)){
+                    entity.setLastActionResult(FAILED_WRONG_FACILITY);
+                    break;
+                }
+                Map<Item, Integer> requirements = new HashMap<>();
+                for (int i = 3; i < params.size(); i += 2){
+                    item = world.getItem(params.get(i));
+                    if(item == null){
+                        entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
+                        break;
+                    }
+                    amount = -1;
+                    try{
+                        amount = Integer.parseInt(params.get(i + 1));
+                    } catch(NumberFormatException ignored){}
+                    if(amount < 1){
+                        entity.setLastActionResult(FAILED_ITEM_AMOUNT);
+                        break;
+                    }
+                    // if an item is listed multiple times, only one occurrence is used
+                    requirements.put(item, amount);
+                }
+                // create job with the parsed details (starting next step)
+                job = new Job(reward, (Storage) fac, stepNo + 1, stepNo + duration);
+                requirements.entrySet().forEach(e -> job.addRequiredItem(e.getKey(), e.getValue()));
+                world.addJob(job);
+                break;
+
             default:
                 entity.setLastAction(Action.STD_UNKNOWN_ACTION);
                 entity.setLastActionResult(FAILED);

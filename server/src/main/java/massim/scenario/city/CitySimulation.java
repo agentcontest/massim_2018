@@ -278,7 +278,7 @@ public class CitySimulation extends AbstractSimulation {
         RNG.shuffle(agents);
         actionExecutor.preProcess();
         for(String agent: agents)
-            actionExecutor.execute(agent, actions);
+            actionExecutor.execute(agent, actions, stepNo);
         actionExecutor.postProcess();
         world.getShops().forEach(Shop::step);
 
