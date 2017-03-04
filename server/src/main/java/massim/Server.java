@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -57,8 +56,7 @@ public class Server {
 
                 case "-conf":
                     try {
-                        server.config = parseServerConfig(new JSONObject(new String(Files.readAllBytes(Paths.get(args[++i])),
-                                StandardCharsets.UTF_8)));
+                        server.config = parseServerConfig(IOUtil.readJSONObjectWithImport(args[++i]));
                     } catch (java.io.IOException e) {
                         e.printStackTrace();
                         Log.log(Log.Level.ERROR, "Could not read massim.config file.");

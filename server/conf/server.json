@@ -1,0 +1,14 @@
+{
+  "tournamentMode" : "round-robin",
+  "teamsPerMatch" : 3,
+  "teamSize" : 6,
+  "launch" : "key",
+  "port" : 12300,
+  "backlog" : 10000,
+  "agentTimeout" : 4000,
+  "resultPath" : "results",
+  "logLevel" : "normal",
+  "logPath" : "logs",
+  "replayPath" : "replays",
+  "maxPacketLength" : 65536
+}

@@ -1,18 +1,5 @@
 {
-  "server" : {
-    "tournamentMode" : "round-robin",
-    "teamsPerMatch" : 3,
-    "teamSize" : 6,
-    "launch" : "key",
-    "port" : 12300,
-    "backlog" : 10000,
-    "agentTimeout" : 4000,
-    "resultPath" : "results",
-    "logLevel" : "normal",
-    "logPath" : "logs",
-    "replayPath" : "replays",
-    "maxPacketLength" : 65536
-  },
+  "server" : "$(server.json)",
 
   "manual-mode" : [
     ["A", "B", "C"],
@@ -116,45 +103,10 @@
   ],
 
   "teams" : {
-    "A" : {
-      "agentA1": "1",
-      "agentA2": "1",
-      "agentA3": "1",
-      "agentA4": "1",
-      "agentA5": "1",
-      "agentA6": "1"
-    },
-    "B" : {
-      "agentB1": "1",
-      "agentB2": "1",
-      "agentB3": "1",
-      "agentB4": "1",
-      "agentB5": "1",
-      "agentB6": "1"
-    },
-    "C" : {
-      "agentC1": "1",
-      "agentC2": "1",
-      "agentC3": "1",
-      "agentC4": "1",
-      "agentC5": "1",
-      "agentC6": "1"
-    },
-    "D" : {
-      "agentD1": "1",
-      "agentD2": "1",
-      "agentD3": "1",
-      "agentD4": "1",
-      "agentD5": "1",
-      "agentD6": "1"
-    },
-    "E" : {
-      "agentE1": "1",
-      "agentE2": "1",
-      "agentE3": "1",
-      "agentE4": "1",
-      "agentE5": "1",
-      "agentE6": "1"
-    }
+    "A" : "$(teams/A.json)",
+    "B" : "$(teams/B.json)",
+    "C" : "$(teams/C.json)",
+    "D" : "$(teams/D.json)",
+    "E" : "$(teams/E.json)"
   }
 }
