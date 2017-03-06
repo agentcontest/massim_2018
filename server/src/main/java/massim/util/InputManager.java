@@ -20,7 +20,7 @@ public class InputManager {
      * Starts listening on standard input
      */
     public void start() {
-        Thread scanningThread = new Thread(() -> {
+        new Thread(() -> {
             String line;
             while (!stopped) {
                 try {
@@ -39,8 +39,7 @@ public class InputManager {
                     inputQueue.offer(line);
                 }
             }
-        });
-        scanningThread.start();
+        }).start();
     }
 
     /**
