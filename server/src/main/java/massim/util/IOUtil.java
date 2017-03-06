@@ -25,7 +25,7 @@ public abstract class IOUtil {
     /**
      * Matches all shortest occurrences of "$(...)".
      */
-    private static Pattern pattern = Pattern.compile("\\$\\(([^$]*)??\\)"); //
+    private static Pattern pattern = Pattern.compile("\"\\$\\(([^$]*)??\\)\""); //
 
     /**
      * Tries to read a JSON object from the given file/path.

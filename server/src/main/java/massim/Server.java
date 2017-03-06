@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -108,8 +107,7 @@ public class Server {
                     }
                 }
                 try {
-                    server.config = parseServerConfig(
-                            new JSONObject(new String( Files.readAllBytes(Paths.get(confFiles[confNum].toURI())))));
+                    server.config = parseServerConfig(IOUtil.readJSONObjectWithImport(confFiles[confNum].getPath()));
                 } catch (IOException e) {
                     Log.log(Log.Level.ERROR, "Could not read massim.config file, exiting MASSim");
                     System.exit(0);
