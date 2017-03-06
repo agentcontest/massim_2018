@@ -12,6 +12,7 @@ import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
 import massim.util.IOUtil;
+import massim.util.InputManager;
 import massim.util.Log;
 import massim.util.RNG;
 import org.json.JSONArray;
@@ -33,9 +34,9 @@ import java.util.stream.IntStream;
  */
 public class Server {
 
-    private Vector<String> commandQueue = new Vector<>();
     private ServerConfig config;
 
+    private final InputManager inputManager = new InputManager();
     private LoginManager loginManager;
     private AgentManager agentManager;
     private Monitor monitor;
@@ -46,6 +47,7 @@ public class Server {
     private boolean stopped = false;
 
     public static void main(String[] args){
+
         Server server = new Server();
 
         boolean monitor = false;
@@ -133,7 +135,7 @@ public class Server {
      */
     private void go(){
 
-        //setup logging
+        //setup text I/O
         switch(config.logLevel){
             case "debug": Log.setLogLevel(Log.Level.DEBUG); break;
             case "error": Log.setLogLevel(Log.Level.ERROR); break;
@@ -146,6 +148,7 @@ public class Server {
             if(!dir.exists()) dir.mkdirs();
             Log.setLogFile(logFile);
         }
+        inputManager.start();
 
         // setup backend
         agentManager = new AgentManager(config.teams, config.agentTimeout, config.maxPacketLength);
@@ -163,9 +166,9 @@ public class Server {
         // delay tournament start according to launch type
         if (config.launch.equals("key")){
             Log.log(Log.Level.NORMAL,"Please press ENTER to start the tournament.");
-            try {
-                System.in.read();
-            } catch (IOException ignored) {}
+            synchronized (inputManager) {
+                try {inputManager.wait();} catch (InterruptedException ignored) {}
+            }
         }
         else if(config.launch.endsWith("s")){
             try{
@@ -302,6 +305,9 @@ public class Server {
 
         // write match result to file
         IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
+
+        // terminate everything
+        inputManager.stop();
     }
 
     /**
