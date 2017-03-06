@@ -61,10 +61,20 @@
         "facilities" : {
           "quadSize" : 0.04,
           "chargingStations" : {
-            "density" : 0.9
+            "density" : 0.9,
+            "rateMin" : 50,
+            "rateMax" : 150
           },
           "shops" : {
-            "density" : 0.8
+            "density" : 0.8,
+            "minProd" : 3,
+            "maxProd" : 10,
+            "amountMin" : 5,
+            "amountMax" : 20,
+            "priceAddMin" : 100,
+            "priceAddMax" : 150,
+            "restockMin" : 1,
+            "restockMax" : 5
           },
           "dumps" : {
             "density" : 0.6
@@ -73,7 +83,9 @@
             "density" : 0.6
           },
           "storage" : {
-            "density" : 0.8
+            "density" : 0.8,
+            "capacityMin" : 7500,
+            "capacityMax" : 15000
           }
         },
         "items" : {

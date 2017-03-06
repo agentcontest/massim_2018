@@ -15,6 +15,30 @@ import java.util.stream.Collectors;
  */
 public class Generator {
 
+    private double quadSize;
+
+    private double chargingDensity;
+    private int rateMin;
+    private int rateMax;
+
+    private double shopDensity;
+    private int minProd;
+    private int maxProd;
+    private int amountMin;
+    private int amountMax;
+    private int priceAddMin;
+    private int priceAddMax;
+    private int restockMin;
+    private int restockMax;
+
+    private double dumpDensity;
+
+    private double workshopDensity;
+
+    private double storageDensity;
+    private int capacityMin;
+    private int capacityMax;
+
     private int baseItemsMin;
     private int baseItemsMax;
     private int levelDecreaseMin;
@@ -48,22 +72,77 @@ public class Generator {
         if(facilities == null){
             Log.log(Log.Level.ERROR, "No facilities in configuration.");
         }else {
+            quadSize = facilities.optDouble("quadSize", 0.4);
+            Log.log(Log.Level.NORMAL, "Configuring facilities quadSize: " + quadSize);
 
             //parse charging stations
             JSONObject chargingStations = facilities.optJSONObject("chargingStations");
             if (chargingStations == null) {
                 Log.log(Log.Level.ERROR, "No charging stations in configuration.");
             } else {
-                String density = chargingStations.optString("density", "0.8");
-                Log.log(Log.Level.NORMAL, "Configuring facilities charging station density: " + density);
+                chargingDensity = chargingStations.optDouble("density", 0.9);
+                Log.log(Log.Level.NORMAL, "Configuring facilities charging station density: " + chargingDensity);
+                rateMin = chargingStations.optInt("rateMin", 50);
+                Log.log(Log.Level.NORMAL, "Configuring facilities charging station rateMin: " + rateMin);
+                rateMax = chargingStations.optInt("rateMax", 150);
+                Log.log(Log.Level.NORMAL, "Configuring facilities charging station rateMax: " + rateMax);
             }
+
             //parse shops
+            JSONObject shops = facilities.optJSONObject("shops");
+            if (shops == null) {
+                Log.log(Log.Level.ERROR, "No shops in configuration.");
+            } else {
+                shopDensity = shops.optDouble("density", 0.8);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop density: " + shopDensity);
+                minProd = shops.optInt("minProd", 3);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop minProd: " + minProd);
+                maxProd = shops.optInt("maxProd", 10);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop maxProd: " + maxProd);
+                amountMin = shops.optInt("amountMin", 5);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop amountMin: " + amountMin);
+                amountMax = shops.optInt("amountMax", 20);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop amountMax: " + amountMax);
+                priceAddMin = shops.optInt("priceAddMin", 100);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop priceAddMin: " + priceAddMin);
+                priceAddMax = shops.optInt("priceAddMax", 150);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop priceAddMax: " + priceAddMax);
+                restockMin = shops.optInt("restockMin", 1);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop restockMin: " + restockMin);
+                restockMax = shops.optInt("restockMax", 5);
+                Log.log(Log.Level.NORMAL, "Configuring facilities shop restockMax: " + restockMax);
+            }
 
             //parse dumps
+            JSONObject dumps = facilities.optJSONObject("dumps");
+            if (dumps == null) {
+                Log.log(Log.Level.ERROR, "No dumps in configuration.");
+            } else {
+                dumpDensity = dumps.optDouble("density", 0.6);
+                Log.log(Log.Level.NORMAL, "Configuring facilities dump density: " + dumpDensity);
+            }
 
             //parse workshops
+            JSONObject workshops = facilities.optJSONObject("workshops");
+            if (workshops == null) {
+                Log.log(Log.Level.ERROR, "No workshops in configuration.");
+            } else {
+                workshopDensity = workshops.optDouble("density", 0.6);
+                Log.log(Log.Level.NORMAL, "Configuring facilities workshops density: " + workshopDensity);
+            }
 
             //parse storage
+            JSONObject storage = facilities.optJSONObject("storage");
+            if (storage == null) {
+                Log.log(Log.Level.ERROR, "No storage in configuration.");
+            } else {
+                storageDensity = storage.optDouble("density", 0.8);
+                Log.log(Log.Level.NORMAL, "Configuring facilities storage density: " + storageDensity);
+                capacityMin = storage.optInt("capacityMin", 7000);
+                Log.log(Log.Level.NORMAL, "Configuring facilities storage capacityMin: " + capacityMin);
+                capacityMax = storage.optInt("capacityMax", 10000);
+                Log.log(Log.Level.NORMAL, "Configuring facilities storage capacityMax: " + capacityMax);
+            }
         }
 
         //parse items
@@ -312,7 +391,7 @@ public class Generator {
     }
 
     public List<Facility> generateFacilities(List<Item> items, WorldState world) {
-        //TODO implement for real
+        /*//TODO implement for real
         //TODO ensure facilities have different locations
         List<Facility> result = new Vector<>();
         ChargingStation ch = new ChargingStation("Chargez", getRandomLocation(world), 100);
@@ -327,7 +406,39 @@ public class Generator {
         Shop shop = new Shop("Shop", getRandomLocation(world), 1);
         shop.addItem(items.get(0), 3, 17171717);
         result.add(shop);
-        return result;
+        return result;*/
+
+        List<Facility> facilities = new Vector<>();
+        Set<Location> locations = new HashSet<>();
+
+        //TODO generate charging stations
+        ChargingStation charging1 = new ChargingStation("ChargingStation1", getUniqueLocation(locations, world), RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
+        facilities.add(charging1);
+        locations.add(charging1.getLocation());
+
+        //TODO generate shops
+        Shop shop1 = new Shop("Shop1", getUniqueLocation(locations, world),RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
+        shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+        facilities.add(shop1);
+        locations.add(shop1.getLocation());
+
+        //TODO generate dumps
+        Dump dump1 = new Dump("Dump1", getUniqueLocation(locations, world));
+        facilities.add(dump1);
+        locations.add(dump1.getLocation());
+
+        //TODO generate workshops
+        Workshop workshop1 = new Workshop("Workshop1", getUniqueLocation(locations, world));
+        facilities.add(workshop1);
+        locations.add(workshop1.getLocation());
+
+        //TODO generate storage
+        Storage storage1 = new Storage("Storage1", getUniqueLocation(locations, world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+                world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
+        facilities.add(storage1);
+        locations.add(storage1.getLocation());
+
+        return facilities;
     }
 
     /**
@@ -337,6 +448,18 @@ public class Generator {
      */
     private Location getRandomLocation(WorldState world){
         return world.getMap().getRandomLocation(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000);
+    }
+
+    private Location getUniqueLocation(Set<Location> locations, WorldState world){
+        Location loc = getRandomLocation(world);
+        for(int i=0; i<100; i++){
+            if(locations.contains(loc)){
+                loc = getRandomLocation(world);
+                continue;
+            }
+            return loc;
+        }
+        return loc;
     }
 
     /**
