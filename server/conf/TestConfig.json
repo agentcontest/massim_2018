@@ -1,5 +1,5 @@
 {
-  "server" : "$(server.json)",
+  "server" : "$(server/server.json)",
 
   "manual-mode" : [
     ["A", "B", "C"],

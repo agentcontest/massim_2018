@@ -83,7 +83,7 @@ public class Server {
         if (server.config == null){
             File confDir = new File("conf");
             confDir.mkdirs();
-            File[] confFiles = confDir.listFiles();
+            File[] confFiles = confDir.listFiles((dir, name) -> name.endsWith(".json"));
             if (confFiles == null || confFiles.length == 0) {
                 Log.log(Log.Level.NORMAL, "No massim.config files to load - exit MASSim.");
                 System.exit(0);
