@@ -39,6 +39,11 @@ public class Generator {
     private int capacityMin;
     private int capacityMax;
 
+    private int perResourceMin;
+    private int perResourceMax;
+    private int resourceAmountMin;
+    private int resourceAmountMax;
+
     private int baseItemsMin;
     private int baseItemsMax;
     private int levelDecreaseMin;
@@ -63,6 +68,9 @@ public class Generator {
 
     private int truckCapacity;
 
+    private Vector<Item> baseItems = new Vector<>();
+    private Vector<Vector<Item>> itemGraph = new Vector<>();
+    private List<Item> resources = new Vector<>();
 
     public Generator(JSONObject randomConf){
         // TODO parse random parameters from config
@@ -142,6 +150,21 @@ public class Generator {
                 Log.log(Log.Level.NORMAL, "Configuring facilities storage capacityMin: " + capacityMin);
                 capacityMax = storage.optInt("capacityMax", 10000);
                 Log.log(Log.Level.NORMAL, "Configuring facilities storage capacityMax: " + capacityMax);
+            }
+
+            //parse resourceNodes
+            JSONObject resourceNodes = facilities.optJSONObject("resourceNodes");
+            if (resourceNodes == null) {
+                Log.log(Log.Level.ERROR, "No resource nodes in configuration.");
+            } else {
+                perResourceMin = resourceNodes.optInt("perResourceMin", 1);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes perResourceMin: " + perResourceMin);
+                perResourceMax = resourceNodes.optInt("perResourceMax", 2);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes perResourceMax: " + perResourceMax);
+                resourceAmountMin = resourceNodes.optInt("amountMin", 2);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes amountMin: " + resourceAmountMin);
+                resourceAmountMax = resourceNodes.optInt("amountMax", 5);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes amountMax: " + resourceAmountMax);
             }
         }
 
@@ -266,9 +289,6 @@ public class Generator {
         int resourcesAmount = RNG.nextInt((resourcesMax-resourcesMin) + 1) + resourcesMin;
 
         List<Item> items = new Vector<>();
-        Vector<Item> baseItems = new Vector<>();
-        Vector<Vector<Item>> itemGraph = new Vector<>();
-        List<Item> resources = new Vector<>();
 
         //generate base items
         for(int i=0; i<=baseItemAmount-1;i++){
@@ -437,6 +457,16 @@ public class Generator {
                 world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
         facilities.add(storage1);
         locations.add(storage1.getLocation());
+
+        //TODO generate resource nodes
+        for(Item resource: resources){
+            int amount = RNG.nextInt((perResourceMax-perResourceMin) + 1) + perResourceMin;
+            for(int i=0; i<amount; i++){
+                ResourceNode node = new ResourceNode("ResourceNode"+i, getUniqueLocation(locations, world), resources.get(resources.lastIndexOf(resource)));
+                facilities.add(node);
+                locations.add(node.getLocation());
+            }
+        }
 
         return facilities;
     }
