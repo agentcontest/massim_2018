@@ -370,19 +370,26 @@ public class CitySimulation extends AbstractSimulation {
         return staticData;
     }
 
-    /**
-     * Gives items to an entity/agent, if both exist and capacity allows.
-     * @param itemName the item type to give
-     * @param agentName the name of the agent to receive the item
-     * @param amount how many items to give
-     * @return true if giving was successful
-     */
-    public boolean simGive(String itemName, String agentName, int amount){
-        Item item = world.getItem(itemName);
-        if(item == null) return false;
-        Entity entity = world.getEntity(agentName);
-        if(entity != null) return entity.addItem(item, amount);
-        return false;
+    @Override
+    public void handleCommand(String[] command) {
+        switch (command[0]){
+            case "give":
+                if(command.length == 4){
+                    Item item = world.getItem(command[1]);
+                    Entity agent = world.getEntity(command[2]);
+                    int amount = -1;
+                    try{amount = Integer.parseInt(command[3]);} catch (NumberFormatException ignored){}
+                    if(item != null && agent != null && amount > 0 ){
+                        if(agent.addItem(item, amount)){
+                            Log.log(Log.Level.NORMAL,
+                                    "Added " + amount + " of item " + command[1] + " to agent " + command[2]);
+                        }
+                        break;
+                    }
+                }
+                Log.log(Log.Level.ERROR, "Invalid give command parameters.");
+                break;
+        }
     }
 
     /**

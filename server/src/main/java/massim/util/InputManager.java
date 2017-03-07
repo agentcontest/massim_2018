@@ -60,4 +60,19 @@ public class InputManager {
         inputQueue.drainTo(inputs);
         return inputs;
     }
+
+    /**
+     * @return the most recent input - blocks until one is available if the input queue is empty
+     * @throws InterruptedException if interrupted while waiting
+     */
+    public String take() throws InterruptedException {
+        return inputQueue.take();
+    }
+
+    /**
+     * @return true if at least one input is buffered and has not been taken yet
+     */
+    public boolean hasInput() {
+        return inputQueue.size() > 0;
+    }
 }

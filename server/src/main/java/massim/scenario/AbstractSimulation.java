@@ -70,4 +70,10 @@ public abstract class AbstractSimulation {
      * @return all world data that does not change during the simulation
      */
     public abstract StaticWorldData getStaticData();
+
+    /**
+     * Handles a given command if supported.
+     * @param command the command to handle
+     */
+    public abstract void handleCommand(String[] command);
 }

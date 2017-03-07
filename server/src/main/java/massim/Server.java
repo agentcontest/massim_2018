@@ -314,24 +314,38 @@ public class Server {
      * @param sim the simulation that may receive some of the commands
      */
     private void handleInputs(AbstractSimulation sim) {
-        Queue<String> inputs = new LinkedList<>(inputManager.takeInputs());
-        while(inputs.size() > 0){
-            String input = inputs.poll();
-            switch(input) {
-                case "pause":
-                    Log.log(Log.Level.NORMAL, "Simulation paused. Type commands or press ENTER to continue.");
-                    synchronized (inputManager) {
-                        try {
-                            inputManager.wait();
-                        } catch (InterruptedException ignored) {}
-                    }
-                    // add possible new inputs
-                    inputs.addAll(inputManager.takeInputs());
-                    break;
-                default:
-                    Log.log(Log.Level.ERROR, "Unknown command: " + input);
+        boolean paused = false;
+        // read inputs if inputs are available or execution is paused
+        while(inputManager.hasInput() || paused){
+            try {
+                String[] inputWords = inputManager.take().split(" ");
+                switch (inputWords[0]) {
+                    case "pause":
+                        paused = true;
+                        Log.log(Log.Level.NORMAL, "Simulation paused. Type further commands or 'continue' to proceed.");
+                        break;
+                    case "continue":
+                        paused = false;
+                        break;
+                    default:
+                        handleCommand(inputWords);
+                        sim.handleCommand(inputWords);
+                        break;
+                }
+            } catch (InterruptedException e) {
+                Log.log(Log.Level.ERROR, "Interrupted while waiting for input.");
+                return;
             }
         }
+    }
+
+    /**
+     * Handles a single command
+     * @param command the already split command string
+     */
+    private void handleCommand(String[] command) {
+        // TODO handle something
+        Log.log(Log.Level.NORMAL, "Command received: " + command[0]);
     }
 
     /**
