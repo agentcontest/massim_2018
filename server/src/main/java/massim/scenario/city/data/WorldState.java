@@ -366,4 +366,11 @@ public class WorldState {
     public int getPostJobLimit(){
         return postJobLimit;
     }
+
+    /**
+     * @return a list of all facilities in this world
+     */
+    public List<Facility> getFacilities(){
+        return new ArrayList<>(facilities.values());
+    }
 }

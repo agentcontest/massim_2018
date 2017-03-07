@@ -429,6 +429,24 @@ public class CitySimulation extends AbstractSimulation {
                 }
                 Log.log(Log.Level.ERROR, "Invalid addJob command parameters.");
                 break;
+            case "print":
+                if(command.length > 1) {
+                    switch (command[1]) {
+                        case "facilities":
+                        case "facs":
+                            world.getFacilities().forEach(f -> Log.log(Log.Level.NORMAL, f.toString()));
+                            break;
+                        case "items":
+                            world.getItems().forEach(i -> Log.log(Log.Level.NORMAL, i.toString()));
+                            break;
+                        default:
+                            Log.log(Log.Level.ERROR, "Invalid print command argument.");
+                    }
+                }
+                else{
+                    Log.log(Log.Level.ERROR, "Invalid print command.");
+                }
+                break;
         }
     }
 }
