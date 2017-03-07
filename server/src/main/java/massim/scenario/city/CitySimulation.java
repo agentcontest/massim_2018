@@ -373,7 +373,7 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public void handleCommand(String[] command) {
         switch (command[0]){
-            case "give":
+            case "give": // "give item0 agentA1 1"
                 if(command.length == 4){
                     Item item = world.getItem(command[1]);
                     Entity agent = world.getEntity(command[2]);
@@ -389,43 +389,46 @@ public class CitySimulation extends AbstractSimulation {
                 }
                 Log.log(Log.Level.ERROR, "Invalid give command parameters.");
                 break;
+            case "store": // "store storage0 item0 A 1"
+                if(command.length == 5){
+                    Facility facility = world.getFacility(command[1]);
+                    Item item = world.getItem(command[2]);
+                    int amount = -1;
+                    try{amount = Integer.parseInt(command[4]);} catch (NumberFormatException ignored){}
+                    if(facility instanceof Storage && item != null && amount > 0){
+                        if(((Storage) facility).store(item, amount, command[3])){
+                            Log.log(Log.Level.NORMAL, "Stored items in " + facility.getName());
+                        }
+                        break;
+                    }
+                }
+                Log.log(Log.Level.ERROR, "Invalid store command parameters.");
+                break;
+            case "addJob": // "addJob 1 2 100 storage0 item0 1 item1 1 ..."
+                if(command.length >= 7 && command.length % 2 == 1){
+                    int start = -1;
+                    try{start = Integer.parseInt(command[1]);} catch (NumberFormatException ignored){}
+                    int end = -1;
+                    try{end = Integer.parseInt(command[2]);} catch (NumberFormatException ignored){}
+                    int reward = -1;
+                    try{reward = Integer.parseInt(command[3]);} catch (NumberFormatException ignored){}
+                    Facility facility = world.getFacility(command[4]);
+                    Map<Item, Integer> requirements = new HashMap<>();
+                    for(int i = 5; i < command.length; i += 2){
+                        Item item = world.getItem(command[i]);
+                        int amount = -1;
+                        try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
+                        if(item != null && amount > 0) requirements.put(item, amount);
+                    }
+                    if(start > 0 && end >= start && reward > 0 && requirements.size() > 0 && facility instanceof Storage) {
+                        Job job = new Job(reward, (Storage) facility, start, end, JobData.POSTER_SYSTEM);
+                        requirements.forEach(job::addRequiredItem);
+                        world.addJob(job);
+                        break;
+                    }
+                }
+                Log.log(Log.Level.ERROR, "Invalid addJob command parameters.");
+                break;
         }
-    }
-
-    /**
-     * Stores items in a storage if both exist.
-     * @param storageName name of a storage
-     * @param itemName name of an item
-     * @param team name of a team
-     * @param amount how many items to store
-     * @return whether storing was successful
-     */
-    public boolean simStore(String storageName, String itemName, String team, int amount){
-        Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
-        if(storage.isPresent()){
-            Item item = world.getItem(itemName);
-            if(item != null) return storage.get().store(item, amount, team);
-        }
-        return false;
-    }
-
-    /**
-     * Adds a job to the simulation. All required items and the storage must exist. Otherwise, the job is not added.
-     * @param requirements the items that need to be delivered to the job
-     * @param reward the reward for completing the job
-     * @param storageName name of the associated storage
-     * @param start when the job should start. if the step has already passed, the job will not be activated at all
-     * @param end the job's deadline
-     */
-    public void simAddJob(Map<String, Integer> requirements, int reward, String storageName, int start, int end, String poster){
-        Optional<Storage> storage = world.getStorages().stream().filter(s -> s.getName().equals(storageName)).findAny();
-        if(!storage.isPresent()) return;
-        Job job = new Job(reward, storage.get(), start, end, poster);
-        requirements.forEach((itemName, amount) -> {
-            Item item = world.getItem(itemName);
-            if(item == null) return;
-            job.addRequiredItem(item, amount);
-        });
-        world.addJob(job);
     }
 }
