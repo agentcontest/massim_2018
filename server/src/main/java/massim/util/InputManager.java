@@ -1,7 +1,5 @@
 package massim.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -48,17 +46,6 @@ public class InputManager {
     public void stop(){
         this.stopped = true;
         scanner.close();
-    }
-
-    /**
-     * Retrieves all inputs made since the last call to this method.
-     * Empty lines are ignored (since they are used to notify waiting threads).
-     * @return a list of all those inputs
-     */
-    public List<String> takeInputs(){
-        List<String> inputs = new ArrayList<>(inputQueue.size());
-        inputQueue.drainTo(inputs);
-        return inputs;
     }
 
     /**
