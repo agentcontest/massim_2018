@@ -128,6 +128,7 @@ public class Server {
     private void close() {
         if (loginManager != null) loginManager.stop();
         if (agentManager != null) agentManager.stop();
+        inputManager.stop();
     }
 
     /**
@@ -305,9 +306,6 @@ public class Server {
 
         // write match result to file
         IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
-
-        // terminate everything
-        inputManager.stop();
     }
 
     /**
