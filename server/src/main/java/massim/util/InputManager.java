@@ -29,14 +29,14 @@ public class InputManager {
                     stopped = true;
                     break;
                 }
-                Log.log(Log.Level.NORMAL, "You typed: " + line);
                 if (line.equals("")) {
                     // notify all threads waiting for an empty line (also known as ENTER)
                     synchronized (this) {
                         InputManager.this.notifyAll();
                     }
                 } else {
-                    inputQueue.offer(line);
+                    Log.log(Log.Level.NORMAL, "You typed: " + line);
+                    inputQueue.add(line);
                 }
             }
         }).start();
@@ -55,7 +55,7 @@ public class InputManager {
      * Empty lines are ignored (since they are used to notify waiting threads).
      * @return a list of all those inputs
      */
-    public synchronized List<String> takeInputs(){
+    public List<String> takeInputs(){
         List<String> inputs = new ArrayList<>(inputQueue.size());
         inputQueue.drainTo(inputs);
         return inputs;

@@ -289,6 +289,7 @@ public class Server {
                 // handle steps
                 for (int i = 0; i < steps; i++){
                     Log.log(Log.Level.NORMAL, "Simulation at step " + i);
+                    handleInputs(sim);
                     Map<String, RequestAction> percepts = sim.preStep(i);
                     Map<String, Action> actions = agentManager.requestActions(percepts);
                     sim.step(i, actions); // execute step with agent actions
@@ -306,6 +307,31 @@ public class Server {
 
         // write match result to file
         IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
+    }
+
+    /**
+     * Takes and processes all inputs from the input manager
+     * @param sim the simulation that may receive some of the commands
+     */
+    private void handleInputs(AbstractSimulation sim) {
+        Queue<String> inputs = new LinkedList<>(inputManager.takeInputs());
+        while(inputs.size() > 0){
+            String input = inputs.poll();
+            switch(input) {
+                case "pause":
+                    Log.log(Log.Level.NORMAL, "Simulation paused. Type commands or press ENTER to continue.");
+                    synchronized (inputManager) {
+                        try {
+                            inputManager.wait();
+                        } catch (InterruptedException ignored) {}
+                    }
+                    // add possible new inputs
+                    inputs.addAll(inputManager.takeInputs());
+                    break;
+                default:
+                    Log.log(Log.Level.ERROR, "Unknown command: " + input);
+            }
+        }
     }
 
     /**
