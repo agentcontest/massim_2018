@@ -191,25 +191,22 @@ public class CityMap implements Serializable {
 	 * @return a random location on the map or the map's center, if no such location could be found
 	 */
 	public Location getRandomLocation(Set<String> roads, int iterations) {
-		Location loc;
-		for (int i = 0; i < iterations; i++) {
-            double latDiff = maxLat - minLat;
-			double lonDiff = maxLon - minLon;
-			double lat = minLat + RNG.nextDouble() * latDiff;
-			double lon = minLon + RNG.nextDouble() * lonDiff;
-			loc = getNearestRoad(new Location(lon, lat));
-			if (isReachable(loc, roads)) return loc;
-		}
-		return center;
+		return getRandomLocationInBounds(roads, iterations, minLat, maxLat, minLon, maxLon);
 	}
 
 	/**
 	 * Tries to find a random location on this map (reachable from the center) within some bounds.
+     * <b>The bounds provided must be within map bounds.</b>
 	 * @param roads if not empty, tries to find a location snapped to these road types (e.g. "road")
 	 * @param iterations if roads param is non-empty: maximum number of attempts to snap a random location to a road
-	 * @return a random location on the map or the map's center, if no such location could be found
+     * @param minLat the minimum latitude the area to search in
+     * @param maxLat the maximum latitude of the area to search in
+     * @param minLon the minimum longitude of the area to search in
+     * @param maxLon the maximum longitude of the area to search in
+     * @return a random location on the map or the map's center, if no such location could be found
 	 */
-	public Location getRandomLocationInBounds(Set<String> roads, int iterations, Location upperLeft, Location bottomRight) {
+	public Location getRandomLocationInBounds(Set<String> roads, int iterations,
+                                              double minLat, double maxLat, double minLon, double maxLon) {
 		Location loc;
 		for (int i = 0; i < iterations; i++) {
 			double latDiff = maxLat - minLat;
