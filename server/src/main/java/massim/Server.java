@@ -267,6 +267,10 @@ public class Server {
 
         JSONObject result = new JSONObject();
         for (JSONObject simConfig: config.simConfigs){
+            // initialize random
+            long randomSeed = simConfig.optLong("randomSeed", System.currentTimeMillis());
+            Log.log(Log.Level.NORMAL, "Configuring random seed: " + randomSeed);
+            RNG.initialize(randomSeed);
             // create and run scenario instance with the given teams
             String className = simConfig.optString("scenarioClass", "");
             if (className.equals("")){
@@ -279,9 +283,6 @@ public class Server {
                                                                 .newInstance();
 
                 int steps = simConfig.optInt("steps", 1000);
-                long randomSeed = simConfig.optLong("randomSeed", System.currentTimeMillis());
-                Log.log(Log.Level.NORMAL, "Configuring random seed: " + randomSeed);
-                RNG.initialize(randomSeed);
 
                 // handle initial state
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
