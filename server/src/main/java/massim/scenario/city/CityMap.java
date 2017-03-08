@@ -203,6 +203,25 @@ public class CityMap implements Serializable {
 		return center;
 	}
 
+	/**
+	 * Tries to find a random location on this map (reachable from the center) within some bounds.
+	 * @param roads if not empty, tries to find a location snapped to these road types (e.g. "road")
+	 * @param iterations if roads param is non-empty: maximum number of attempts to snap a random location to a road
+	 * @return a random location on the map or the map's center, if no such location could be found
+	 */
+	public Location getRandomLocationInBounds(Set<String> roads, int iterations, Location upperLeft, Location bottomRight) {
+		Location loc;
+		for (int i = 0; i < iterations; i++) {
+			double latDiff = maxLat - minLat;
+			double lonDiff = maxLon - minLon;
+			double lat = minLat + RNG.nextDouble() * latDiff;
+			double lon = minLon + RNG.nextDouble() * lonDiff;
+			loc = getNearestRoad(new Location(lon, lat));
+			if (isReachable(loc, roads)) return loc;
+		}
+		return center;
+	}
+
     /**
      * Checks if a location is reachable in this map. Needs to compute two routes for this.
      * @param loc the location to check

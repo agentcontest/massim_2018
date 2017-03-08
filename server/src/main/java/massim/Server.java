@@ -279,7 +279,9 @@ public class Server {
                                                                 .newInstance();
 
                 int steps = simConfig.optInt("steps", 1000);
-                RNG.initialize(simConfig.optLong("randomSeed", System.currentTimeMillis()));
+                long randomSeed = simConfig.optLong("randomSeed", System.currentTimeMillis());
+                Log.log(Log.Level.NORMAL, "Configuring random seed: " + randomSeed);
+                RNG.initialize(randomSeed);
 
                 // handle initial state
                 Map<String, SimStart> initialPercepts = sim.init(steps, simConfig, matchTeams);
