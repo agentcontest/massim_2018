@@ -17,4 +17,9 @@ public class ChargingStation extends Facility {
     public int getRate(){
         return rate;
     }
+
+    @Override
+    public String toString(){
+        return super.toString() + " rate(" + rate + ")";
+    }
 }

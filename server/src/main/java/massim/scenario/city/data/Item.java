@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A product/item in the City scenario.
@@ -89,5 +90,18 @@ public class Item {
             return 0;
         }
         return assembleValue;
+    }
+
+    @Override
+    public String toString(){
+        String ret = "Item " + id + ": \tvol("+volume+")";
+        if(requiredItems.keySet().size() > 0)
+            ret += "\tparts([" + requiredItems.entrySet().stream()
+                .map(e -> "(" + e.getValue() + ", " + e.getKey().getName() + ")")
+                .collect(Collectors.joining(", ")) + "])";
+        if(toolsNeeded.size() > 0)
+            ret += "\ttools([" + toolsNeeded.stream().map(Tool::getName).collect(Collectors.joining(", ")) + "])";
+
+        return ret;
     }
 }

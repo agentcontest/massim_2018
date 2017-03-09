@@ -175,4 +175,9 @@ public class Storage extends Facility{
         }
         return stored;
     }
+
+    @Override
+    public String toString(){
+        return super.toString() + " capacity(" + capacity + ")";
+    }
 }

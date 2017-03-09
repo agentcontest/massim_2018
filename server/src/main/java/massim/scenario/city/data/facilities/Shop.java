@@ -7,6 +7,7 @@ import massim.scenario.city.data.Location;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Shop facility in the City scenario.
@@ -100,5 +101,13 @@ public class Shop extends Facility{
      */
     public int getRestock() {
         return restock;
+    }
+
+    @Override
+    public String toString(){
+        return super.toString() + " restock(" + restock + ") \tstock([" +
+                stock.getStoredTypes().stream()
+                        .map(item -> "("+getItemCount(item) + ", " + item.getName() + ", " + getPrice(item) + ")")
+                        .collect(Collectors.joining(", ")) + "])";
     }
 }
