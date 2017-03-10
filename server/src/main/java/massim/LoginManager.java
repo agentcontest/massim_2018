@@ -127,6 +127,9 @@ class LoginManager {
                         } catch (IOException ignored) {}
                     }
                 }
+                else{
+                    Log.log(Log.Level.ERROR, "Received message content: " + receivedMsg.getContent());
+                }
             }
             else{
                 Log.log(Log.Level.ERROR, "Received wrong message, expected auth-request.");
