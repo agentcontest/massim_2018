@@ -166,11 +166,11 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
             EISEntity entity = EISEntity.createEntity(name, scenario, host, port, username, password);
 
-            if(config.optBoolean("xml", true)){
+            if(jsonEntity.optBoolean("xml", true)){
                 entity.enableXML();
                 Log.log("Enable XML for entity " + entity.getName());
             }
-            if(config.optBoolean("iilang", true)){
+            if(jsonEntity.optBoolean("iilang", true)){
                 entity.enableIILang();
                 Log.log("Enable IILang for entity " + entity.getName());
             }
