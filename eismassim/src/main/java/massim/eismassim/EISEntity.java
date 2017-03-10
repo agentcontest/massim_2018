@@ -467,7 +467,6 @@ public abstract class EISEntity implements Runnable{
      * Sends a document.
      * @param doc the document to be sent
      * @throws IOException if the document could not be sent
-     * @throws IOException if the document could not be transformed for sending
      */
     private void sendDocument(Document doc) throws IOException, TransformerException {
         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(out));
