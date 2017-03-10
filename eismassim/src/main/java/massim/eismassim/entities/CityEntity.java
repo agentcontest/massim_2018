@@ -85,6 +85,7 @@ public class CityEntity extends EISEntity {
         if(!(message.getContent() instanceof CityStepPercept)) return ret; // percept incompatible with entity
         CityStepPercept percept = (CityStepPercept) message.getContent();
 
+        ret.add(new Percept("actionID", new Numeral(percept.getId())));
         ret.add(new Percept("timestamp", new Numeral(message.getTimestamp())));
         ret.add(new Percept("deadline", new Numeral(percept.getDeadline())));
         ret.add(new Percept("step", new Numeral(percept.getSimData().getStep())));
