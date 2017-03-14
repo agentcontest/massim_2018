@@ -22,8 +22,6 @@
       "centerLon" : -0.1112036,
       "proximity" : 0.0002,
       "cellSize" : 0.001,
-      "serviceTime" : 25,
-      "serviceFee" : 500,
       "randomSeed" : 17,
       "randomFail" : 1,
       "postJobLimit": 10,

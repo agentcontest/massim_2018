@@ -140,8 +140,6 @@ public class ActionExecutor {
                     Entity receiverEntity = world.getEntity(receiver);
                     int amount = -1;
                     try { amount = Integer.parseInt(params.get(2)); } catch (NumberFormatException ignored) {}
-                    int volume = 0;
-                    if(item != null) volume = amount * item.getVolume();
 
                     if(receiverEntity == null || amount < 0){
                         entity.setLastActionResult(FAILED_WRONG_PARAM);
@@ -158,7 +156,7 @@ public class ActionExecutor {
                     else if (amount > entity.getItemCount(item)) {
                         entity.setLastActionResult(FAILED_ITEM_AMOUNT);
                     }
-                    else if (receiverEntity.getFreeSpace() < volume) {
+                    else if (receiverEntity.getFreeSpace() < amount * item.getVolume()) {
                         entity.setLastActionResult(FAILED_CAPACITY);
                     }
                     else {
@@ -196,7 +194,7 @@ public class ActionExecutor {
                 try{
                     amount = Integer.parseInt(params.get(1));
                 } catch(NumberFormatException ignored){}
-                if(amount < 0 || amount > entity.getItemCount(item)){
+                if(amount < 1 || amount > entity.getItemCount(item)){
                     entity.setLastActionResult(FAILED_ITEM_AMOUNT);
                     return;
                 }
@@ -241,7 +239,7 @@ public class ActionExecutor {
                 int retrievable = action.getActionType().equals(RETRIEVE)?
                                               storage.getStored(item, world.getTeamForAgent(agent))
                                             : storage.getDelivered(item, world.getTeamForAgent(agent));
-                if (amount < 0 || amount > retrievable){
+                if (amount < 1 || amount > retrievable){
                     entity.setLastActionResult(FAILED_ITEM_AMOUNT);
                     return;
                 }
@@ -322,7 +320,7 @@ public class ActionExecutor {
                 try{
                     amount = Integer.parseInt(params.get(1));
                 } catch(NumberFormatException ignored){}
-                if(amount < 0 || amount > shop.getItemCount(item)){
+                if(amount < 1 || amount > shop.getItemCount(item)){
                     entity.setLastActionResult(FAILED_ITEM_AMOUNT);
                     break;
                 }
@@ -333,6 +331,7 @@ public class ActionExecutor {
                 int price = shop.buy(item, amount);
                 entity.addItem(item, amount);
                 world.getTeam(world.getTeamForAgent(agent)).subMoney(price);
+                entity.setLastActionResult(SUCCESSFUL);
                 break;
 
             case DELIVER_JOB: // 1 param (job)
@@ -443,7 +442,7 @@ public class ActionExecutor {
                 try{
                     amount = Integer.parseInt(params.get(1));
                 } catch(NumberFormatException ignored){}
-                if(amount < 0 || amount > entity.getItemCount(item)){
+                if(amount < 1 || amount > entity.getItemCount(item)){
                     entity.setLastActionResult(FAILED_ITEM_AMOUNT);
                     break;
                 }
@@ -498,11 +497,7 @@ public class ActionExecutor {
                     break;
                 }
                 Facility fac = world.getFacility(params.get(2));
-                if(fac == null){
-                    entity.setLastActionResult(FAILED_UNKNOWN_FACILITY);
-                    break;
-                }
-                else if(!(fac instanceof Storage)){
+                if(fac == null || !(fac instanceof Storage)){
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
@@ -552,7 +547,6 @@ public class ActionExecutor {
      */
     void postProcess(){
         // set last action result for receiver agents
-        receivers.forEach(r -> r.setLastActionResult(SUCCESSFUL));
         world.getEntities().stream()
                 .filter(r -> r.getLastAction().getActionType().equals(RECEIVE))
                 .forEach(r -> r.setLastActionResult(receivers.contains(r)? SUCCESSFUL : FAILED_COUNTERPART));
