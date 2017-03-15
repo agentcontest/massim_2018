@@ -11,10 +11,7 @@ import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
-import massim.util.IOUtil;
-import massim.util.InputManager;
-import massim.util.Log;
-import massim.util.RNG;
+import massim.util.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -309,7 +306,7 @@ public class Server {
         }
 
         // write match result to file
-        IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp()));
+        IOUtil.writeJSONToFile(result, new File(config.resultPath + File.separator + "result_" + timestamp() + ".json"));
     }
 
     /**

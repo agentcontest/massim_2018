@@ -100,6 +100,8 @@ public abstract class IOUtil {
         try {
             FileWriter out = new FileWriter(file);
             out.write(json.toString(4));
+            out.flush();
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
