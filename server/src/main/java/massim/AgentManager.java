@@ -55,7 +55,7 @@ class AgentManager {
      */
     void stop(){
         disconnecting = true;
-        agents.values().parallelStream().forEach(AgentProxy::close);
+        agents.values().forEach(AgentProxy::close);
     }
 
     /**

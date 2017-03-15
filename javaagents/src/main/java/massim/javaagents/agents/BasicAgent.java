@@ -1,6 +1,7 @@
 package massim.javaagents.agents;
 
 import eis.iilang.Identifier;
+import eis.iilang.Numeral;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import massim.javaagents.MailBox;
@@ -34,6 +35,7 @@ public class BasicAgent extends Agent {
                     Parameter param = p.getParameters().getFirst();
                     if(param instanceof Identifier) say("Step " + ((Identifier) param).getValue());
         });
-        return new eis.iilang.Action("skip");
+        //return new eis.iilang.Action("skip");
+        return new eis.iilang.Action("goto", new Numeral(51.6), new Numeral(11));
     }
 }
