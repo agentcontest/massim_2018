@@ -167,6 +167,7 @@ public class CitySimulation extends AbstractSimulation {
                             && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                             && job.isActive())
                     .forEach(job -> teamJobs.add(job.toJobData(true, false)));
+            jobsPerTeam.put(team.getName(), teamJobs);
         });
 
         // create and deliver percepts
