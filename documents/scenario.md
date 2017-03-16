@@ -4,12 +4,7 @@
 
 ### Background Story
 
-_
-In the year 2044, following the great water conflicts of 2033, humankind has finally colonized and terraformed Mars; so much in fact that it greatly (structurally) resembles parts of old Earth.
-Unfortunately, scientists are still working on making the atmosphere breathable, so humans still need (costly) special equipment to leave their homes.
-Luckily, some entrepreneurial individuals found remnants of the old 'All Terrain Planetary Vehicles' which they retrofitted to do some serious business.
-Wanting to improve life for everyone on Mars (and to make a living off of that), they are sending their ATPVs out to gather the planet's natural resources and supply everyone in need with useful items.
-_
+_In the year 2044, following the great water conflicts of 2033, humankind has finally colonized and terraformed Mars; so much in fact that it greatly (structurally) resembles parts of old Earth. Unfortunately, scientists are still working on making the atmosphere breathable, so humans still need (costly) special equipment to leave their homes. Luckily, some entrepreneurial individuals found remnants of the old 'All Terrain Planetary Vehicles' which they retrofitted to do some serious business. Wanting to improve life for everyone on Mars (and to make a living off of that), they are sending their ATPVs out to gather the planet's natural resources and supply everyone in need with useful items._
 
 ### Introduction
 
@@ -194,7 +189,9 @@ Moves the agent towards a destination. Consumes __10__ charge units if successfu
 No | Parameter | Meaning
 --- | --- | ---
 0 | Facility | The name of a facility the agent wants to move to.
-||
+
+No | Parameter | Meaning
+--- | --- | ---
 0 | latitude | The latitude of the agent's desired destination.
 1 | longitude | The longitude of the agent's desired destination.
 
