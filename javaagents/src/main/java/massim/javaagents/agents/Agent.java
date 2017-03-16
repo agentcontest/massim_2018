@@ -1,7 +1,7 @@
 package massim.javaagents.agents;
 
 import eis.iilang.Percept;
-import massim.javaagents.MailBox;
+import massim.javaagents.MailService;
 
 import java.util.List;
 import java.util.Vector;
@@ -12,7 +12,7 @@ import java.util.Vector;
 public abstract class Agent {
 
     private String name;
-    private MailBox mailbox;
+    private MailService mailbox;
     private List<Percept> percepts = new Vector<>();
 
     /**
@@ -20,7 +20,7 @@ public abstract class Agent {
      * @param name the agent's name
      * @param mailbox the mail facility
      */
-    Agent(String name, MailBox mailbox){
+    Agent(String name, MailService mailbox){
         this.name = name;
         this.mailbox = mailbox;
     }
@@ -46,7 +46,7 @@ public abstract class Agent {
 
     /**
      * Sends a percept as a message to the given agent.
-     * Messages will be delivered after all agents have been stepped.
+     * The receiver agent may fetch the message the next time it is stepped.
      * @param message the message to deliver
      * @param receiver the receiving agent
      */
@@ -55,11 +55,10 @@ public abstract class Agent {
     }
 
     /**
-     * @return a list of all messages that were sent to this agent
+     * Called if another agent sent a message to this agent; so technically this is part of another agent's step method.
+     * @param message the message that was sent
      */
-    protected List<Percept> receiveMessages(){
-        return mailbox.getMessages(name);
-    }
+    public abstract void handleMessage(Percept message);
 
     /**
      * Sets the percepts for this agent. Should only be called from the outside.

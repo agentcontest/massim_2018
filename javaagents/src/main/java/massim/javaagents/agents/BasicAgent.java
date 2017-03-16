@@ -1,10 +1,7 @@
 package massim.javaagents.agents;
 
-import eis.iilang.Identifier;
-import eis.iilang.Numeral;
-import eis.iilang.Parameter;
-import eis.iilang.Percept;
-import massim.javaagents.MailBox;
+import eis.iilang.*;
+import massim.javaagents.MailService;
 
 import java.util.List;
 
@@ -18,7 +15,7 @@ public class BasicAgent extends Agent {
      * @param name    the agent's name
      * @param mailbox the mail facility
      */
-    public BasicAgent(String name, MailBox mailbox) {
+    public BasicAgent(String name, MailService mailbox) {
         super(name, mailbox);
     }
 
@@ -26,7 +23,10 @@ public class BasicAgent extends Agent {
     public void handlePercept(Percept percept) {}
 
     @Override
-    public eis.iilang.Action step() {
+    public void handleMessage(Percept message) {}
+
+    @Override
+    public Action step() {
         List<Percept> percepts = getPercepts();
         percepts.stream()
                 .filter(p -> p.getName().equals("step"))
@@ -35,7 +35,6 @@ public class BasicAgent extends Agent {
                     Parameter param = p.getParameters().getFirst();
                     if(param instanceof Identifier) say("Step " + ((Identifier) param).getValue());
         });
-        //return new eis.iilang.Action("skip");
-        return new eis.iilang.Action("goto", new Numeral(51.6), new Numeral(11));
+        return new Action("skip");
     }
 }

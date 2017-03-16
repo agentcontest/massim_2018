@@ -11,6 +11,8 @@ import eis.iilang.EnvironmentState;
 import eis.iilang.Percept;
 import massim.javaagents.agents.Agent;
 import massim.javaagents.agents.BasicAgent;
+import massim.javaagents.agents.JobPostingAgent;
+import massim.javaagents.agents.WarpAgent;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -81,19 +83,27 @@ public class Scheduler implements AgentListener, EnvironmentListener{
      */
     void setEnvironment(EnvironmentInterfaceStandard ei) {
         this.eis = ei;
-        MailBox mailBox = new MailBox();
+        MailService mailService = new MailService();
         for (AgentConf agentConf: agentConfigurations) {
 
             Agent agent = null;
             switch(agentConf.className){
                 case "BasicAgent":
-                    agent = new BasicAgent(agentConf.name, mailBox);
+                    agent = new BasicAgent(agentConf.name, mailService);
+                    break;
+                case "WarpAgent":
+                    agent = new WarpAgent(agentConf.name, mailService);
+                    break;
+                case "JobPostingAgent":
+                    agent = new JobPostingAgent(agentConf.name, mailService);
                     break;
                 // [add further types here]
                 default:
                     System.out.println("Unknown agent type/class " + agentConf.className);
             }
             if(agent == null) continue;
+
+            mailService.registerAgent(agent);
 
             try {
                 ei.registerAgent(agent.getName());
@@ -137,7 +147,8 @@ public class Scheduler implements AgentListener, EnvironmentListener{
             try {
                 eis.performAction(agent.getName(), action);
             } catch (ActException e) {
-                System.out.println("Could not perform action " + action.getName() + " for " + agent.getName());
+                if(action != null)
+                    System.out.println("Could not perform action " + action.getName() + " for " + agent.getName());
             }
         });
 
