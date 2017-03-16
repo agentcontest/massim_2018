@@ -507,7 +507,7 @@ public class ActionExecutor {
                         .filter(j -> j.getPoster().equals(team))
                         .filter(Job::isActive)
                         .count();
-                if(postedJobs > world.getPostJobLimit()){
+                if(postedJobs >= world.getPostJobLimit()){
                     entity.setLastActionResult(FAILED_JOB_STATUS);
                     break;
                 }
