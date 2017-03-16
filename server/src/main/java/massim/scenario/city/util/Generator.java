@@ -411,61 +411,159 @@ public class Generator {
     }
 
     public List<Facility> generateFacilities(List<Item> items, WorldState world) {
-        /*//TODO implement for real
-        //TODO ensure facilities have different locations
-        List<Facility> result = new Vector<>();
-        ChargingStation ch = new ChargingStation("Chargez", getRandomLocation(world), 100);
-        result.add(ch);
-        Dump dump = new Dump("Tronald's", getRandomLocation(world));
-        result.add(dump);
-        Storage storage = new Storage("Storage1", getRandomLocation(world), 10000,
-                world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
-        result.add(storage);
-        Workshop workshop = new Workshop("How to agent", getRandomLocation(world));
-        result.add(workshop);
-        Shop shop = new Shop("Shop", getRandomLocation(world), 1);
-        shop.addItem(items.get(0), 3, 17171717);
-        result.add(shop);
-        return result;*/
+
+        //TODO somehow get lat and lon from config
+        double minLat = 51.4647;
+        double maxLat = 51.5223;
+        double minLon = -0.1978;
+        double maxLon = -0.0354;
 
         List<Facility> facilities = new Vector<>();
+        List<Facility> shops = new Vector<>();
+        List<Facility> resourceNodes = new Vector<>();
         Set<Location> locations = new HashSet<>();
 
-        //TODO generate charging stations
-        ChargingStation charging1 = new ChargingStation("ChargingStation1", getUniqueLocation(locations, world), RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
-        facilities.add(charging1);
-        locations.add(charging1.getLocation());
+        //generate charging stations
+        int chargingCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(chargingDensity < 1){
+                    if(RNG.nextDouble() < chargingDensity){
+                        numberOfFacilities = 1;
+                    }
+                }
+                else{
+                    numberOfFacilities = new Float(chargingDensity).intValue();
+                }
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, loc, RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
+                    facilities.add(charging1);
+                    locations.add(charging1.getLocation());
+                    chargingCounter++;
+                }
+            }
+        }
 
-        //TODO generate shops
-        Shop shop1 = new Shop("Shop1", getUniqueLocation(locations, world),RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-        shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
-        facilities.add(shop1);
-        locations.add(shop1.getLocation());
+        //generate shops
+        int shopCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(shopDensity < 1){
+                    if(RNG.nextDouble() < shopDensity){
+                        numberOfFacilities = 1;
+                    }
+                }
+                else{
+                    numberOfFacilities = new Float(shopDensity).intValue();
+                }
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    Shop shop1 = new Shop("shop" + shopCounter, loc,RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
+                    shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+                    facilities.add(shop1);
+                    locations.add(shop1.getLocation());
+                    shops.add(shop1);
+                    shopCounter++;
+                }
+            }
+        }
+        //TODO add items to shops
 
-        //TODO generate dumps
-        Dump dump1 = new Dump("Dump1", getUniqueLocation(locations, world));
-        facilities.add(dump1);
-        locations.add(dump1.getLocation());
+        //generate dumps
+        int dumpCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(dumpDensity < 1){
+                    if(RNG.nextDouble() < dumpDensity){
+                        numberOfFacilities = 1;
+                    }
+                }
+                else{
+                    numberOfFacilities = new Float(dumpDensity).intValue();
+                }
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    Dump dump1 = new Dump("dump" + dumpCounter, loc);
+                    facilities.add(dump1);
+                    locations.add(dump1.getLocation());
+                    dumpCounter++;
+                }
+            }
+        }
 
-        //TODO generate workshops
-        Workshop workshop1 = new Workshop("Workshop1", getUniqueLocation(locations, world));
-        facilities.add(workshop1);
-        locations.add(workshop1.getLocation());
+        //generate workshops
+        int workshopCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(workshopDensity < 1){
+                    if(RNG.nextDouble() < workshopDensity){
+                        numberOfFacilities = 1;
+                    }
+                }
+                else{
+                    numberOfFacilities = new Float(workshopDensity).intValue();
+                }
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    Workshop workshop1 = new Workshop("workshop" + workshopCounter, loc);
+                    facilities.add(workshop1);
+                    locations.add(workshop1.getLocation());
+                    workshopCounter++;
+                }
+            }
+        }
 
-        //TODO generate storage
-        Storage storage1 = new Storage("Storage1", getUniqueLocation(locations, world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
-                world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
-        facilities.add(storage1);
-        locations.add(storage1.getLocation());
+        //generate storage
+        int storageCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(storageDensity < 1){
+                    if(RNG.nextDouble() < storageDensity){
+                        numberOfFacilities = 1;
+                    }
+                }
+                else{
+                    numberOfFacilities = new Float(storageDensity).intValue();
+                }
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    Storage storage1 = new Storage("storage" + storageCounter, getRandomLocation(world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+                            world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
+                    facilities.add(storage1);
+                    locations.add(storage1.getLocation());
+                    storageCounter++;
+                }
+            }
+        }
 
         //TODO generate resource nodes
+        int resourceCounter = 0;
         for(Item resource: resources){
             int amount = RNG.nextInt((perResourceMax-perResourceMin) + 1) + perResourceMin;
             for(int i=0; i<amount; i++){
-                ResourceNode node = new ResourceNode("ResourceNode"+i, getUniqueLocation(locations, world), resources.get(resources.lastIndexOf(resource)));
+                ResourceNode node = new ResourceNode("resourceNode"+resourceCounter, getRandomLocation(world), resources.get(resources.lastIndexOf(resource)));
                 facilities.add(node);
                 locations.add(node.getLocation());
+                resourceNodes.add(node);
+                resourceCounter++;
             }
+        }
+
+        //TODO make sure there is at least one facility of every type
+
+        for(Facility fac: facilities){
+            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName());
         }
 
         return facilities;
@@ -480,8 +578,12 @@ public class Generator {
         return world.getMap().getRandomLocation(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000);
     }
 
-    private Location getUniqueLocation(Set<Location> locations, WorldState world){
-        Location loc = getRandomLocation(world);
+    private Location getRandomLocationInBounds(WorldState world, double minLat, double maxLat, double minLon, double maxLon){
+        return world.getMap().getRandomLocationInBounds(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000, minLat, maxLat, minLon, maxLon);
+    }
+
+    private Location getUniqueLocationInBounds(Set<Location> locations, WorldState world, double minLat, double maxLat, double minLon, double maxLon){
+        Location loc = getRandomLocationInBounds(world, minLat, maxLat, minLon, maxLon);
         for(int i=0; i<100; i++){
             if(locations.contains(loc)){
                 loc = getRandomLocation(world);
