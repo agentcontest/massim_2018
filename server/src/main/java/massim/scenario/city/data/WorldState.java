@@ -152,7 +152,7 @@ public class WorldState {
                 Log.log(Log.Level.ERROR, "Invalid JSON role object.");
             }
             else {
-                JSONArray permissionsJson = roleJson.optJSONArray("permissions");
+                JSONArray permissionsJson = roleJson.optJSONArray("roads");
                 Set<String> permissions = new HashSet<>();
                 if (permissionsJson != null){
                     for (int i = 0; i < permissionsJson.length(); i++) {
