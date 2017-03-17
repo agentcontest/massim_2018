@@ -71,6 +71,7 @@ public class Generator {
     private Vector<Item> baseItems = new Vector<>();
     private Vector<Vector<Item>> itemGraph = new Vector<>();
     private List<Item> resources = new Vector<>();
+    private List<Tool> allTools = new Vector<>();
 
     public Generator(JSONObject randomConf){
         // TODO parse random parameters from config
@@ -281,6 +282,7 @@ public class Generator {
             }
         }
 
+        allTools = tools;
         return tools;
     }
 
@@ -353,6 +355,7 @@ public class Generator {
                 }
 
                 //generate required tools
+                //Vector<Tool> tmpTools = new Vector<>(tools);
                 Vector<Tool> requiredTools = new Vector<>();
                 if(RNG.nextDouble()<toolProbability){
                     RNG.shuffle(tools);
@@ -396,7 +399,7 @@ public class Generator {
             for(Item item: itemList){
                 Vector<String> reqItems = new Vector<>();
                 for(Item reqItem: item.getRequiredItems().keySet()){
-                    reqItems.add(new String(item.getRequiredItems().get(reqItem) + "x " + reqItem.getName()));
+                    reqItems.add(item.getRequiredItems().get(reqItem) + "x " + reqItem.getName());
                     //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
                 }
                 Vector<String> reqTools = new Vector<>();
@@ -419,8 +422,8 @@ public class Generator {
         double maxLon = -0.0354;
 
         List<Facility> facilities = new Vector<>();
-        List<Facility> shops = new Vector<>();
-        List<Facility> resourceNodes = new Vector<>();
+        List<Shop> shops = new Vector<>();
+        List<ResourceNode> resourceNodes = new Vector<>();
         Set<Location> locations = new HashSet<>();
 
         //generate charging stations
@@ -445,6 +448,12 @@ public class Generator {
                     chargingCounter++;
                 }
             }
+        }
+        if(chargingCounter==0){
+            ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, getUniqueLocation(locations, world), RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
+            facilities.add(charging1);
+            locations.add(charging1.getLocation());
+            chargingCounter++;
         }
 
         //generate shops
@@ -472,7 +481,60 @@ public class Generator {
                 }
             }
         }
-        //TODO add items to shops
+        if(shopCounter==0){
+            Shop shop1 = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
+            shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+            facilities.add(shop1);
+            locations.add(shop1.getLocation());
+            shops.add(shop1);
+            shopCounter++;
+        }
+        //add base items, resources and tools to shops
+        Vector<Item> shopItems = new Vector<>();
+        for(Item item: itemGraph.get(0)){
+            shopItems.add(item);
+        }
+        Vector<Tool> shopTools = new Vector<>(allTools);
+        Vector<Item> usedItems = new Vector<>();
+        Vector<Item> usedTools = new Vector<>();
+        for(Shop shop: shops){
+            int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
+            Vector<Item> unusedItems = new Vector(shopItems);
+            for(int j=0; j<(numberOfProducts-(numberOfProducts/2)); j++){
+                int productNumber = RNG.nextInt(unusedItems.size());
+                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
+                Item tmpItem = unusedItems.get(productNumber);
+                unusedItems.remove(productNumber);
+                usedItems.add(tmpItem);
+            }
+            Vector<Tool> unusedTools = new Vector(shopTools);
+            for(int j=0; j<(numberOfProducts/2); j++){
+                int productNumber = RNG.nextInt(unusedTools.size());
+                shop.addItem(unusedTools.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
+                Tool tmpTool = unusedTools.get(productNumber);
+                unusedTools.remove(productNumber);
+                usedTools.add(tmpTool);
+            }
+        }
+        shopItems.removeAll(usedItems);
+        for(Item item: shopItems){
+            int shopNumber = RNG.nextInt(shops.size());
+            Shop shop = shops.get(shopNumber);
+            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+        }
+        shopTools.removeAll(usedTools);
+        for(Tool tool: shopTools){
+            int shopNumber = RNG.nextInt(shops.size());
+            Shop shop = shops.get(shopNumber);
+            shop.addItem(tool, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+        }
+
+        /*for(Shop shop: shops){
+            Log.log(Log.Level.NORMAL, shop.getName() + ":");
+            for(Item item: shop.getOfferedItems()){
+                Log.log(Log.Level.NORMAL, item.getName());
+            }
+        }*/
 
         //generate dumps
         int dumpCounter = 0;
@@ -497,6 +559,12 @@ public class Generator {
                 }
             }
         }
+        if(dumpCounter==0){
+            Dump dump1 = new Dump("dump" + dumpCounter, getUniqueLocation(locations, world));
+            facilities.add(dump1);
+            locations.add(dump1.getLocation());
+            dumpCounter++;
+        }
 
         //generate workshops
         int workshopCounter = 0;
@@ -520,6 +588,12 @@ public class Generator {
                     workshopCounter++;
                 }
             }
+        }
+        if(workshopCounter==0){
+            Workshop workshop1 = new Workshop("workshop" + workshopCounter, getUniqueLocation(locations, world));
+            facilities.add(workshop1);
+            locations.add(workshop1.getLocation());
+            workshopCounter++;
         }
 
         //generate storage
@@ -546,6 +620,13 @@ public class Generator {
                 }
             }
         }
+        if(storageCounter==0){
+            Storage storage1 = new Storage("storage" + storageCounter, getUniqueLocation(locations, world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+                    world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
+            facilities.add(storage1);
+            locations.add(storage1.getLocation());
+            storageCounter++;
+        }
 
         //TODO generate resource nodes
         int resourceCounter = 0;
@@ -560,10 +641,8 @@ public class Generator {
             }
         }
 
-        //TODO make sure there is at least one facility of every type
-
         for(Facility fac: facilities){
-            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName());
+            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName() + ": " + fac.getLocation().getLat() + ", " + fac.getLocation().getLon());
         }
 
         return facilities;
@@ -582,11 +661,23 @@ public class Generator {
         return world.getMap().getRandomLocationInBounds(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000, minLat, maxLat, minLon, maxLon);
     }
 
+    private Location getUniqueLocation(Set<Location> locations, WorldState world){
+        Location loc = getRandomLocation(world);
+        for(int i=0; i<100; i++){
+            if(locations.contains(loc)){
+                loc = getRandomLocation(world);
+                continue;
+            }
+            return loc;
+        }
+        return loc;
+    }
+
     private Location getUniqueLocationInBounds(Set<Location> locations, WorldState world, double minLat, double maxLat, double minLon, double maxLon){
         Location loc = getRandomLocationInBounds(world, minLat, maxLat, minLon, maxLon);
         for(int i=0; i<100; i++){
             if(locations.contains(loc)){
-                loc = getRandomLocation(world);
+                loc = getRandomLocationInBounds(world, minLat, maxLat, minLon, maxLon);
                 continue;
             }
             return loc;
