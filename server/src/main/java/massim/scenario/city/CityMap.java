@@ -10,6 +10,7 @@ import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 import com.graphhopper.util.shapes.GHPoint3D;
+import massim.util.Log;
 import massim.util.RNG;
 import massim.scenario.city.data.Location;
 import massim.scenario.city.data.Route;
@@ -53,8 +54,9 @@ public class CityMap implements Serializable {
 		if(from == null || to == null) return null;
 		if(!isInBounds(to) || !existsRoute(to, from)) return null; // target must be in bounds and route back must exist
 		Route route = null;
-		if (permissions.contains("air")) route = getNewAirRoute(from, to);
-		else if (permissions.contains("road")) route = getNewCarRoute(from, to);
+		if (permissions.contains(GraphHopperManager.PERMISSION_AIR)) route = getNewAirRoute(from, to);
+		else if (permissions.contains(GraphHopperManager.PERMISSION_ROAD)) route = getNewCarRoute(from, to);
+		else Log.log(Log.Level.ERROR, "Cannot find a route with those permissions");
 		return route;
 	}
 
@@ -102,7 +104,7 @@ public class CityMap implements Serializable {
     }
 	
 	private Route getNewCarRoute(Location from, Location to){
-		
+
         GHResponse rsp = queryGH(from, to);
 		if(rsp.hasErrors()) return null;
 
@@ -173,15 +175,14 @@ public class CityMap implements Serializable {
      * @return a new location object fitting the description or null if there was no road found to snap to
      */
 	private Location getNearestRoad(Location loc){
-		GHPoint3D snap;
 		QueryResult qr = GraphHopperManager.getHopper().getLocationIndex().findClosest(loc.getLat(), loc.getLon(),
 				EdgeFilter.ALL_EDGES);
 		try {
-			snap = qr.getSnappedPoint();
+			GHPoint3D snap = qr.getSnappedPoint();
+			return new Location(snap.getLon(), snap.getLat());
 		} catch(IllegalStateException ignored){
             return null;
         }
-		return new Location(snap.getLon(), snap.getLat());
 	}
 
 	/**
@@ -216,6 +217,7 @@ public class CityMap implements Serializable {
 			loc = getNearestRoad(new Location(lon, lat));
 			if (isReachable(loc, roads)) return loc;
 		}
+		Log.log(Log.Level.ERROR, "Exceeded max tries to find a location.");
 		return center;
 	}
 
