@@ -1,9 +1,6 @@
 package massim.javaagents.agents;
 
-import eis.iilang.Action;
-import eis.iilang.Numeral;
-import eis.iilang.Parameter;
-import eis.iilang.Percept;
+import eis.iilang.*;
 import massim.javaagents.MailService;
 
 import java.util.HashMap;
@@ -62,7 +59,7 @@ public class JobPostingAgent extends Agent{
                     new Numeral(reward),
                     new Numeral(duration),
                     storage.getParameters().get(0), //storage.name
-                    item1,
+                    new Identifier("item0"),
                     new Numeral(3)
             );
         }
@@ -72,5 +69,5 @@ public class JobPostingAgent extends Agent{
     }
 
     @Override
-    public void handleMessage(Percept message) {} // this agent does not care what others have to say
+    public void handleMessage(Percept message, String sender) {} // this agent does not care what others have to say
 }

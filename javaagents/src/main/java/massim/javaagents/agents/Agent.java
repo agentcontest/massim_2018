@@ -49,16 +49,28 @@ public abstract class Agent {
      * The receiver agent may fetch the message the next time it is stepped.
      * @param message the message to deliver
      * @param receiver the receiving agent
+     * @param sender the agent sending the message
      */
-    protected void sendMessage(Percept message, String receiver){
-        mailbox.sendMessage(message, receiver);
+    protected void sendMessage(Percept message, String receiver, String sender){
+        mailbox.sendMessage(message, receiver, sender);
+    }
+
+    /**
+     * Broadcasts a message to the entire team.
+     * @param message the message to broadcast
+     * @param sender the agent sending the message
+     */
+    void broadcast(Percept message, String sender){
+        mailbox.broadcast(message, sender);
     }
 
     /**
      * Called if another agent sent a message to this agent; so technically this is part of another agent's step method.
+     *
      * @param message the message that was sent
+     * @param sender name of the agent who sent the message
      */
-    public abstract void handleMessage(Percept message);
+    public abstract void handleMessage(Percept message, String sender);
 
     /**
      * Sets the percepts for this agent. Should only be called from the outside.

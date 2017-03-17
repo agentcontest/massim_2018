@@ -103,7 +103,7 @@ public class Scheduler implements AgentListener, EnvironmentListener{
             }
             if(agent == null) continue;
 
-            mailService.registerAgent(agent);
+            mailService.registerAgent(agent, agentConf.team);
 
             try {
                 ei.registerAgent(agent.getName());

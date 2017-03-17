@@ -23,7 +23,7 @@ public class BasicAgent extends Agent {
     public void handlePercept(Percept percept) {}
 
     @Override
-    public void handleMessage(Percept message) {}
+    public void handleMessage(Percept message, String sender) {}
 
     @Override
     public Action step() {
