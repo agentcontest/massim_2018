@@ -438,7 +438,7 @@ This action is substituted if the agent did not send an action in time.
 
 Percepts are sent by the server as XML files and contain information about the current simulation. Initital percepts (sent via `SIM-START` messages) contain static information while other percepts (sent via `REQUEST-ACTION` messages) contain information about the current simulation state.
 
-The complete XML format is discussed in [protocol.md]().
+The complete XML format is discussed in [protocol.md](protocol.md).
 
 ### Initial percept
 
