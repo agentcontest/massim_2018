@@ -169,7 +169,7 @@ public class Job {
      * @return a data object of this job for serialization
      */
     public JobData toJobData(boolean withDelivered, boolean withPoster){
-        return new JobData(name, storage.getName(), endStep, reward,
+        return new JobData(name, storage.getName(), beginStep, endStep, reward,
                 requiredItems.toItemAmountData(),
                 withDelivered? getDeliveredData() : null,
                 withPoster? getPoster() : null

@@ -27,6 +27,8 @@ public class CityStepPercept extends RequestAction {
     @XmlElement(name="dump") private List<DumpData> dumps;
     @XmlElement(name="storage") private List<StorageData> storage;
     @XmlElement(name="job") private List<JobData> jobs;
+    @XmlElement(name="auction") private List<AuctionJobData> auctions;
+    @XmlElement(name="posted") private List<JobData> postedJobs;
 
     private CityStepPercept(){} // for jaxb
 
@@ -42,12 +44,15 @@ public class CityStepPercept extends RequestAction {
      * @param stations all charging stations
      * @param dumps all dumps
      * @param storage data of all storage facilities containing the items for the team of the agent
-     * @param jobsPerTeam map of all jobs by team (some jobs are only seen by a single team)
+     * @param jobsPerTeam map of all jobs by team (not including jobs posted by the team per entry)
+     * @param auctionsPerTeam map of all auctions by team (assigned auctions are only visible to the assigned team)
+     * @param postedJobsPerTeam map of all posted jobs by team
      */
     public CityStepPercept(EntityData self, String teamName, int step, TeamData team,
                            List<EntityData> entities, List<ShopData> shops, List<WorkshopData> workshops,
                            List<ChargingStationData> stations, List<DumpData> dumps, List<StorageData> storage,
-                           Map<String, List<JobData>> jobsPerTeam){
+                           Map<String, List<JobData>> jobsPerTeam, Map<String, List<AuctionJobData>> auctionsPerTeam,
+                           Map<String, List<JobData>> postedJobsPerTeam){
         simData = new SimData(step);
         teamData = team;
         selfData = self;
@@ -58,6 +63,8 @@ public class CityStepPercept extends RequestAction {
         this.dumps = dumps;
         this.storage = storage;
         this.jobs = jobsPerTeam.get(teamName);
+        this.auctions = auctionsPerTeam.get(teamName);
+        this.postedJobs = postedJobsPerTeam.get(teamName);
     }
 
     /**
@@ -117,10 +124,24 @@ public class CityStepPercept extends RequestAction {
     }
 
     /**
-     * @return information about all jobs
+     * @return information about all non-auction jobs
      */
     public List<JobData> getJobs(){
         return jobs == null? new Vector<>() : jobs;
+    }
+
+    /**
+     * @return information about all auctions
+     */
+    public List<AuctionJobData> getAuctions(){
+        return auctions == null? new Vector<>() : auctions;
+    }
+
+    /**
+     * @return information about all jobs posted by the team
+     */
+    public List<JobData> getPostedJobs(){
+        return postedJobs == null? new Vector<>() : postedJobs;
     }
 
     /**

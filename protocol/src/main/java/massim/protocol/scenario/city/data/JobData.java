@@ -20,6 +20,9 @@ public class JobData {
     private String storage;
 
     @XmlAttribute
+    private int start;
+
+    @XmlAttribute
     private int end;
 
     @XmlAttribute
@@ -46,15 +49,17 @@ public class JobData {
      * Constructor.
      * @param name id of the job
      * @param storage storage to deliver to
+     * @param start start step
      * @param end end step
      * @param reward reward amount
      * @param requiredItems items required for job completion
      * @param poster the job's origin
      */
-    public JobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems,
+    public JobData(String name, String storage, int start, int end, int reward, List<ItemAmountData> requiredItems,
                    List<CompletionData> deliveredItems, String poster) {
         id = name;
         this.storage = storage;
+        this.start = start;
         this.end = end;
         this.reward = reward;
         if(requiredItems != null) this.requiredItems.addAll(requiredItems);
@@ -74,6 +79,13 @@ public class JobData {
      */
     public String getStorage() {
         return storage == null? "" : storage;
+    }
+
+    /**
+     * @return the start step of the job
+     */
+    public int getStart() {
+        return start;
     }
 
     /**

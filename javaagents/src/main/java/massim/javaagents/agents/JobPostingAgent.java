@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * This agent tries to post a weird job in each step.
+ * This agent tries to post a weird job in each step. Also, it bids on an auction if there is one.
  */
 public class JobPostingAgent extends Agent{
 
@@ -46,6 +46,8 @@ public class JobPostingAgent extends Agent{
                 case "item":
                     items.putIfAbsent(percept.getName(), percept);
                     break;
+                case "auction":
+                    return new Action("bid_for_job", new Identifier(WarpAgent.stringParam(percept.getParameters(), 0)), new Numeral(20));
             }
         }
 

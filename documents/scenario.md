@@ -436,7 +436,185 @@ This action is substituted if the agent did not send an action in time.
 
 ## Percepts
 
-TODO
+Percepts are sent by the server as XML files and contain information about the current simulation. Initital percepts (sent via `SIM-START` messages) contain static information while other percepts (sent via `REQUEST-ACTION` messages) contain information about the current simulation state.
+
+The complete XML format is discussed in [protocol.md]().
+
+### Initial percept
+
+This percept contains information that does not change during the whole simulation. As mentioned in the protocol description, everything is contained in a `simulation` element.
+
+Example:
+
+```XML
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<message timestamp="1489763697332" type="sim-start">
+  <simulation id="2017-QuickTest-Sim" map="london"
+              seedCapital="10" steps="1000" team="A">
+    <role battery="500" load="1000" name="SampleRole" speed="10">
+      <tool>tool0</tool>
+      <tool>tool2</tool>
+    </role>
+    <item name="item0" volume="72"/>
+    <item name="item14" volume="0">
+      <item amount="2" name="item12"/>
+      <item amount="1" name="item8"/>
+      <tool>tool5</tool>
+      <tool>tool2</tool>
+    </item>
+  </simulation>
+</message>
+```
+
+#### Simulation details
+
+The `simulation` tag has attributes for the simulation `id`, the name of the `map` that is used, the seed capital, the number of simulation `steps` to be played and the name of the agent's `team`.
+
+#### Role details
+
+The percept also contains the agent's `role` and its details; speed, maximum load, name and maximum battery charge. The role element may further contain an arbitrary number of child nodes, one for each tool the role is allowed to use.
+
+#### Item details
+
+Each item type present in the simulation has a child node in the simulation element. It contains the item's unique `name` and `volume`.
+
+If the item has to be assembled, the necessary parts are included as child nodes (`item` and `tool` elements) of the item element.
+
+#### Contest note
+
+The roles and their details will be defined (and made public) in before and not change between simulations. This does not hold for tools however, as they are random for all simulations.
+
+### Step percept
+
+This percept contains information about the simulation state at the beginning of each step.
+
+Example:
+
+```XML
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<message timestamp="1489763697397" type="request-action">
+  <percept deadline="1489763701395" id="0">
+    <simulation step="0"/>
+    <self charge="101" lat="51.4675" load="0" lon="-0.0911" name="agentA1"
+          role="SampleRole" team="A">
+      <action result="successful" type="noAction"/>
+    </self>
+    <team money="10"/>
+
+    ...
+
+  </percept>
+</message>
+```
+
+The information is contained in the `percept` element within the message. This element contains an arbitrary number of child nodes, each representing an element of the simulation.
+
+#### Self details
+
+The `self` element contains information about the agent itself; its current battery charge and used carrying capacity, position, role and team. The action the agent executed in the last step together with its result is included in a child node of the `self` element.
+
+#### Team details
+
+The `team` element contains information about the agent's team; currently only how much money it owns.
+
+#### Entity details
+
+For each entity (or agent) in the simulation, one `entity` element is added.
+
+Example:
+
+```XML
+<entity lat="51.4659" lon="-0.1035" name="agentB3" role="SampleRole" team="B"/>
+```
+
+Each of these elements contains the entity's name, position, role and team.
+
+#### Facility details
+
+For each facility, a specific element is included.
+
+##### Shop details
+
+Example:
+
+```XML
+<shop lat="51.4861" lon="-0.1477" name="shop1" restock="3">
+  <item amount="8" name="tool7" price="211"/>
+  <item amount="10" name="item0" price="217"/>
+</shop>
+```
+
+For each shop, its name, position and restock value are included. Each shop contains a child node for each item type that can currently be bought, consisting of the item's name, its price and the available quantity.
+
+##### Workshop details
+
+Example:
+
+```XML
+<workshop lat="51.4983" lon="-0.0356" name="workshop3"/>
+```
+
+##### Charging station details
+
+Example:
+
+```XML
+<chargingStation lat="51.5182" lon="-0.0361" name="chargingStation6" rate="88"/>
+```
+
+##### Dump details
+
+Example:
+
+```XML
+<dump lat="51.5163" lon="-0.1588" name="dump2"/>
+```
+
+##### Storage details
+
+Example:
+
+```XML
+<storage lat="51.4906" lon="-0.0825" name="storage6" totalCapacity="9277"
+         usedCapacity="0">
+         <item delivered="3" name="item0" stored="0"/>
+</storage>
+```
+
+The storage contains a child node for each item type that is stored or delivered (or both) for an agent's team.
+
+#### Job details
+
+An element for each job is added (`job`, `auction`, or `posted`).
+
+__Regular job example:__ (all non-auction jobs not posted by the team)
+
+```XML
+<job start="59" end="159" id="job0" reward="5018" storage="storage2">
+  <required amount="3" name="item0"/>
+</job>
+```
+
+__Auction job example:__ (all auctions in auction state and active auctions assigned to the team)
+
+```XML
+<auction auctionTime="5" start="10" end="100" fine="500" id="job2"
+         lowestBid="20" reward="1000" storage="storage0">
+  <required amount="777" name="item0"/>
+</auction>
+```
+
+Please note that the `lowestBid` attribute is not present if no bids have been placed yet.
+
+Assigned auctions can be recognized by comparing `start + auctionTime` with the current step. If the auction is still visible after the `auctionTime`, the team has won the auction.
+
+__Posted job example:__ (all active jobs posted by the team)
+
+```XML
+<posted start="30" end="156" id="job11" reward="6546" storage="storage8">
+  <required amount="3" name="item0"/>
+</posted>
+```
 
 ## Configuration
 
@@ -500,3 +678,19 @@ Agents are assigned their role according to their position in the team config. I
 ## Random generation
 
 TODO
+
+## Commands
+
+A number of commands are handled by this scenario, which may help with debugging or testing your agents.
+
+`print facilities`: prints all facilities to the console
+
+`print items`: prints all items to the console
+
+`give itemX agentY Z`: gives Z units of item "itemX" to an agent "agentY" (if the agent has enough free space)
+
+`store storageX itemY A Z`: stores Z units of item "itemY" for team "A" in storage "storageX" (if the storage has enough free space)
+
+`addJob X Y Z storage0 item0 A item1 B ...`: adds a new job to the system, starting in step X, ending in step Y, with reward Z, target storage "storage0", and requiring A units of "item0", B units of "item1", etc.
+
+`addAuction A B C D E storage0 item0 X item1 Y ...`: similar to `addJob`, A is the start of the job, B the job's end, C the reward, D the auction time and E the auction's fine

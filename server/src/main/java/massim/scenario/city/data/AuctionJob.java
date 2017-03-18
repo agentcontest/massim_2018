@@ -99,7 +99,7 @@ public class AuctionJob extends Job{
 
     @Override
     public JobData toJobData(boolean withDelivered, boolean withPoster){
-        return new AuctionJobData(getName(), getStorage().getName(), getEndStep(), getReward(),
+        return new AuctionJobData(getName(), getStorage().getName(), getBeginStep(), getEndStep(), getReward(),
                 getRequiredItems().toItemAmountData(),
                 fine, lowestBid, auctionTime,
                 withDelivered? getDeliveredData() : null,

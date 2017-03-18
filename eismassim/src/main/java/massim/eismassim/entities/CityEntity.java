@@ -5,10 +5,7 @@ import eis.iilang.Action;
 import massim.eismassim.EISEntity;
 import massim.protocol.Message;
 import massim.protocol.messagecontent.*;
-import massim.protocol.scenario.city.data.ActionData;
-import massim.protocol.scenario.city.data.AuctionJobData;
-import massim.protocol.scenario.city.data.EntityData;
-import massim.protocol.scenario.city.data.RoleData;
+import massim.protocol.scenario.city.data.*;
 import massim.protocol.scenario.city.percept.CityInitialPercept;
 import massim.protocol.scenario.city.percept.CityStepPercept;
 import org.w3c.dom.Document;
@@ -159,26 +156,37 @@ public class CityEntity extends EISEntity {
                 new Numeral(ws.getLat()), new Numeral(ws.getLon()))));
 
         // job percepts
-        percept.getJobs().forEach(job -> {
-            // add common data
-            Percept jobPercept = new Percept("job", new Identifier(job.getId()), new Identifier(job.getStorage()),
-                    new Numeral(job.getReward()), new Numeral(job.getEnd()));
-            if(job instanceof AuctionJobData){
-                // add auction data
-                AuctionJobData auction = (AuctionJobData) job;
-                jobPercept.addParameter(new Numeral(auction.getFine()));
-                jobPercept.addParameter(new Numeral(auction.getLowestBid()));
-                jobPercept.addParameter(new Numeral(auction.getAuctionTime()));
-            }
-            // add item data
-            ParameterList requiredItems = new ParameterList();
-            job.getRequiredItems().forEach(item -> requiredItems.add(
-                    new Function("required", new Identifier(item.getName()), new Numeral(item.getAmount()))));
-            jobPercept.addParameter(requiredItems);
-            ret.add(jobPercept);
-        });
+        percept.getJobs().forEach(job -> ret.add(createJobPercept(job, "job")));
+        percept.getAuctions().forEach(job -> ret.add(createJobPercept(job, "auction")));
+        percept.getPostedJobs().forEach(job -> ret.add(createJobPercept(job, "posted")));
 
         return ret;
+    }
+
+    /**
+     * Creates a job percept based on a {@link JobData} object.
+     * @param job the source job data
+     * @param name the name of the percept to create
+     * @return a Percept for the job
+     */
+    private static Percept createJobPercept(JobData job, String name){
+        Percept jobPercept = new Percept(name, new Identifier(job.getId()), new Identifier(job.getStorage()),
+                new Numeral(job.getReward()), new Numeral(job.getStart()), new Numeral(job.getEnd()));
+        if(job instanceof AuctionJobData){
+            // add auction data
+            AuctionJobData auction = (AuctionJobData) job;
+            Integer lowestBid = auction.getLowestBid();
+            if (lowestBid == null) lowestBid = 0;
+            jobPercept.addParameter(new Numeral(auction.getFine()));
+            jobPercept.addParameter(new Numeral(lowestBid));
+            jobPercept.addParameter(new Numeral(auction.getAuctionTime()));
+        }
+        // add item data
+        ParameterList requiredItems = new ParameterList();
+        job.getRequiredItems().forEach(item -> requiredItems.add(
+                new Function("required", new Identifier(item.getName()), new Numeral(item.getAmount()))));
+        jobPercept.addParameter(requiredItems);
+        return jobPercept;
     }
 
     @Override

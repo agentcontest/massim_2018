@@ -1,11 +1,16 @@
 package massim.protocol.scenario.city.data;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Holds the data of an auction job.
  */
+@XmlRootElement(name = "auction")
+@XmlAccessorType(XmlAccessType.NONE)
 public class AuctionJobData extends JobData {
 
     @XmlAttribute
@@ -26,6 +31,7 @@ public class AuctionJobData extends JobData {
      * Constructor.
      * @param name id of the job
      * @param storage target storage
+     * @param start start step
      * @param end end step
      * @param reward max reward money
      * @param requiredItems items required for job completion
@@ -34,10 +40,10 @@ public class AuctionJobData extends JobData {
      * @param auctionTime amount of steps for auction process
      * @param poster the job's origin
      */
-    public AuctionJobData(String name, String storage, int end, int reward, List<ItemAmountData> requiredItems,
+    public AuctionJobData(String name, String storage, int start, int end, int reward, List<ItemAmountData> requiredItems,
                           int fine, Integer lowestBid, int auctionTime, List<CompletionData> deliveredItems,
                           String poster) {
-        super(name, storage, end, reward, requiredItems, deliveredItems, poster);
+        super(name, storage, start, end, reward, requiredItems, deliveredItems, poster);
         this.fine = fine;
         this.lowestBid = lowestBid;
         this.auctionTime = auctionTime;

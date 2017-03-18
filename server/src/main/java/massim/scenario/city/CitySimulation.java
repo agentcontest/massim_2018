@@ -150,24 +150,46 @@ public class CitySimulation extends AbstractSimulation {
             storageMap.put(team.getName(), storageData);
         }
 
-        //create job data
-        List<JobData> commonJobs = world.getJobs().stream()
-                // add active regular jobs and auction jobs in auctioning phase
-                .filter(job -> ( (!(job instanceof AuctionJob)) && job.isActive() )
-                            || ( job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
+        /* create job data */
+        Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
+        Map<String, List<JobData>> postedJobsPerTeam = new HashMap<>();
+        Map<String, List<AuctionJobData>> auctionsPerTeam = new HashMap<>();
+        world.getTeams().forEach(team -> postedJobsPerTeam.put(team.getName(), new ArrayList<>()));
+        world.getTeams().forEach(team -> jobsPerTeam.put(team.getName(), new ArrayList<>()));
+
+        // add all regular jobs (either as posted or not)
+        for (Job job : world.getJobs()) {
+            if(!(job instanceof AuctionJob) && job.isActive()){
+                JobData jobData = job.toJobData(false, false);
+                for(TeamState team: world.getTeams()){
+                    if(job.getPoster().equals(team.getName())){
+                        // add to team's posted jobs
+                        postedJobsPerTeam.get(team.getName()).add(jobData);
+                    }
+                    else{
+                        // add as regular job
+                        jobsPerTeam.get(team.getName()).add(jobData);
+                    }
+                }
+            }
+        }
+
+        // list of auction jobs in auctioning state (visible to all)
+        List<AuctionJobData> auctioningJobs = world.getJobs().stream()
+                .filter(job -> (job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
                 .map(job -> job.toJobData(false, false))
+                .map(jobData -> (AuctionJobData)jobData)
                 .collect(Collectors.toList());
 
-        Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
+        // add per team: auctions assigned to that team
         world.getTeams().forEach(team -> {
-            List<JobData> teamJobs = new Vector<>(commonJobs);
-            // add auctions only visible to the assigned team
+            List<AuctionJobData> teamJobs = new Vector<>(auctioningJobs);
             world.getJobs().stream()
                     .filter(job -> job instanceof AuctionJob
                             && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                             && job.isActive())
-                    .forEach(job -> teamJobs.add(job.toJobData(true, false)));
-            jobsPerTeam.put(team.getName(), teamJobs);
+                    .forEach(job -> teamJobs.add((AuctionJobData) job.toJobData(true, false)));
+            auctionsPerTeam.put(team.getName(), teamJobs);
         });
 
         // create and deliver percepts
@@ -178,7 +200,10 @@ public class CitySimulation extends AbstractSimulation {
                     new CityStepPercept(
                             completeEntities.get(agent),
                             team, stepNo, teamData.get(team), entities, shops, workshops, stations, dumps,
-                            storageMap.get(team), jobsPerTeam
+                            storageMap.get(team),
+                            jobsPerTeam,
+                            auctionsPerTeam,
+                            postedJobsPerTeam
             ));
         });
         return percepts;
@@ -429,6 +454,35 @@ public class CitySimulation extends AbstractSimulation {
                     }
                 }
                 Log.log(Log.Level.ERROR, "Invalid addJob command parameters.");
+                break;
+            case "addAuction": // "addAuction 1 2 100 5 1000 storage0 item0 1 item1 1 ..."
+                if(command.length >= 9 && command.length % 2 == 1){
+                    int start = -1;
+                    try{start = Integer.parseInt(command[1]);} catch (NumberFormatException ignored){}
+                    int end = -1;
+                    try{end = Integer.parseInt(command[2]);} catch (NumberFormatException ignored){}
+                    int reward = -1;
+                    try{reward = Integer.parseInt(command[3]);} catch (NumberFormatException ignored){}
+                    int auctionTime = -1;
+                    try{auctionTime = Integer.parseInt(command[4]);} catch (NumberFormatException ignored){}
+                    int fine = -1;
+                    try{fine = Integer.parseInt(command[5]);} catch (NumberFormatException ignored){}
+                    Facility facility = world.getFacility(command[6]);
+                    Map<Item, Integer> requirements = new HashMap<>();
+                    for(int i = 7; i < command.length; i += 2){
+                        Item item = world.getItem(command[i]);
+                        int amount = -1;
+                        try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
+                        if(item != null && amount > 0) requirements.put(item, amount);
+                    }
+                    if(start > 0 && end >= start && reward > 0 && requirements.size() > 0 && facility instanceof Storage) {
+                        AuctionJob auction = new AuctionJob(reward, (Storage) facility, start, end, auctionTime, fine);
+                        requirements.forEach(auction::addRequiredItem);
+                        world.addJob(auction);
+                        break;
+                    }
+                }
+                Log.log(Log.Level.ERROR, "Invalid addAuction command parameters.");
                 break;
             case "print":
                 if(command.length > 1) {

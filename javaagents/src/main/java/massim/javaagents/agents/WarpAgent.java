@@ -147,7 +147,7 @@ public class WarpAgent extends Agent{
      * @param index the index of the parameter
      * @return the string value of that parameter or an empty string if there is no parameter or it is not an identifier
      */
-    private static String stringParam(List<Parameter> params, int index){
+    public static String stringParam(List<Parameter> params, int index){
         if(params.size() < index + 1) return "";
         Parameter param = params.get(index);
         if(param instanceof Identifier) return ((Identifier) param).getValue();
