@@ -86,10 +86,7 @@
             "capacityMax" : 15000
           },
           "resourceNodes":{
-            "perResourceMin" : 1,
-            "perResourceMax" : 3,
-            "amountMin" : 4,
-            "amountMax" : 8
+            "density" : 0.7
           }
         },
         "items" : {

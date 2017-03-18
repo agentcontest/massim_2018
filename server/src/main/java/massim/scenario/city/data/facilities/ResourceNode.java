@@ -21,4 +21,6 @@ public class ResourceNode extends Facility{
         this.resource = resource;
     }
 
+    public Item getResource() { return resource; }
+
 }

@@ -39,10 +39,7 @@ public class Generator {
     private int capacityMin;
     private int capacityMax;
 
-    private int perResourceMin;
-    private int perResourceMax;
-    private int resourceAmountMin;
-    private int resourceAmountMax;
+    private double resourceDensity;
 
     private int baseItemsMin;
     private int baseItemsMax;
@@ -158,14 +155,8 @@ public class Generator {
             if (resourceNodes == null) {
                 Log.log(Log.Level.ERROR, "No resource nodes in configuration.");
             } else {
-                perResourceMin = resourceNodes.optInt("perResourceMin", 1);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes perResourceMin: " + perResourceMin);
-                perResourceMax = resourceNodes.optInt("perResourceMax", 2);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes perResourceMax: " + perResourceMax);
-                resourceAmountMin = resourceNodes.optInt("amountMin", 2);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes amountMin: " + resourceAmountMin);
-                resourceAmountMax = resourceNodes.optInt("amountMax", 5);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource nodes amountMax: " + resourceAmountMax);
+                resourceDensity = resourceNodes.optDouble("density", 0.7);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource node density: " + resourceDensity);
             }
         }
 
@@ -628,17 +619,41 @@ public class Generator {
             storageCounter++;
         }
 
-        //TODO generate resource nodes
-        int resourceCounter = 0;
-        for(Item resource: resources){
-            int amount = RNG.nextInt((perResourceMax-perResourceMin) + 1) + perResourceMin;
-            for(int i=0; i<amount; i++){
-                ResourceNode node = new ResourceNode("resourceNode"+resourceCounter, getRandomLocation(world), resources.get(resources.lastIndexOf(resource)));
-                facilities.add(node);
-                locations.add(node.getLocation());
-                resourceNodes.add(node);
-                resourceCounter++;
+        //generate resource nodes
+        int nodeCounter = 0;
+        for (double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) {
+                // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if (resourceDensity < 1) {
+                    if (RNG.nextDouble() < resourceDensity) {
+                        numberOfFacilities = 1;
+                    }
+                } else {
+                    numberOfFacilities = new Float(resourceDensity).intValue();
+                }
+                for (int i = 0; i < numberOfFacilities; i++) {
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
+                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()));
+                    facilities.add(node1);
+                    locations.add(node1.getLocation());
+                    resourceNodes.add(node1);
+                    nodeCounter++;
+                }
             }
+        }
+        if(nodeCounter<resources.size()){
+            for(int i=nodeCounter; i<resources.size(); i++){
+                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world), resources.get(nodeCounter % resources.size()));
+                facilities.add(node1);
+                locations.add(node1.getLocation());
+                resourceNodes.add(node1);
+                nodeCounter++;
+            }
+        }
+
+        for(ResourceNode node: resourceNodes){
+            Log.log(Log.Level.NORMAL, "Configuring resource nodes: " + node.getName() + ": " + node.getResource().getName() + " " + node.getLocation().getLat() + ", " + node.getLocation().getLon());
         }
 
         for(Facility fac: facilities){
@@ -691,7 +706,34 @@ public class Generator {
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
         // TODO maybe it's better not to create the same job each step
-        jobs.add(new Job(1, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10, JobData.POSTER_SYSTEM));
+        //jobs.add(new Job(1, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10, JobData.POSTER_SYSTEM));
+        if(stepNo==1){
+            //easy job
+            int itemNumber = RNG.nextInt(itemGraph.get(1).size());
+            int reward = 100 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
+            Job job1 = new Job(reward, world.getStorages().iterator().next(), 5, 205, JobData.POSTER_SYSTEM);
+            job1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+            jobs.add(job1);
+            //medium job
+            itemNumber = RNG.nextInt(itemGraph.get(2).size());
+            reward = 500 + itemGraph.get(2).get(itemNumber).getAssembleValue()*100;
+            Job job2 = new Job(reward, world.getStorages().iterator().next(), 205, 505, JobData.POSTER_SYSTEM);
+            job2.addRequiredItem(itemGraph.get(2).get(itemNumber), 3);
+            jobs.add(job2);
+            //hard job
+            itemNumber = RNG.nextInt(itemGraph.get(3).size());
+            reward = 1000 + itemGraph.get(3).get(itemNumber).getAssembleValue()*100;
+            Job job3 = new Job(reward, world.getStorages().iterator().next(), 505, 905, JobData.POSTER_SYSTEM);
+            job3.addRequiredItem(itemGraph.get(3).get(itemNumber), 3);
+            jobs.add(job3);
+            for(Job job: jobs){
+                String itemName = "";
+                for(Item item: job.getRequiredItems().getStoredTypes()){
+                    itemName = item.getName();
+                }
+                Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() + " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage());
+            }
+        }
         return jobs;
     }
 }
