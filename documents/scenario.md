@@ -2,6 +2,17 @@
 
 ## Agents in the City (2017)
 
+* [Intro](#background-story)
+* [Locations](#locations)
+* [Items](#items)
+* [Facilities](#facilities)
+* [Roles](#roles)
+* [Jobs](#job)
+* [Actions](#actions)
+* [Percepts](#percepts)
+* [Configuration](#configuration)
+* [Commands](#commands)
+
 ### Background Story
 
 _In the year 2044, following the great water conflicts of 2033, humankind has finally colonized and terraformed Mars; so much in fact that it greatly (structurally) resembles parts of old Earth. Unfortunately, scientists are still working on making the atmosphere breathable, so humans still need (costly) special equipment to leave their homes. Luckily, some entrepreneurial individuals found remnants of the old 'All Terrain Planetary Vehicles' which they retrofitted to do some serious business. Wanting to improve life for everyone on Mars (and to make a living off of that), they are sending their ATPVs out to gather the planet's natural resources and supply everyone in need with useful items._
