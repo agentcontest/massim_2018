@@ -35,6 +35,7 @@ public class WorldState {
     private Set<ChargingStation> chargingStations = new HashSet<>();
     private Set<Shop> shops = new HashSet<>();
     private Set<Storage> storages = new HashSet<>();
+    private Set<ResourceNode> resourceNodes = new HashSet<>();
 
     private Vector<String> agentNames;
     private Map<String, String> agentToTeam = new HashMap<>();
@@ -118,6 +119,7 @@ public class WorldState {
             else if(f instanceof Shop) shops.add((Shop) f);
             else if(f instanceof Storage) storages.add((Storage) f);
             else if(f instanceof Dump) dumps.add((Dump) f);
+            else if(f instanceof ResourceNode) resourceNodes.add((ResourceNode) f);
         });
 
         // draw initial locations
@@ -331,6 +333,8 @@ public class WorldState {
     public Set<Storage> getStorages() {
         return storages;
     }
+
+    public Set<ResourceNode> getResourceNodes() { return resourceNodes; }
 
     /**
      * @return a new list of all team states

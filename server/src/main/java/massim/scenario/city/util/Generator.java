@@ -40,6 +40,8 @@ public class Generator {
     private int capacityMax;
 
     private double resourceDensity;
+    private int gatherFrequencyMin;
+    private int gatherFrequencyMax;
 
     private int baseItemsMin;
     private int baseItemsMax;
@@ -157,6 +159,10 @@ public class Generator {
             } else {
                 resourceDensity = resourceNodes.optDouble("density", 0.7);
                 Log.log(Log.Level.NORMAL, "Configuring facilities resource node density: " + resourceDensity);
+                gatherFrequencyMin = resourceNodes.optInt("gatherFrequencyMin", 4);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource node gatherFrequencyMin: " + gatherFrequencyMin);
+                gatherFrequencyMax = resourceNodes.optInt("gatherFrequencyMax", 8);
+                Log.log(Log.Level.NORMAL, "Configuring facilities resource node gatherFrequencyMax: " + gatherFrequencyMax);
             }
         }
 
@@ -634,7 +640,7 @@ public class Generator {
                 }
                 for (int i = 0; i < numberOfFacilities; i++) {
                     Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
-                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()));
+                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()),RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
                     facilities.add(node1);
                     locations.add(node1.getLocation());
                     resourceNodes.add(node1);
@@ -644,7 +650,7 @@ public class Generator {
         }
         if(nodeCounter<resources.size()){
             for(int i=nodeCounter; i<resources.size(); i++){
-                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world), resources.get(nodeCounter % resources.size()));
+                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world), resources.get(nodeCounter % resources.size()), RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
                 facilities.add(node1);
                 locations.add(node1.getLocation());
                 resourceNodes.add(node1);

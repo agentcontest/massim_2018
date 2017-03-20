@@ -26,6 +26,7 @@ public class CityStepPercept extends RequestAction {
     @XmlElement(name="chargingStation") private List<ChargingStationData> chargingStations;
     @XmlElement(name="dump") private List<DumpData> dumps;
     @XmlElement(name="storage") private List<StorageData> storage;
+    @XmlElement(name="resourceNode") private List<ResourceNodeData> resourceNodes;
     @XmlElement(name="job") private List<JobData> jobs;
     @XmlElement(name="auction") private List<AuctionJobData> auctions;
     @XmlElement(name="posted") private List<JobData> postedJobs;
@@ -44,13 +45,14 @@ public class CityStepPercept extends RequestAction {
      * @param stations all charging stations
      * @param dumps all dumps
      * @param storage data of all storage facilities containing the items for the team of the agent
+     * @param resourceNodes all resource nodes
      * @param jobsPerTeam map of all jobs by team (not including jobs posted by the team per entry)
      * @param auctionsPerTeam map of all auctions by team (assigned auctions are only visible to the assigned team)
      * @param postedJobsPerTeam map of all posted jobs by team
      */
     public CityStepPercept(EntityData self, String teamName, int step, TeamData team,
                            List<EntityData> entities, List<ShopData> shops, List<WorkshopData> workshops,
-                           List<ChargingStationData> stations, List<DumpData> dumps, List<StorageData> storage,
+                           List<ChargingStationData> stations, List<DumpData> dumps, List<StorageData> storage, List<ResourceNodeData> resourceNodes,
                            Map<String, List<JobData>> jobsPerTeam, Map<String, List<AuctionJobData>> auctionsPerTeam,
                            Map<String, List<JobData>> postedJobsPerTeam){
         simData = new SimData(step);
@@ -62,6 +64,7 @@ public class CityStepPercept extends RequestAction {
         this.chargingStations = stations;
         this.dumps = dumps;
         this.storage = storage;
+        this.resourceNodes = resourceNodes;
         this.jobs = jobsPerTeam.get(teamName);
         this.auctions = auctionsPerTeam.get(teamName);
         this.postedJobs = postedJobsPerTeam.get(teamName);
@@ -121,6 +124,13 @@ public class CityStepPercept extends RequestAction {
      */
     public List<StorageData> getStorage(){
         return storage == null? new Vector<>() : storage;
+    }
+
+    /**
+     * @return information about the resource nodes
+     */
+    public List<ResourceNodeData> getResourceNodes(){
+        return resourceNodes == null? new Vector<>() : resourceNodes;
     }
 
     /**
