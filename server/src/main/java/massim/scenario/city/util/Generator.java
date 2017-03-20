@@ -714,24 +714,34 @@ public class Generator {
         // TODO maybe it's better not to create the same job each step
         //jobs.add(new Job(1, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10, JobData.POSTER_SYSTEM));
         if(stepNo==1){
-            //easy job
-            int itemNumber = RNG.nextInt(itemGraph.get(1).size());
-            int reward = 100 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
-            Job job1 = new Job(reward, world.getStorages().iterator().next(), 5, 205, JobData.POSTER_SYSTEM);
-            job1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
-            jobs.add(job1);
-            //medium job
-            itemNumber = RNG.nextInt(itemGraph.get(2).size());
-            reward = 500 + itemGraph.get(2).get(itemNumber).getAssembleValue()*100;
-            Job job2 = new Job(reward, world.getStorages().iterator().next(), 205, 505, JobData.POSTER_SYSTEM);
-            job2.addRequiredItem(itemGraph.get(2).get(itemNumber), 3);
-            jobs.add(job2);
-            //hard job
-            itemNumber = RNG.nextInt(itemGraph.get(3).size());
-            reward = 1000 + itemGraph.get(3).get(itemNumber).getAssembleValue()*100;
-            Job job3 = new Job(reward, world.getStorages().iterator().next(), 505, 905, JobData.POSTER_SYSTEM);
-            job3.addRequiredItem(itemGraph.get(3).get(itemNumber), 3);
-            jobs.add(job3);
+            int itemNumber = 0;
+            int reward = 0;
+            if(itemGraph.get(1).isEmpty() == false){
+                //easy job
+                itemNumber = RNG.nextInt(itemGraph.get(1).size());
+                reward = 100 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
+                Job job1 = new Job(reward, world.getStorages().iterator().next(), 5, 205, JobData.POSTER_SYSTEM);
+                job1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+                jobs.add(job1);
+                if(itemGraph.get(2).isEmpty() == false){
+                    //medium job
+                    itemNumber = RNG.nextInt(itemGraph.get(2).size());
+                    reward = 500 + itemGraph.get(2).get(itemNumber).getAssembleValue()*100;
+                    Job job2 = new Job(reward, world.getStorages().iterator().next(), 205, 505, JobData.POSTER_SYSTEM);
+                    job2.addRequiredItem(itemGraph.get(2).get(itemNumber), 3);
+                    jobs.add(job2);
+                    if(itemGraph.get(3).isEmpty() == false){
+                        //hard job
+                        itemNumber = RNG.nextInt(itemGraph.get(3).size());
+                        reward = 1000 + itemGraph.get(3).get(itemNumber).getAssembleValue()*100;
+                        Job job3 = new Job(reward, world.getStorages().iterator().next(), 505, 905, JobData.POSTER_SYSTEM);
+                        job3.addRequiredItem(itemGraph.get(3).get(itemNumber), 3);
+                        jobs.add(job3);
+                    }
+                }
+            }else{
+                Log.log(Log.Level.NORMAL, "Configuring jobs: Could not configure Jobs, not enough items!");
+            }
             for(Job job: jobs){
                 String itemName = "";
                 for(Item item: job.getRequiredItems().getStoredTypes()){
