@@ -12,8 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ResourceNodeData extends FacilityData {
 
-    //@XmlAttribute
-    //TODO resource!
+    @XmlAttribute
     private String resource;
 
     /**
@@ -28,7 +27,7 @@ public class ResourceNodeData extends FacilityData {
      * @param lon longitude of the facility
      //* @param gatherFrequency number of actions until the next resource becomes available
      */
-    public ResourceNodeData(String name, double lat, double lon) {
+    public ResourceNodeData(String name, double lat, double lon, String resource) {
         super(name, lat, lon);
         this.resource = resource;
     }

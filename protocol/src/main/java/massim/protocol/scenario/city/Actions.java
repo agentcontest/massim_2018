@@ -29,11 +29,12 @@ public abstract class Actions {
     public final static String ABORT = "abort";
     public final static String SKIP = "skip";
     public final static String POST_JOB = "post_job";
+    public final static String GATHER = "gather";
 
     /**
      * Unmodifiable list of all actions in the scenario.
      */
     public final static List<String> ALL_ACTIONS = Collections.unmodifiableList(Arrays.asList(GO_TO, RECEIVE, GIVE,
             STORE, RETRIEVE, ASSEMBLE, ASSIST_ASSEMBLE, BUY, DELIVER_JOB, RETRIEVE_DELIVERED, BID_FOR_JOB, DUMP, CHARGE,
-            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION));
+            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION, GATHER));
 }

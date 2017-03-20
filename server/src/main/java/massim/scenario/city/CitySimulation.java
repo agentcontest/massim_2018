@@ -264,7 +264,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<ResourceNodeData> buildResourceNodeData() {
         return world.getResourceNodes().stream()
-                .map(node -> new ResourceNodeData(node.getName(), node.getLocation().getLat(), node.getLocation().getLon()))
+                .map(node -> new ResourceNodeData(node.getName(), node.getLocation().getLat(), node.getLocation().getLon(), node.getResource().getName()))
                 .collect(Collectors.toList());
     }
 

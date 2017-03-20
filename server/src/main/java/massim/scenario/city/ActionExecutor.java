@@ -536,6 +536,30 @@ public class ActionExecutor {
                 world.addJob(job);
                 break;
 
+            case GATHER: // no params
+                if(params.size() != 0){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                facility = world.getFacilityByLocation(entity.getLocation());
+                if(facility == null){
+                    entity.setLastActionResult(FAILED_LOCATION);
+                    break;
+                }
+                if(!(facility instanceof ResourceNode)){
+                    entity.setLastActionResult(FAILED_WRONG_FACILITY);
+                    break;
+                }
+                boolean gatherResult = ((ResourceNode) facility).gather();
+                if(gatherResult==true){
+                    entity.addItem(((ResourceNode) facility).getResource(), 1);
+                    entity.setLastActionResult(SUCCESSFUL);
+                }else{
+                    entity.setLastActionResult(PARTIAL_SUCCESS);
+                }
+
+                break;
+
             default:
                 entity.setLastAction(Action.STD_UNKNOWN_ACTION);
                 entity.setLastActionResult(FAILED);

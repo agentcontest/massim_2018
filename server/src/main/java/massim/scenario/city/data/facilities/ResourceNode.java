@@ -10,6 +10,7 @@ public class ResourceNode extends Facility{
 
     private Item resource;
     private int gatherFrequency;
+    private int actionCounter;
 
     /**
      * Creates a new resource node.
@@ -22,8 +23,22 @@ public class ResourceNode extends Facility{
         super(name, location);
         this.resource = resource;
         this.gatherFrequency = gatherFrequency;
+        this.actionCounter = 0;
     }
 
     public Item getResource() { return resource; }
+
+    /**
+     * Keeps track of number of gather actions
+     * @return true if agent gets a resource, false if more gather actions are needed
+     */
+    public boolean gather(){
+        actionCounter++;
+        if(actionCounter==gatherFrequency){
+            actionCounter=0;
+            return true;
+        }
+        return false;
+    }
 
 }
