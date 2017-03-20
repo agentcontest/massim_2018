@@ -1,5 +1,10 @@
 # MASSim Javaagents Documentation
 
+This module provides some very basic agent framework written in Java. EISMASSim
+is integrated so that agents can communicate with the MASSim server out of the box.
+
+Some very basic agents are included mainly for testing purposes.
+
 ## Create your own agent
 * Add a new class for your agent somewhere in _massim.javaagents.agents_
  * Make your class extend _massim.javaagents.agents.Agent_
