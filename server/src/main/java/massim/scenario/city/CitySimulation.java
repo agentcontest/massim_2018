@@ -205,7 +205,8 @@ public class CitySimulation extends AbstractSimulation {
                             resourceNodes,
                             jobsPerTeam,
                             auctionsPerTeam,
-                            postedJobsPerTeam
+                            postedJobsPerTeam,
+                            world.getVisibilityRange()
             ));
         });
         return percepts;

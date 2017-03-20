@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * A regular percept that is sent each step in the City scenario.
@@ -49,12 +50,13 @@ public class CityStepPercept extends RequestAction {
      * @param jobsPerTeam map of all jobs by team (not including jobs posted by the team per entry)
      * @param auctionsPerTeam map of all auctions by team (assigned auctions are only visible to the assigned team)
      * @param postedJobsPerTeam map of all posted jobs by team
+     * @param visRange the visibility range for determining whether to include certain elements
      */
     public CityStepPercept(EntityData self, String teamName, int step, TeamData team,
                            List<EntityData> entities, List<ShopData> shops, List<WorkshopData> workshops,
                            List<ChargingStationData> stations, List<DumpData> dumps, List<StorageData> storage, List<ResourceNodeData> resourceNodes,
                            Map<String, List<JobData>> jobsPerTeam, Map<String, List<AuctionJobData>> auctionsPerTeam,
-                           Map<String, List<JobData>> postedJobsPerTeam){
+                           Map<String, List<JobData>> postedJobsPerTeam, int visRange){
         simData = new SimData(step);
         teamData = team;
         selfData = self;
@@ -64,7 +66,9 @@ public class CityStepPercept extends RequestAction {
         this.chargingStations = stations;
         this.dumps = dumps;
         this.storage = storage;
-        this.resourceNodes = resourceNodes;
+        this.resourceNodes = resourceNodes.stream() // filter nodes by visibility range
+                .filter(rn -> calculateRange(rn.getLat(), rn.getLon(), self.getLat(), self.getLon()) <= visRange)
+                .collect(Collectors.toList());
         this.jobs = jobsPerTeam.get(teamName);
         this.auctions = auctionsPerTeam.get(teamName);
         this.postedJobs = postedJobsPerTeam.get(teamName);
@@ -188,4 +192,25 @@ public class CityStepPercept extends RequestAction {
         }
     }
 
+    /**
+     * Calculates the actual distance between two locations.
+     * @param lat1 latitude of location 1
+     * @param lon1 longitude of location 1
+     * @param lat2 latitude of location 2
+     * @param lon2 longitude of location 2
+     * @return the distance between the two locations in meters
+     */
+    private static double calculateRange(double lat1, double lon1, double lat2, double lon2){
+        double phi1 = Math.toRadians(lat1);
+        double phi2 = Math.toRadians(lat2);
+        double deltaPhi = Math.toRadians(lat2 - lat1);
+        double deltaLambda = Math.toRadians(lon2 - lon1);
+
+        double a = Math.pow(Math.sin(deltaPhi / 2), 2);
+        a += Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(deltaLambda / 2), 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return 6371e3 * c;
+    }
 }

@@ -24,6 +24,7 @@ public class WorldState {
     private int randomFail;
     private String id;
     private int postJobLimit;
+    private int visibilityRange = 500; // TODO add to config
 
     private List<Tool> tools;
     private Map<String, Item> items = new HashMap<>();
@@ -376,5 +377,12 @@ public class WorldState {
      */
     public List<Facility> getFacilities(){
         return new ArrayList<>(facilities.values());
+    }
+
+    /**
+     * @return the visibility range of an agent
+     */
+    public int getVisibilityRange(){
+        return visibilityRange;
     }
 }
