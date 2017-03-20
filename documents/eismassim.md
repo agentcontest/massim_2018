@@ -273,7 +273,7 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * item : Function - an item available in this storage
     * name1 : Identifier - that item's name
     * stored1 : Numeral - quantity stored by the agent's team
-    * delivered1 : Numeral - quantity delivered by or for the agent's team (see [Shop section](scenario.md#shop))
+    * delivered1 : Numeral - quantity delivered by or for the agent's team (see [Storage section](scenario.md#storage))
 * `workshop(name, lat, lon)`
   * name : Identifier
   * lat : Numeral
