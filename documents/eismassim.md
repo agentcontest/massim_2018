@@ -135,6 +135,22 @@ Further, there is an object for each entity in the `entities` array, containing
 
 EISMASSim is exemplarily used in the [javaagents](javaagents.md) package.
 
+## IILang
+
+Actions and percepts in _EISMASSim_ use the _Interface Intermediate Language_ (IILang) as provided by _EIS_. The IILang defines the following concepts:
+
+* __DataContainer__: consists of a name and a number of _Parameters_
+  * __Action__: used for acting
+  * __Percept__: used to perceive changes in the environment
+* __Parameter__: argument to _DataContainers_
+  * __Identifier__: contains a string value
+  * __Numeral__: contains any number value
+  * __TruthValue__: contains a boolean value
+  * __ParameterList__: strangely, a list of parameters
+  * __Function__: has the same structure as a _DataContainer_, but can be used as a _Parameter_
+
+Thus, any IILang _DataContainer_ forms a tree structure that can also be represented with Prolog-like syntax. For example, `car(red, 2007, [ac, radio], wheels(4))` could be a _Percept_ with the name `car`, an _Identifier_ (parameter) `red`, a _Numeral_ 2007, a _ParameterList_ containing 2 _Identifiers_ and a _Function_ named `wheels` containing a final _Numeral_.
+
 ## MAPC 2017 scenario
 
 ### Actions
@@ -152,20 +168,144 @@ Action a = new Action("goto", new Identifier("shop1"));
 
 The following paragraphs describe how the XML messages described in [protocol.md](protocol.md) and [scenario.md](scenario.md) are translated into __IILang__ percepts.
 
+`[XYZ, ...]` denotes a _ParameterList_ of arbitrary length
+
 #### SIM-START percepts
 
 The following percepts might be included in a `SIM-START` message:
 
-TODO
+* `id(simId)`
+  * simId : Identifier - name of the simulation
+* `map(mapName)`
+  * mapName : Identifier - name of the current map
+* `seedCapital(sc)`
+  * sc : Numeral - seed capital of any team in the simulation
+* `steps(stepNumber)`
+  * stepNumber : Numeral - number of steps the simulation will take
+* `team(name)`
+  * name : Identifier - name of the agent's team
+* `role(name, speed, load, battery, [tool1, ...])`
+  * represents the agent's role
+  * name : Identifier - name of the role
+  * speed : Numeral - speed of the role
+  * load : Numeral - carrying capacity of the role
+  * battery : Numeral - maximum battery charge of the role
+  * tool1 : Identifier - a tool usable by the role (list might be empty)
+* `item(name, volume, tools([tool1, ...]), parts([[item1, qty1], ...]))`
+  * represents an item type in the simulation
+  * name : Identifier - name of the item
+  * volume : Numeral - the item's volume
+  * tools : Function - all tools required to assemble the item
+    * tool1 : Identifier - one of the tools required for assembly
+  * parts : Function - all quantities of items required for assembly
+    * item1 : Identifier - the first item required for assembly
+    * qty1 : Numeral - quantity of 'item1' required for assembly
 
 #### REQUEST-ACTION percepts
 
-The following percepts might be included in a `REQUEST-ACTION` message:
+The following percepts might be included in a `REQUEST-ACTION` message. Most of them should be self-explanatory.
 
-TODO
+* `actionID(id)`
+  * id : Numeral - current action-id to reply with
+* `timestamp(time)`
+  * time : Numeral - server time the message was created at
+* `deadline(time)`
+  * time : Numeral - timepoint at which the action must be available
+* `step(number)`
+  * number : Numeral - the current step
+* `charge(ch)`
+  * ch : Numeral - agent's current battery charge
+* `load(cap)`
+  * cap : Numeral - agent's currently used capacity
+* `lat(d)`
+  * d : Numeral - latitude of the agent's location
+* `lon(d)`
+  * d : Numeral - longitude of the agent's location
+* `routeLength(ln)`
+  * ln : Numeral - length of the agent's current route
+* `money(m)`
+  * m : Numeral - the agent's team's current money
+* `lastAction(type)`
+  * type : Identifier - name of the last executed action
+* `lastActionParams([param1, ...])`
+  * param1 : Identifier - first parameter of the last executed action (list might be empty)
+* `lastActionResult(result)`
+  * result : Identifier - result of the last executed action
+* `item(name, qty)`
+  * name : Identifier - name of a carried item
+  * qty : Numeral - carried quantity
+* `route([wp(index, lat, lon), ...])`
+  * represents the agent's current route
+  * wp : Function - a waypoint in the route
+    * index : Numeral - index of the waypoint
+    * lat : Numeral - latitude of the waypoint
+    * lon : Numeral - longitude of the waypoint
+* `entity(name, team, lat, lon, role)`
+  * name : Identifier - name of an entity/agent in the simulation
+  * team : Identifier - name of that entity's team
+  * lat : Numeral - latitude
+  * lon : Numeral - longitude
+  * role : Identifier - that entity's role
+* `chargingStation(name, lat, lon, rate)`
+  * name : Identifier
+  * lat : Numeral
+  * lon : Numeral
+  * rate : Numeral - the station's charging rate
+* `dump(name, lat, lon)`
+  * name : Identifier
+  * lat : Numeral
+  * lon : Numeral
+* `shop(name, lat, lon, restock, [item(name1, price1, qty1), ...])`
+  * name : Identifier - the shop's name
+  * lat : Numeral
+  * lon : Numeral
+  * restock : Numeral - number of steps between restocks
+  * item : Function - an item stocked in the shop
+    * name1 - Identifier : that item's name
+    * price1 - Numeral : the item's price in this shop
+    * qty1 - Numeral : the quantity available in this shop
+* `storage(name, lat, lon, cap, used, [item(name1, stored1, delivered1), ...])`
+  * name : Identifier - the storage's name
+  * lat : Numeral
+  * lon : Numeral
+  * cap : Numeral - the storage's total capacity
+  * used : Numeral - the used capacity of the storage
+  * item : Function - an item available in this storage
+    * name1 : Identifier - that item's name
+    * stored1 : Numeral - quantity stored by the agent's team
+    * delivered1 : Numeral - quantity delivered by or for the agent's team (see [Shop section](scenario.md#shop))
+* `workshop(name, lat, lon)`
+  * name : Identifier
+  * lat : Numeral
+  * lon : Numeral
+* `resourceNode(name, lat, lon, resource)`
+  * name : Identifier
+  * lat : Numeral
+  * lon : Numeral
+  * resource : Identifier - name of the item that can be gathered at the node
+* `job(id, storage, reward, start, end, [required(name1, qty1), ...])`
+  * represents a non-auction job (excluding those posted by the agent's team)
+  * id : Identifier - the job's ID
+  * storage : Identifier - name of the storage associated with this job
+  * reward : Numeral
+  * start : Numeral
+  * end : Numeral
+  * required : Function - an item required to complete the job
+    * name1 : Identififer - name of that item
+    * qty1 : Numeral - required quantity
+* `posted(id, storage, reward, start, end, [required(name1, qty1), ...])`
+  * represents a job posted by the agent's team (parameters are the same as for `job`)
+* `auction(id, storage, reward, start, end, fine, bid, time, [required(name1, qty1), ...])`
+  * same parameters as `job` plus:
+    * fine : Numeral - amount to pay if the auction is assigned but not completed
+    * bid : Numeral - the current lowest bid; might update each step during auction time
+    * time : Numeral - number of steps the auction phase will take
 
 #### SIM-END percepts
 
 The following percepts might be included in a `SIM-END` message:
 
-TODO
+* `ranking(r)`
+  * r : Numeral - the final ranking of the agent's team
+* `score(s)`
+  * s : Numeral - the final score of the agent's team
