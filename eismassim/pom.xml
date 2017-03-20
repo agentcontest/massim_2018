@@ -51,16 +51,16 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>eishub-mvn-repo</id>
+            <url>https://raw.github.com/eishub/mvn-repo/master</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.eishub</groupId>
+            <groupId>eishub</groupId>
             <artifactId>eis</artifactId>
-            <version>aead20e8f0a453d47efc4f44a4d39c2f7593353f</version>
+            <version>0.5.0</version>
         </dependency>
         <dependency>
             <groupId>massim</groupId>
