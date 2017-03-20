@@ -2,6 +2,8 @@ package massim.scenario.city.data;
 
 import massim.util.Log;
 
+import java.math.BigDecimal;
+
 /**
  * Represents a map location in the city scenario.
  */
@@ -9,7 +11,8 @@ public class Location {
 
     private double lat;
     private double lon;
-    private static double proximity;
+    private static int proximity;
+    private static double divisor;
 
     public Location(double lon, double lat) {
         this.lat = lat;
@@ -20,23 +23,23 @@ public class Location {
      * @return the location's latitude
      */
     public double getLat() {
-        return lat;
+        return BigDecimal.valueOf(lat).setScale(proximity, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
      * @return the location's longitude
      */
     public double getLon() {
-        return lon;
+        return BigDecimal.valueOf(lon).setScale(proximity, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        long temp = Math.round(lat / proximity);
+        long temp = approximate(lat);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Math.round(lon / proximity);
+        temp = approximate(lon);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
@@ -50,15 +53,25 @@ public class Location {
         if (obj.getClass() != Location.class)
             return false;
         Location other = (Location) obj;
-        return Math.round(this.lat / proximity) == Math.round(other.lat / proximity) && Math.round(this.lon / proximity) == Math.round(other.lon / proximity);
+        return approximate(lat) == approximate(other.lat) && approximate(lon) == approximate(other.lon);
+    }
+
+    /**
+     * Calculates a value of a coordinate to determine which coordinates are considered equal
+     * @param coordinate the coordinate to approximate
+     * @return the approximated value of the coordinate
+     */
+    private static long approximate(double coordinate){
+        return Math.round(coordinate / divisor);
     }
 
     /**
      * Sets the global proximity value
      * @param newProximity the new proximity value
      */
-    static void setProximity(double newProximity){
+    static void setProximity(int newProximity){
         proximity = newProximity;
+        divisor = 1d / Math.pow(10d, proximity);
     }
 
     /**

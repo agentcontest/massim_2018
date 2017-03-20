@@ -37,17 +37,16 @@ __Tournament points__ are distributed according to the amount of money a team ow
 
 ## Locations
 
-Locations in the scenario are given as pairs of latitude and longitude double values. To simplify reaching a location, these values are rounded and approximated with the help of two parameters:
+Locations in the scenario are given as pairs of latitude and longitude double values. For the sake of simplicity, we assume them to form a uniform grid (which will be okay, if we don't go near the poles).
+
+To simplify reaching a location, these values are rounded and approximated with the help of two parameters:
 
 __Proximity:__ The proximity value specifies which precise locations are still considered the same, which is important when an agent needs to be at the same location as e.g. another agent or a facility.
+So, it determines how many decimal places of the latitude and longitude values are compared when checking equality of Locations.
 
-Latitude and longitude are divided by the proximity value and rounded to the nearest number. Thus, each location _snaps_ to an intersection in a more coarse grid. All locations snapping to the same intersection are considered to be 'equal'.
+_Example:_ 51.1111 and 51.1112 would still be considered equal with a proximity of 3 and different with a proximity of 4.
 
-In other words, __proximity__ determines how many decimal places of the latitude and longitude values are compared.
-
-_Example:_ 51.1111 and 51.1112 would still be considered equal with a proximity of 0.001 (both values are multiplied with 1000 and rounded to 51,111) and different with a proximity of 0.0001 (both values are multiplied with 10,000, which already yields two different integers).
-
-__CellSize:__ The cell size specifies the length an agent with speed 1 could travel in a single step. To simplify distance calculation, we assume latitude and longitude to form a uniform grid. The cell size is given in degrees. (For example, with a cell size of 4.5, an agent could travel around the world in 80 steps.)
+__CellSize:__ The cell size specifies the length in meters an agent with speed 1 could travel in a single step.
 
 ## Items
 

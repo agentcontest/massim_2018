@@ -10,6 +10,7 @@ import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
 import com.graphhopper.util.shapes.GHPoint3D;
+import massim.protocol.scenario.city.util.LocationUtil;
 import massim.util.Log;
 import massim.util.RNG;
 import massim.scenario.city.data.Location;
@@ -128,7 +129,7 @@ public class CityMap implements Serializable {
 			
 			long i = 0;
 			for (; i * cellSize + remainder < length ; i++) {
-				loc = getIntermediateLoc(prevPoint, nextPoint, length, i*cellSize+remainder);
+				loc = getIntermediateLoc(prevPoint, nextPoint, length, i * cellSize + remainder);
 				if (!from.equals(loc)) {
 					route.addPoint(loc);
 				}
@@ -138,15 +139,13 @@ public class CityMap implements Serializable {
 		}
 		
 		if (!to.equals(loc)) { route.addPoint(to); }
-		
+
 		return route;
 	}
 	
 	
 	private double getLength(Location loc1, Location loc2) {
-		return Math.sqrt( Math.pow(loc1.getLon() - loc2.getLon(), 2)
-						+ Math.pow(loc1.getLat() - loc2.getLat(), 2));
-		
+        return LocationUtil.calculateRange(loc1.getLat(), loc1.getLon(), loc2.getLat(), loc2.getLon());
 	}
 	
 	
@@ -158,9 +157,7 @@ public class CityMap implements Serializable {
 	
 	
 	private double getLength(GHPoint loc1, GHPoint loc2) {
-		return Math.sqrt( Math.pow(loc1.getLon() - loc2.getLon(), 2)
-						+ Math.pow(loc1.getLat() - loc2.getLat(), 2));
-		
+        return LocationUtil.calculateRange(loc1.getLat(), loc1.getLon(), loc2.getLat(), loc2.getLon());
 	}
 	
 	private Location getIntermediateLoc(GHPoint loc1, GHPoint loc2, double length, double i) {

@@ -2,6 +2,7 @@ package massim.protocol.scenario.city.percept;
 
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.scenario.city.data.*;
+import massim.protocol.scenario.city.util.LocationUtil;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
@@ -67,7 +68,7 @@ public class CityStepPercept extends RequestAction {
         this.dumps = dumps;
         this.storage = storage;
         this.resourceNodes = resourceNodes.stream() // filter nodes by visibility range
-                .filter(rn -> calculateRange(rn.getLat(), rn.getLon(), self.getLat(), self.getLon()) <= visRange)
+                .filter(rn -> LocationUtil.calculateRange(rn.getLat(), rn.getLon(), self.getLat(), self.getLon()) <= visRange)
                 .collect(Collectors.toList());
         this.jobs = jobsPerTeam.get(teamName);
         this.auctions = auctionsPerTeam.get(teamName);
@@ -190,27 +191,5 @@ public class CityStepPercept extends RequestAction {
         public int getStep(){
             return step;
         }
-    }
-
-    /**
-     * Calculates the actual distance between two locations.
-     * @param lat1 latitude of location 1
-     * @param lon1 longitude of location 1
-     * @param lat2 latitude of location 2
-     * @param lon2 longitude of location 2
-     * @return the distance between the two locations in meters
-     */
-    private static double calculateRange(double lat1, double lon1, double lat2, double lon2){
-        double phi1 = Math.toRadians(lat1);
-        double phi2 = Math.toRadians(lat2);
-        double deltaPhi = Math.toRadians(lat2 - lat1);
-        double deltaLambda = Math.toRadians(lon2 - lon1);
-
-        double a = Math.pow(Math.sin(deltaPhi / 2), 2);
-        a += Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(deltaLambda / 2), 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return 6371e3 * c;
     }
 }
