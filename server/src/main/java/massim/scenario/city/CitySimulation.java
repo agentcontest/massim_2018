@@ -125,6 +125,7 @@ public class CitySimulation extends AbstractSimulation {
         List<WorkshopData> workshops = buildWorkshopData();
         List<ChargingStationData> stations = buildChargingStationData();
         List<DumpData> dumps = buildDumpData();
+        List<ResourceNodeData> resourceNodes = buildResourceNodeData();
 
         // storage
         Map<String, List<StorageData>> storageMap = new HashMap<>();
@@ -201,6 +202,7 @@ public class CitySimulation extends AbstractSimulation {
                             completeEntities.get(agent),
                             team, stepNo, teamData.get(team), entities, shops, workshops, stations, dumps,
                             storageMap.get(team),
+                            resourceNodes,
                             jobsPerTeam,
                             auctionsPerTeam,
                             postedJobsPerTeam
@@ -253,6 +255,16 @@ public class CitySimulation extends AbstractSimulation {
                                 shop.getOfferedItems().stream()
                                         .map(item -> new StockData(item.getName(), shop.getPrice(item), shop.getItemCount(item)))
                                         .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds resource node data objects for all shops.
+     * @return a list of those objects
+     */
+    private List<ResourceNodeData> buildResourceNodeData() {
+        return world.getResourceNodes().stream()
+                .map(node -> new ResourceNodeData(node.getName(), node.getLocation().getLat(), node.getLocation().getLon()))
                 .collect(Collectors.toList());
     }
 
@@ -381,6 +393,7 @@ public class CitySimulation extends AbstractSimulation {
                 buildWorkshopData(),
                 buildChargingStationData(),
                 buildDumpData(),
+                buildResourceNodeData(),
                 world.getJobs().stream()
                         .map(job -> job.toJobData(true, true))
                         .collect(Collectors.toList()),

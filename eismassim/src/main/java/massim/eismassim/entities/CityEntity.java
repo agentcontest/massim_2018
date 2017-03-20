@@ -155,6 +155,10 @@ public class CityEntity extends EISEntity {
         percept.getWorkshops().forEach(ws -> ret.add(new Percept("workshop", new Identifier(ws.getName()),
                 new Numeral(ws.getLat()), new Numeral(ws.getLon()))));
 
+        // resourceNode percepts
+        percept.getResourceNodes().forEach(node -> ret.add(new Percept("resourceNode", new Identifier(node.getName()),
+                new Numeral(node.getLat()), new Numeral(node.getLon()), new Identifier(node.getResource()))));
+
         // job percepts
         percept.getJobs().forEach(job -> ret.add(createJobPercept(job, "job")));
         percept.getAuctions().forEach(job -> ret.add(createJobPercept(job, "auction")));
