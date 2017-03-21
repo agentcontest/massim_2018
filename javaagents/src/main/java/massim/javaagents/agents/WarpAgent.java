@@ -18,6 +18,8 @@ public class WarpAgent extends Agent{
 
     private Queue<Action> actionQueue = new LinkedList<>();
 
+    private boolean test = false;
+
     /**
      * Constructor.
      *
@@ -38,6 +40,10 @@ public class WarpAgent extends Agent{
         Map<String, List<Percept>> shopsByItem = new HashMap<>();
 
         String lastAction = "";
+        String carriedItems = "";
+        Vector<String> resourceNodes = new Vector<>();
+        String lon = "";
+        String lat = "";
 
         for (Percept p: getPercepts()){
             switch(p.getName()){
@@ -46,6 +52,18 @@ public class WarpAgent extends Agent{
                 case "lastActionParams":
                 case "lastActionResult":
                     lastAction += " " + p.toProlog();
+                    break;
+                case "item":
+                    carriedItems += " " + p.toProlog();
+                    break;
+                case "resourceNode":
+                    resourceNodes.add(p.toProlog());
+                    break;
+                case "lon":
+                    lon = p.toProlog();
+                    break;
+                case "lat":
+                    lat = p.toProlog();
                     break;
             }
             if(actionQueue.size() == 0){
@@ -74,6 +92,25 @@ public class WarpAgent extends Agent{
         }
 
         say("Last step I did " + lastAction);
+
+        if(carriedItems.isEmpty()==false){
+            say("I carry " + carriedItems);
+        }
+
+        say("I am at " + lon + " " + lat);
+
+        if(resourceNodes.isEmpty()==false){
+            for(String nodeInfo: resourceNodes){
+                say(nodeInfo);
+            }
+        }
+
+        //test gather action
+        if(test==false){
+            actionQueue.add(new Action("goto", new Identifier("resourceNode2")));
+            actionQueue.add(new Action("gather"));
+            test=true;
+        }
 
         // follow the plan if there is one
         if(actionQueue.size() > 0) return actionQueue.poll();
