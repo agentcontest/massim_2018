@@ -75,10 +75,9 @@
             "capacityMax" : 15000
           },
           "resourceNodes":{
-            "perResourceMin" : 1,
-            "perResourceMax" : 3,
-            "amountMin" : 4,
-            "amountMax" : 8
+            "density" : 0.7,
+            "gatherFrequencyMin" : 4,
+            "gatherFrequencyMax" : 8
           }
         },
         "items" : {
@@ -91,7 +90,7 @@
           "resourcesMin" : 2,
           "resourcesMax" : 4,
           "minVol" : 10,
-          "maxVol" : 100,
+          "maxVol" : 50,
           "valueMin" : 10,
           "valueMax" : 100,
           "minReq" : 1,
