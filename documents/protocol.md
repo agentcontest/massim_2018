@@ -23,6 +23,8 @@ If an agent loses the connection to the server, it may reconnect using the stand
 
 ## Message formats
 
+__Each message is terminated by a separate `0 byte`.__ The server buffers everything up to the 0 byte and tries to parse an XML string from that.
+
 ### AUTH-REQUEST
 
 Used by agents to initiate communication with the server.
