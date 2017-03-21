@@ -21,7 +21,7 @@
       "centerLat" : 51.4885438,
       "centerLon" : -0.1112036,
       "proximity" : 5,
-      "cellSize" : 500,
+      "cellSize" : 200,
       "randomSeed" : 17,
       "randomFail" : 1,
       "postJobLimit": 10,

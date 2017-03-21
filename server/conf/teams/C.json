@@ -1,8 +1,8 @@
-{
-  "agentC1": "1",
-  "agentC2": "1",
-  "agentC3": "1",
-  "agentC4": "1",
-  "agentC5": "1",
-  "agentC6": "1"
-}
+[
+  ["agentC1", "1"],
+  ["agentC2", "1"],
+  ["agentC3", "1"],
+  ["agentC4", "1"],
+  ["agentC5", "1"],
+  ["agentC6", "1"]
+]

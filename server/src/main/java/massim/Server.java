@@ -415,14 +415,21 @@ public class Server {
             teamJSON.keySet().forEach(name -> {
                 TeamConfig team = new TeamConfig(name);
                 config.teams.add(team);
-                JSONObject accounts = teamJSON.optJSONObject(name);
+                JSONArray accounts = teamJSON.optJSONArray(name);
                 if (accounts != null){
-                    accounts.keySet().forEach(agName -> {
-                        if(!allAgents.add(agName))
-                            Log.log(Log.Level.CRITICAL, "Agent " + agName + " occurs in multiple teams.");
-                        team.addAgent(agName, accounts.getString(agName));
-                        config.accounts.put(agName, accounts.getString(agName));
-                    });
+                    for (int i = 0; i < accounts.length(); i++) {
+                        JSONArray account = accounts.optJSONArray(i);
+                        if(account != null){
+                            String accName = account.optString(0);
+                            String accPw = account.optString(1);
+                            if(!accName.equals("") && !accPw.equals("")){
+                                if(!allAgents.add(accName))
+                                    Log.log(Log.Level.CRITICAL, "Agent " + accName + " occurs in multiple teams.");
+                                team.addAgent(accName, accPw);
+                                config.accounts.put(accName, accPw);
+                            }
+                        }
+                    }
                 }
             });
         }

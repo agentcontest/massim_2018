@@ -142,14 +142,14 @@ The teams block describes the teams and their credentials. The teams listed here
 
 ```JSON
 "teams" : {
-    "A" : {
-      "agentA1": "1",
-      "agentA2": "1",
-      "agentA3": "1",
-      "agentA4": "1",
-      "agentA5": "1",
-      "agentA6": "1"
-      },
+    [
+      ["agentA1", "1"],
+      ["agentA2", "1"],
+      ["agentA3", "1"],
+      ["agentA4", "1"],
+      ["agentA5", "1"],
+      ["agentA6", "1"]
+    ],
     "B" : "$(teams/B.json)",
     "C" : "$(teams/C.json)",
     "D" : "$(teams/D.json)",
@@ -157,7 +157,7 @@ The teams block describes the teams and their credentials. The teams listed here
   }
 ```
 
-Each key in the ```teams``` JSON object is the name of a team. Each key in an object the name points to is the name of an agent. The value of that agent is the agent's password.
+Each key in the ```teams``` JSON object is the name of a team. It points to an array of single agent accounts. Each account is represented by an array, where the fist entry is the agent's username, and the second its password.
 
 Here, for teams B to E we used a custom JSON include mechanism that will be explained in the next section.
 
