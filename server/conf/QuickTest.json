@@ -32,6 +32,9 @@
       "randomSeed" : 42,
       "randomFail" : 0,
       "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
 
       "roles" : {
         "SpaceShip" : {

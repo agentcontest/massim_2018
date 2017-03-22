@@ -3,9 +3,6 @@ package massim.scenario.city.data;
 import massim.protocol.messagecontent.Action;
 import massim.scenario.city.ActionExecutor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * The body of an agent in the City scenario.
  */
@@ -14,7 +11,6 @@ public class Entity {
     private Role role;
     private Location location;
     private Route route;
-    private Set<Tool> acquiredTools = new HashSet<>();
 
     private int currentBattery;
     private BoundedItemBox items;
@@ -65,18 +61,19 @@ public class Entity {
 
     /**
      * Moves this entity along the route.
+     * @param cost the energy cost of the goto action
      * @return true if successful
      */
-    public boolean advanceRoute() {
+    public boolean advanceRoute(int cost) {
         if (route == null) {
             return false;
         }
-        if (currentBattery <= 5){
+        if (currentBattery < cost){
             route = null;
             currentBattery = 0;
             return false;
         }
-        currentBattery -= 10;
+        currentBattery -= cost;
         Location newLoc = this.route.advance(role.getSpeed());
         if (newLoc != null) location = newLoc;
         if (route.isCompleted()) route = null;

@@ -24,7 +24,9 @@ public class WorldState {
     private int randomFail;
     private String id;
     private int postJobLimit;
-    private int visibilityRange = 500; // TODO add to config
+    private int visibilityRange;
+    private int gotoCost;
+    private int rechargeRate;
 
     private List<Tool> tools;
     private Map<String, Item> items = new HashMap<>();
@@ -80,6 +82,12 @@ public class WorldState {
         Location mapCenter = new Location(centerLon, centerLat);
         randomFail = config.optInt("randomFail", 1);
         Log.log(Log.Level.NORMAL, "Configuring random fail probability: " + randomFail);
+        visibilityRange = config.optInt("visibilityRange", 500);
+        Log.log(Log.Level.NORMAL, "Configuring visibility range: " + visibilityRange);
+        gotoCost = config.optInt("gotoCost", 10);
+        Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
+        rechargeRate = config.optInt("rechargeRate", 5);
+        Log.log(Log.Level.NORMAL, "Configuring recharge rate: " + rechargeRate);
 
         parseRoles(config.optJSONObject("roles"));
 
@@ -384,5 +392,19 @@ public class WorldState {
      */
     public int getVisibilityRange(){
         return visibilityRange;
+    }
+
+    /**
+     * @return the energy restored 1 to 2 times by the recharge action
+     */
+    public int getRechargeRate(){
+        return rechargeRate;
+    }
+
+    /**
+     * @return the energy cost for the goto action
+     */
+    public int getGotoCost(){
+        return gotoCost;
     }
 }

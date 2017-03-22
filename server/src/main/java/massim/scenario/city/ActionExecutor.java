@@ -127,7 +127,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;
                 }
-                entity.setLastActionResult(entity.advanceRoute()? SUCCESSFUL : FAILED_NO_ROUTE);
+                entity.setLastActionResult(entity.advanceRoute(world.getGotoCost())? SUCCESSFUL : FAILED_NO_ROUTE);
                 break;
 
             case GIVE: // 3 params (agent, item, amount)
@@ -468,10 +468,19 @@ public class ActionExecutor {
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 
+            case RECHARGE: // no params
+                if(params.size() != 0){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    break;
+                }
+                entity.charge(world.getRechargeRate() + RNG.nextInt(world.getRechargeRate() + 1));
+                entity.setLastActionResult(SUCCESSFUL);
+                break;
+
             case CONTINUE:
             case SKIP:
                 if (entity.getRoute() != null)
-                    entity.setLastActionResult(entity.advanceRoute()? SUCCESSFUL : FAILED_NO_ROUTE);
+                    entity.setLastActionResult(entity.advanceRoute(world.getGotoCost())? SUCCESSFUL : FAILED_NO_ROUTE);
                 else // nothing happens successfully
                     entity.setLastActionResult(SUCCESSFUL);
                 break;

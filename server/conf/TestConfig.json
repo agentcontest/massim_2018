@@ -25,6 +25,9 @@
       "randomSeed" : 17,
       "randomFail" : 1,
       "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
 
       "roles" : {
         "Car" : {
@@ -48,7 +51,7 @@
         "Truck" : {
           "speed" : 2,
           "load" : 3000,
-          "battery" : 1000,
+          "battery" : 2000,
           "roads" : ["road"]
         }
       },
