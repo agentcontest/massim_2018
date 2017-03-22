@@ -16,6 +16,10 @@ public class MissionData extends AuctionJobData {
     @XmlAttribute
     private String missionID;
 
+    private MissionData(){
+        super();
+    }
+
     /**
      * Constructor.
      *

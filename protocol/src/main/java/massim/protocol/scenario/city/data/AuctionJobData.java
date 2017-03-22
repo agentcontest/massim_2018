@@ -25,7 +25,7 @@ public class AuctionJobData extends JobData {
     /**
      * For jaxb
      */
-    private AuctionJobData(){}
+    AuctionJobData(){}
 
     /**
      * Constructor.
