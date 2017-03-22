@@ -183,6 +183,12 @@ that go above this value will be ignored.
 - __fine__: at the end of the auction job, if it has not been completed, the
 team that won the auction has to pay this fine.
 
+### Mission
+
+A mission is a special type of job that is given out randomly. All teams will receive an instance of the same mission to complete. This mission has to be completed (or the fine paid).
+
+Note: Technically, a mission is an auction that is immediately assigned to each team in the simulation.
+
 ## Actions
 
 In each step, an agent may execute _exactly one_ action. The actions are gathered and executed in random order.
@@ -607,7 +613,7 @@ The storage contains a child node for each item type that is stored or delivered
 
 #### Job details
 
-An element for each job is added (`job`, `auction`, or `posted`).
+An element for each job is added (`job`, `auction`, `mission` or `posted`).
 
 __Regular job example:__ (all non-auction jobs not posted by the team)
 
@@ -636,6 +642,15 @@ __Posted job example:__ (all active jobs posted by the team)
 <posted start="30" end="156" id="job11" reward="6546" storage="storage8">
   <required amount="3" name="item0"/>
 </posted>
+```
+
+__Mission job example:__ (all currently active missions for the team)
+
+```XML
+<mission auctionTime="0" start="10" end="100" fine="500" id="job2"
+         lowestBid="1000" reward="1001" storage="storage0">
+  <required amount="42" name="item1"/>
+</mission>
 ```
 
 ## Configuration
