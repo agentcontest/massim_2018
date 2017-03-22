@@ -200,6 +200,8 @@ No | Parameter | Meaning
 --- | --- | ---
 0 | Facility | The name of a facility the agent wants to move to.
 
+Note: Names of _ResourceNodes_ are not allowed, as they are not common knowledge.
+
 No | Parameter | Meaning
 --- | --- | ---
 0 | latitude | The latitude of the agent's desired destination.
