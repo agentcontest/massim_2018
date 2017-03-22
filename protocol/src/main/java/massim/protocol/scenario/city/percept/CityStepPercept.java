@@ -31,6 +31,7 @@ public class CityStepPercept extends RequestAction {
     @XmlElement(name="resourceNode") private List<ResourceNodeData> resourceNodes;
     @XmlElement(name="job") private List<JobData> jobs;
     @XmlElement(name="auction") private List<AuctionJobData> auctions;
+    @XmlElement(name="mission") private List<MissionData> missions;
     @XmlElement(name="posted") private List<JobData> postedJobs;
 
     private CityStepPercept(){} // for jaxb
@@ -50,14 +51,23 @@ public class CityStepPercept extends RequestAction {
      * @param resourceNodes all resource nodes
      * @param jobsPerTeam map of all jobs by team (not including jobs posted by the team per entry)
      * @param auctionsPerTeam map of all auctions by team (assigned auctions are only visible to the assigned team)
+     * @param missionsPerTeam mission jobs for each team
      * @param postedJobsPerTeam map of all posted jobs by team
      * @param visRange the visibility range for determining whether to include certain elements
      */
     public CityStepPercept(EntityData self, String teamName, int step, TeamData team,
-                           List<EntityData> entities, List<ShopData> shops, List<WorkshopData> workshops,
-                           List<ChargingStationData> stations, List<DumpData> dumps, List<StorageData> storage, List<ResourceNodeData> resourceNodes,
-                           Map<String, List<JobData>> jobsPerTeam, Map<String, List<AuctionJobData>> auctionsPerTeam,
-                           Map<String, List<JobData>> postedJobsPerTeam, int visRange){
+                           List<EntityData> entities,
+                           List<ShopData> shops,
+                           List<WorkshopData> workshops,
+                           List<ChargingStationData> stations,
+                           List<DumpData> dumps,
+                           List<StorageData> storage,
+                           List<ResourceNodeData> resourceNodes,
+                           Map<String, List<JobData>> jobsPerTeam,
+                           Map<String, List<AuctionJobData>> auctionsPerTeam,
+                           Map<String, List<MissionData>> missionsPerTeam,
+                           Map<String, List<JobData>> postedJobsPerTeam,
+                           int visRange){
         simData = new SimData(step);
         teamData = team;
         selfData = self;
@@ -73,6 +83,7 @@ public class CityStepPercept extends RequestAction {
         this.jobs = jobsPerTeam.get(teamName);
         this.auctions = auctionsPerTeam.get(teamName);
         this.postedJobs = postedJobsPerTeam.get(teamName);
+        this.missions = missionsPerTeam.get(teamName);
     }
 
     /**
@@ -157,6 +168,13 @@ public class CityStepPercept extends RequestAction {
      */
     public List<JobData> getPostedJobs(){
         return postedJobs == null? new Vector<>() : postedJobs;
+    }
+
+    /**
+     * @return information about all jobs posted by the team
+     */
+    public List<MissionData> getMissions(){
+        return postedJobs == null? new Vector<>() : missions;
     }
 
     /**

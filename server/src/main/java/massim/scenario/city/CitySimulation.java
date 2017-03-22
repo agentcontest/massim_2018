@@ -155,6 +155,7 @@ public class CitySimulation extends AbstractSimulation {
         Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
         Map<String, List<JobData>> postedJobsPerTeam = new HashMap<>();
         Map<String, List<AuctionJobData>> auctionsPerTeam = new HashMap<>();
+        Map<String, List<MissionData>> missionsPerTeam = new HashMap<>();
         world.getTeams().forEach(team -> postedJobsPerTeam.put(team.getName(), new ArrayList<>()));
         world.getTeams().forEach(team -> jobsPerTeam.put(team.getName(), new ArrayList<>()));
 
@@ -182,15 +183,20 @@ public class CitySimulation extends AbstractSimulation {
                 .map(jobData -> (AuctionJobData)jobData)
                 .collect(Collectors.toList());
 
-        // add per team: auctions assigned to that team
+        // add per team: auctions assigned to that team + missions
         world.getTeams().forEach(team -> {
             List<AuctionJobData> teamJobs = new Vector<>(auctioningJobs);
+            List<MissionData> teamMissions = new Vector<>();
             world.getJobs().stream()
                     .filter(job -> job instanceof AuctionJob
                             && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                             && job.isActive())
-                    .forEach(job -> teamJobs.add((AuctionJobData) job.toJobData(true, false)));
+                    .map(job ->  job instanceof Mission?
+                             teamMissions.add((MissionData) job.toJobData(false, false))
+                            :teamJobs.add((AuctionJobData) job.toJobData(true, false))
+                    );
             auctionsPerTeam.put(team.getName(), teamJobs);
+            missionsPerTeam.put(team.getName(), teamMissions);
         });
 
         // create and deliver percepts
@@ -205,6 +211,7 @@ public class CitySimulation extends AbstractSimulation {
                             resourceNodes,
                             jobsPerTeam,
                             auctionsPerTeam,
+                            missionsPerTeam,
                             postedJobsPerTeam,
                             world.getVisibilityRange()
             ));
@@ -329,7 +336,9 @@ public class CitySimulation extends AbstractSimulation {
 
         // assign auction jobs which have finished auctioning
         world.getJobs().stream()
-                .filter(job -> job instanceof AuctionJob && job.getBeginStep() + ((AuctionJob)job).getAuctionTime() - 1 == stepNo)
+                .filter(job -> job instanceof AuctionJob
+                               && job.getBeginStep() + ((AuctionJob)job).getAuctionTime() - 1 == stepNo
+                               && ((AuctionJob)job).isAssigned())
                 .forEach(job -> ((AuctionJob)job).assign());
     }
 

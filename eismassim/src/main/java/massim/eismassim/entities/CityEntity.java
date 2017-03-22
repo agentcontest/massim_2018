@@ -163,6 +163,7 @@ public class CityEntity extends EISEntity {
         percept.getJobs().forEach(job -> ret.add(createJobPercept(job, "job")));
         percept.getAuctions().forEach(job -> ret.add(createJobPercept(job, "auction")));
         percept.getPostedJobs().forEach(job -> ret.add(createJobPercept(job, "posted")));
+        percept.getMissions().forEach(job -> ret.add(createJobPercept(job, "mission")));
 
         return ret;
     }

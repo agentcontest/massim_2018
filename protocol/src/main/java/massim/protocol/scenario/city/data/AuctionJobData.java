@@ -39,6 +39,7 @@ public class AuctionJobData extends JobData {
      * @param lowestBid current lowest bid (may be null if there is none)
      * @param auctionTime amount of steps for auction process
      * @param poster the job's origin
+     * @param deliveredItems the items already delivered towards this job
      */
     public AuctionJobData(String name, String storage, int start, int end, int reward, List<ItemAmountData> requiredItems,
                           int fine, Integer lowestBid, int auctionTime, List<CompletionData> deliveredItems,

@@ -55,6 +55,20 @@ public class AuctionJob extends Job{
     }
 
     /**
+     * @return the fine to pay if the job is not completed
+     */
+    int getFine(){
+        return fine;
+    }
+
+    /**
+     * @return the current lowest bid
+     */
+    int getLowestBid(){
+        return lowestBid;
+    }
+
+    /**
      * An auction job is set to {@link massim.scenario.city.data.Job.JobStatus#AUCTION in its begin step.}
      * Needs to be called in the job's begin step.
      */
