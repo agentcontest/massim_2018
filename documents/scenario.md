@@ -419,6 +419,16 @@ failed_wrong_param | Parameters have been given.
 failed_location | The agent is not in a facility.
 failed_wrong_facility | The agent is not in a charging station.
 
+#### recharge
+
+Uses the agent's solar collectors to recharge its battery (slowly).
+
+No parameters.
+
+Failure Code | Reason
+--- | ---
+failed_wrong_param | Parameters have been given.
+
 #### continue & skip
 
 Follows an agent's route or does nothing if the agent has no route.
@@ -651,7 +661,10 @@ Example:
   "cellSize" : 0.001,
   "randomSeed" : 17,
   "randomFail" : 1,
-  "postJobLimit": 10,
+  "postJobLimit" : 10,
+  "gotoCost" : 10,
+  "rechargeRate" : 5,
+  "visibilityRange" : 500,
 
   "roles" : {},
 
@@ -682,6 +695,9 @@ For each simulation, the following parameters may be specified:
 * __randomSeed__: the random seed that is used for map generation and action execution
 * __randomFail__: the probability for any action to fail (in %)
 * __postJobLimit__: the number of simultaneously active jobs for each team (i.e. a team may not post more jobs)
+* __gotoCost__: the energy cost for 1 goto action
+* __rechargeRate__: the energy that is restored between 1 and 2 times with 1 recharge action
+* __visibilityRange__: the maximum distance in meters between an agent and a resource node for the agent to perceive that resource node
 
 The number of agents per role is defined in the `entities` array. Each object may have only one key (the name of the role). The value for the key is the number of agents for that role.
 
