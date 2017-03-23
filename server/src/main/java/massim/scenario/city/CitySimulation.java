@@ -193,7 +193,7 @@ public class CitySimulation extends AbstractSimulation {
                             && job.isActive())
                     .map(job ->  job instanceof Mission?
                              teamMissions.add((MissionData) job.toJobData(false, false))
-                            :teamJobs.add((AuctionJobData) job.toJobData(true, false))
+                            :teamJobs.add((AuctionJobData) job.toJobData(false, false))
                     );
             auctionsPerTeam.put(team.getName(), teamJobs);
             missionsPerTeam.put(team.getName(), teamMissions);
