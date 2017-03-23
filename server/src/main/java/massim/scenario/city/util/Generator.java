@@ -73,8 +73,7 @@ public class Generator {
     private List<Tool> allTools = new Vector<>();
 
     public Generator(JSONObject randomConf){
-        // TODO parse random parameters from config
-
+        //parse random parameters from config
         //parse facilities
         JSONObject facilities = randomConf.optJSONObject("facilities");
         if(facilities == null){
@@ -218,7 +217,7 @@ public class Generator {
         if(jobs == null){
             Log.log(Log.Level.ERROR, "No jobs in configuration.");
         }else{
-
+            //TODO parse job parameters from config
         }
     }
 
@@ -258,12 +257,16 @@ public class Generator {
                 if(roles.get(randomRole).getMaxLoad()>volume) {
                     role2=roles.get(randomRole).getName();
                     tools.add(new Tool(name, volume, value, role1, role2));
-                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() + " roles=" + tools.get(i).getRoles());
+                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() +
+                            ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() +
+                            " roles=" + tools.get(i).getRoles());
                     continue;
                 }
             }
             tools.add(new Tool(name, volume, value, roles.get(randomRole).getName()));
-            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() + ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() + " roles=" + tools.get(i).getRoles());
+            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() +
+                    ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() +
+                    " roles=" + tools.get(i).getRoles());
         }
 
         //add tools to roles
@@ -283,6 +286,10 @@ public class Generator {
         return tools;
     }
 
+    /**
+     * Generates a number of items dependent on config parameters
+     * @return a list of items
+     */
     public List<Item> generateItems(List<Tool> tools) {
         int baseItemAmount = RNG.nextInt((baseItemsMax-baseItemsMin) + 1) + baseItemsMin;
         int resourcesAmount = RNG.nextInt((resourcesMax-resourcesMin) + 1) + resourcesMin;
@@ -291,14 +298,16 @@ public class Generator {
 
         //generate base items
         for(int i=0; i<=baseItemAmount-1;i++){
-            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol, RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
+            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol,
+                    RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
             items.add(item);
             baseItems.add(item);
         }
 
         //generate resources
         for(int i=0; i<=resourcesAmount-1;i++){
-            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol,RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
+            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol,
+                    RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
             items.add(item);
             resources.add(item);
             baseItems.add(item);
@@ -352,13 +361,13 @@ public class Generator {
                 }
 
                 //generate required tools
-                //Vector<Tool> tmpTools = new Vector<>(tools);
+                Vector<Tool> tmpTools = new Vector<>(tools);
                 Vector<Tool> requiredTools = new Vector<>();
                 if(RNG.nextDouble()<toolProbability){
-                    RNG.shuffle(tools);
-                    requiredTools.add(tools.get(0));
+                    RNG.shuffle(tmpTools);
+                    requiredTools.add(tmpTools.get(0));
                     if(RNG.nextDouble()<toolProbability){
-                        requiredTools.add(tools.get(1));
+                        requiredTools.add(tmpTools.get(1));
                     }
                 }
 
@@ -403,20 +412,24 @@ public class Generator {
                 for(Tool reqTool: item.getRequiredTools()){
                     reqTools.add(reqTool.getName());
                 }
-                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() + " value=" + item.getValue() + " assembleValue=" + item.getAssembleValue() + " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
+                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() +
+                        " value=" + item.getValue() + " assembleValue=" + item.getAssembleValue() +
+                        " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
             }
             counter2++;
         }
         return items;
     }
 
+    /**
+     * Generates a number of facilities dependent on config parameters
+     * @return a list of facilities
+     */
     public List<Facility> generateFacilities(List<Item> items, WorldState world) {
-
-        //TODO somehow get lat and lon from config
-        double minLat = 51.4647;
-        double maxLat = 51.5223;
-        double minLon = -0.1978;
-        double maxLon = -0.0354;
+        double minLat = world.getMinLat();
+        double maxLat = world.getMaxLat();
+        double minLon = world.getMinLon();
+        double maxLon = world.getMaxLon();
 
         List<Facility> facilities = new Vector<>();
         List<Shop> shops = new Vector<>();
@@ -439,7 +452,8 @@ public class Generator {
                 }
                 for(int i = 0; i < numberOfFacilities; i++){
                     Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, loc, RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
+                    ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, loc,
+                            RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
                     facilities.add(charging1);
                     locations.add(charging1.getLocation());
                     chargingCounter++;
@@ -447,10 +461,11 @@ public class Generator {
             }
         }
         if(chargingCounter==0){
-            ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, getUniqueLocation(locations, world), RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
+            ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, getUniqueLocation(locations, world),
+                    RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
             facilities.add(charging1);
             locations.add(charging1.getLocation());
-            chargingCounter++;
+            //chargingCounter++;
         }
 
         //generate shops
@@ -470,7 +485,8 @@ public class Generator {
                 for(int i = 0; i < numberOfFacilities; i++){
                     Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
                     Shop shop1 = new Shop("shop" + shopCounter, loc,RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-                    shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+                    shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                            items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
                     facilities.add(shop1);
                     locations.add(shop1.getLocation());
                     shops.add(shop1);
@@ -479,12 +495,14 @@ public class Generator {
             }
         }
         if(shopCounter==0){
-            Shop shop1 = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-            shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+            Shop shop1 = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),
+                    RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
+            shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
             facilities.add(shop1);
             locations.add(shop1.getLocation());
             shops.add(shop1);
-            shopCounter++;
+            //shopCounter++;
         }
         //add base items, resources and tools to shops
         Vector<Item> shopItems = new Vector<>();
@@ -493,21 +511,23 @@ public class Generator {
         }
         Vector<Tool> shopTools = new Vector<>(allTools);
         Vector<Item> usedItems = new Vector<>();
-        Vector<Item> usedTools = new Vector<>();
+        Vector<Tool> usedTools = new Vector<>();
         for(Shop shop: shops){
             int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
-            Vector<Item> unusedItems = new Vector(shopItems);
+            Vector<Item> unusedItems = new Vector<>(shopItems);
             for(int j=0; j<(numberOfProducts-(numberOfProducts/2)); j++){
                 int productNumber = RNG.nextInt(unusedItems.size());
-                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
+                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                        items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
                 Item tmpItem = unusedItems.get(productNumber);
                 unusedItems.remove(productNumber);
                 usedItems.add(tmpItem);
             }
-            Vector<Tool> unusedTools = new Vector(shopTools);
+            Vector<Tool> unusedTools = new Vector<>(shopTools);
             for(int j=0; j<(numberOfProducts/2); j++){
                 int productNumber = RNG.nextInt(unusedTools.size());
-                shop.addItem(unusedTools.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
+                shop.addItem(unusedTools.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                        items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
                 Tool tmpTool = unusedTools.get(productNumber);
                 unusedTools.remove(productNumber);
                 usedTools.add(tmpTool);
@@ -517,13 +537,15 @@ public class Generator {
         for(Item item: shopItems){
             int shopNumber = RNG.nextInt(shops.size());
             Shop shop = shops.get(shopNumber);
-            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
         }
         shopTools.removeAll(usedTools);
         for(Tool tool: shopTools){
             int shopNumber = RNG.nextInt(shops.size());
             Shop shop = shops.get(shopNumber);
-            shop.addItem(tool, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+            shop.addItem(tool, RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
+                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
         }
 
         /*for(Shop shop: shops){
@@ -560,7 +582,7 @@ public class Generator {
             Dump dump1 = new Dump("dump" + dumpCounter, getUniqueLocation(locations, world));
             facilities.add(dump1);
             locations.add(dump1.getLocation());
-            dumpCounter++;
+            //dumpCounter++;
         }
 
         //generate workshops
@@ -590,7 +612,7 @@ public class Generator {
             Workshop workshop1 = new Workshop("workshop" + workshopCounter, getUniqueLocation(locations, world));
             facilities.add(workshop1);
             locations.add(workshop1.getLocation());
-            workshopCounter++;
+            //workshopCounter++;
         }
 
         //generate storage
@@ -609,7 +631,7 @@ public class Generator {
                 }
                 for(int i = 0; i < numberOfFacilities; i++){
                     Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    Storage storage1 = new Storage("storage" + storageCounter, getRandomLocation(world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+                    Storage storage1 = new Storage("storage" + storageCounter, loc, (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
                             world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
                     facilities.add(storage1);
                     locations.add(storage1.getLocation());
@@ -618,11 +640,12 @@ public class Generator {
             }
         }
         if(storageCounter==0){
-            Storage storage1 = new Storage("storage" + storageCounter, getUniqueLocation(locations, world), (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+            Storage storage1 = new Storage("storage" + storageCounter, getUniqueLocation(locations, world),
+                    (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
                     world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
             facilities.add(storage1);
             locations.add(storage1.getLocation());
-            storageCounter++;
+            //storageCounter++;
         }
 
         //generate resource nodes
@@ -640,7 +663,8 @@ public class Generator {
                 }
                 for (int i = 0; i < numberOfFacilities; i++) {
                     Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
-                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()),RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
+                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()),
+                            RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
                     facilities.add(node1);
                     locations.add(node1.getLocation());
                     resourceNodes.add(node1);
@@ -650,7 +674,9 @@ public class Generator {
         }
         if(nodeCounter<resources.size()){
             for(int i=nodeCounter; i<resources.size(); i++){
-                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world), resources.get(nodeCounter % resources.size()), RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
+                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world),
+                        resources.get(nodeCounter % resources.size()),
+                        RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
                 facilities.add(node1);
                 locations.add(node1.getLocation());
                 resourceNodes.add(node1);
@@ -659,11 +685,13 @@ public class Generator {
         }
 
         for(ResourceNode node: resourceNodes){
-            Log.log(Log.Level.NORMAL, "Configuring resource nodes: " + node.getName() + ": " + node.getResource().getName() + " " + node.getLocation().getLat() + ", " + node.getLocation().getLon());
+            Log.log(Log.Level.NORMAL, "Configuring resource nodes: " + node.getName() + ": " + node.getResource().getName() +
+                    " " + node.getLocation().getLat() + ", " + node.getLocation().getLon());
         }
 
         for(Facility fac: facilities){
-            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName() + ": " + fac.getLocation().getLat() + ", " + fac.getLocation().getLon());
+            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName() + ": " + fac.getLocation().getLat() +
+                    ", " + fac.getLocation().getLon());
         }
 
         return facilities;
@@ -678,10 +706,19 @@ public class Generator {
         return world.getMap().getRandomLocation(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000);
     }
 
+    /**
+     * Tries to get a new random location within certain bounds
+     */
     private Location getRandomLocationInBounds(WorldState world, double minLat, double maxLat, double minLon, double maxLon){
-        return world.getMap().getRandomLocationInBounds(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)), 1000, minLat, maxLat, minLon, maxLon);
+        return world.getMap().getRandomLocationInBounds(new HashSet<>(Collections.singletonList(GraphHopperManager.PERMISSION_ROAD)),
+                1000, minLat, maxLat, minLon, maxLon);
     }
 
+    /**
+     * Tries to get a new random location that is not already in use
+     * @param locations locations that are already in use
+     * @param world the world to look for a location in
+     */
     private Location getUniqueLocation(Set<Location> locations, WorldState world){
         Location loc = getRandomLocation(world);
         for(int i=0; i<100; i++){
@@ -694,6 +731,9 @@ public class Generator {
         return loc;
     }
 
+    /**
+     * Tries to get a unique location within certain bounds
+     */
     private Location getUniqueLocationInBounds(Set<Location> locations, WorldState world, double minLat, double maxLat, double minLon, double maxLon){
         Location loc = getRandomLocationInBounds(world, minLat, maxLat, minLon, maxLon);
         for(int i=0; i<100; i++){
@@ -707,34 +747,42 @@ public class Generator {
     }
 
     /**
+     * Generates a number of jobs dependent on config parameters
+     * @return a set of jobs
      * @param stepNo the number of the current step
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
-        // TODO maybe it's better not to create the same job each step
-        //jobs.add(new Job(1, world.getStorages().iterator().next(), stepNo + 1, stepNo + 10, JobData.POSTER_SYSTEM));
+        // TODO generate more jobs
         if(stepNo==1){
-            int itemNumber = 0;
-            int reward = 0;
-            if(itemGraph.get(1).isEmpty() == false){
+            int itemNumber;
+            int reward;
+            ArrayList<Storage> tmpStorages = new ArrayList<>(world.getStorages());
+            int storageNumber;
+
+            //generate jobs
+            if(!itemGraph.get(1).isEmpty()){
                 //easy job
+                storageNumber = RNG.nextInt(tmpStorages.size());
                 itemNumber = RNG.nextInt(itemGraph.get(1).size());
                 reward = 100 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
-                Job job1 = new Job(reward, world.getStorages().iterator().next(), 5, 205, JobData.POSTER_SYSTEM);
+                Job job1 = new Job(reward, tmpStorages.get(storageNumber), 5, 205, JobData.POSTER_SYSTEM);
                 job1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
                 jobs.add(job1);
-                if(itemGraph.get(2).isEmpty() == false){
+                if(!itemGraph.get(2).isEmpty()){
                     //medium job
+                    storageNumber = RNG.nextInt(tmpStorages.size());
                     itemNumber = RNG.nextInt(itemGraph.get(2).size());
                     reward = 500 + itemGraph.get(2).get(itemNumber).getAssembleValue()*100;
-                    Job job2 = new Job(reward, world.getStorages().iterator().next(), 205, 505, JobData.POSTER_SYSTEM);
+                    Job job2 = new Job(reward, tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
                     job2.addRequiredItem(itemGraph.get(2).get(itemNumber), 3);
                     jobs.add(job2);
-                    if(itemGraph.get(3).isEmpty() == false){
+                    if(!itemGraph.get(3).isEmpty()){
                         //hard job
+                        storageNumber = RNG.nextInt(tmpStorages.size());
                         itemNumber = RNG.nextInt(itemGraph.get(3).size());
                         reward = 1000 + itemGraph.get(3).get(itemNumber).getAssembleValue()*100;
-                        Job job3 = new Job(reward, world.getStorages().iterator().next(), 505, 905, JobData.POSTER_SYSTEM);
+                        Job job3 = new Job(reward, tmpStorages.get(storageNumber), 505, 905, JobData.POSTER_SYSTEM);
                         job3.addRequiredItem(itemGraph.get(3).get(itemNumber), 3);
                         jobs.add(job3);
                     }
@@ -742,13 +790,38 @@ public class Generator {
             }else{
                 Log.log(Log.Level.NORMAL, "Configuring jobs: Could not configure Jobs, not enough items!");
             }
+
+            //generate auctions
+            if(!itemGraph.get(1).isEmpty()){
+                storageNumber = RNG.nextInt(tmpStorages.size());
+                itemNumber = RNG.nextInt(itemGraph.get(1).size());
+                reward = 500 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
+                AuctionJob auction1 = new AuctionJob(reward, tmpStorages.get(storageNumber), 5, 205, 5, 1000);
+                auction1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+                jobs.add(auction1);
+            }
+
+            //generate missions
+            for(TeamState team: world.getTeams()){
+                if(!itemGraph.get(1).isEmpty()){
+                    storageNumber = RNG.nextInt(tmpStorages.size());
+                    itemNumber = RNG.nextInt(itemGraph.get(1).size());
+                    reward = 500 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
+                    Mission mission1 = new Mission(reward, tmpStorages.get(storageNumber), 100, 300, 1000, team, "mission1");
+                    mission1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+                    jobs.add(mission1);
+                }
+            }
+
             for(Job job: jobs){
                 String itemName = "";
                 for(Item item: job.getRequiredItems().getStoredTypes()){
                     itemName = item.getName();
                 }
-                Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() + " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage());
+                Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() +
+                        " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass());
             }
+
         }
         return jobs;
     }

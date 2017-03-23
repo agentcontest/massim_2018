@@ -26,6 +26,10 @@ public class ResourceNode extends Facility{
         this.actionCounter = 0;
     }
 
+    /**
+     *
+     * @return the resource that is available at this resource node
+     */
     public Item getResource() { return resource; }
 
     /**
