@@ -27,6 +27,10 @@ public class WorldState {
     private int visibilityRange;
     private int gotoCost;
     private int rechargeRate;
+    private double minLon;
+    private double maxLon;
+    private double minLat;
+    private double maxLat;
 
     private List<Tool> tools;
     private Map<String, Item> items = new HashMap<>();
@@ -60,13 +64,13 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring scenario map: " + mapName);
         seedCapital = config.optLong("seedCapital", 50000L);
         Log.log(Log.Level.NORMAL, "Configuring scenario seedCapital: " + seedCapital);
-        double minLon = config.optDouble("minLon", 0);
+        minLon = config.optDouble("minLon", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario minLon: " + minLon);
-        double maxLon = config.optDouble("maxLon", 0);
+        maxLon = config.optDouble("maxLon", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario maxLon: " + maxLon);
-        double minLat = config.optDouble("minLat", 0);
+        minLat = config.optDouble("minLat", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario minLat: " + minLat);
-        double maxLat = config.optDouble("maxLat", 0);
+        maxLat = config.optDouble("maxLat", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario maxLat: " + maxLat);
         int proximity = config.optInt("proximity", 4);
         Log.log(Log.Level.NORMAL, "Configuring scenario proximity: " + proximity);
@@ -407,4 +411,25 @@ public class WorldState {
     public int getGotoCost(){
         return gotoCost;
     }
+
+    /**
+     * @return minLon
+     */
+    public double getMinLon(){ return minLon; }
+
+    /**
+     * @return maxLon
+     */
+    public double getMaxLon(){ return maxLon; }
+
+    /**
+     * @return minLat
+     */
+    public double getMinLat(){ return minLat; }
+
+    /**
+     * @return maxLat
+     */
+    public double getMaxLat(){ return maxLat; }
 }
+

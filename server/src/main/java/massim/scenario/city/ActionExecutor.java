@@ -560,7 +560,11 @@ public class ActionExecutor {
                     break;
                 }
                 boolean gatherResult = ((ResourceNode) facility).gather();
-                if(gatherResult==true){
+                if(gatherResult){
+                    if(entity.getFreeSpace() < ((ResourceNode) facility).getResource().getVolume()){
+                        entity.setLastActionResult(FAILED_CAPACITY);
+                        break;
+                    }
                     entity.addItem(((ResourceNode) facility).getResource(), 1);
                     entity.setLastActionResult(SUCCESSFUL);
                 }else{
