@@ -509,13 +509,15 @@ public class Generator {
         for(Item item: itemGraph.get(0)){
             shopItems.add(item);
         }
-        Vector<Tool> shopTools = new Vector<>(allTools);
+        for(Tool tool: allTools){
+            shopItems.add(tool);
+        }
         Vector<Item> usedItems = new Vector<>();
-        Vector<Tool> usedTools = new Vector<>();
         for(Shop shop: shops){
             int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
+
             Vector<Item> unusedItems = new Vector<>(shopItems);
-            for(int j=0; j<(numberOfProducts-(numberOfProducts/2)); j++){
+            for(int j=0; j<numberOfProducts; j++){
                 int productNumber = RNG.nextInt(unusedItems.size());
                 shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
                         items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
@@ -523,28 +525,12 @@ public class Generator {
                 unusedItems.remove(productNumber);
                 usedItems.add(tmpItem);
             }
-            Vector<Tool> unusedTools = new Vector<>(shopTools);
-            for(int j=0; j<(numberOfProducts/2); j++){
-                int productNumber = RNG.nextInt(unusedTools.size());
-                shop.addItem(unusedTools.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                        items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
-                Tool tmpTool = unusedTools.get(productNumber);
-                unusedTools.remove(productNumber);
-                usedTools.add(tmpTool);
-            }
         }
         shopItems.removeAll(usedItems);
         for(Item item: shopItems){
             int shopNumber = RNG.nextInt(shops.size());
             Shop shop = shops.get(shopNumber);
             shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
-        }
-        shopTools.removeAll(usedTools);
-        for(Tool tool: shopTools){
-            int shopNumber = RNG.nextInt(shops.size());
-            Shop shop = shops.get(shopNumber);
-            shop.addItem(tool, RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
                     items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
         }
 
