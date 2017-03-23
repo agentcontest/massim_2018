@@ -174,7 +174,7 @@ public class CityStepPercept extends RequestAction {
      * @return information about all jobs posted by the team
      */
     public List<MissionData> getMissions(){
-        return postedJobs == null? new Vector<>() : missions;
+        return missions == null? new Vector<>() : missions;
     }
 
     /**
