@@ -104,7 +104,11 @@ Each team has a separate (unlimited) compartment in each storage. This compartme
 
 #### Resouce nodes
 
-TODO
+__Resource nodes__ represent natural sources for certain items. Agents can go to the nodes to gather those items, but it always takes a certain number of gather actions until a new resource is found.
+
+When there are multiple agents gathering at the same resource node only one of them will get the resource depending on the order in which they executed their actions.
+
+The location of resource nodes is not common knowledge and agents are only able to perceive the nodes when they are close to them.
 
 ### Teams
 
@@ -462,6 +466,20 @@ This action is substituted if the agent's action randomly failed.
 
 This action is substituted if the agent did not send an action in time.
 
+#### gather
+
+Gathers a resource from a resource node.
+
+No parameters.
+
+Failure Code | Reason
+--- | ---
+failed_wrong_param | Parameters have been given.
+failed_location | The agent is not in a facility.
+failed_wrong_facility | The agent is not in a resource node.
+failed_capacity | The agent does not have enough free space to carry the resource.
+partial_success | Not really a failure. The action was executed successfully but there was no resource found.
+
 ## Percepts
 
 Percepts are sent by the server as XML files and contain information about the current simulation. Initital percepts (sent via `SIM-START` messages) contain static information while other percepts (sent via `REQUEST-ACTION` messages) contain information about the current simulation state.
@@ -720,7 +738,39 @@ Agents are assigned their role according to their position in the team config. I
 
 ## Random generation
 
-TODO
+In the first section of the random generation the parameters for the generation of the facilities can be specified:
+* __quadSize__: cellSize of the grid that is used for positioning
+* Parameters for charging stations:
+  * __density__: probability of placing a charging station per quad (or number of charging stations to place if >1)
+  * __rateMin/Max__: bounds for charging rate
+* Parameters for shops:
+  * __density__: see above
+  * __min/maxProd__: bounds for number of different available products per shop
+  * __amountMin/Max__: bounds for the starting amount a shop sells of a product
+  * __priceAddMin/Max__: bounds for the price a shop adds to an items value (can vary between products of the same shop)
+  * __restockMin/Max__: bounds for a shop's restock interval
+* Parameters for dumps:
+  * __density__: see above
+* Parameters for workshops:
+  * __density__: see above
+* Parameters for storage: 
+  * __density__: see above
+  * __capacityMin/Max__: bounds for the storage's capacity
+* Parameter for resource nodes:
+  * __density__: see above
+  * __gatherFrequencyMin/Max__: bounds for number of gather actions after which a new resource is found
+
+In the second section of the random generation the parameters for the generation of the items can be specified:
+* __baseItemsMin/Max__: bounds for the number of base items
+* __levelDecreaseMin/Max__: bounds for the number of items by which the next level of the item graph will be smaller
+* __graphDepthMin/Max__: bounds for the number of levels of the item graph
+* __resourcesMin/Max__: bounds for the number of resources
+* __min/maxVol__: bounds for the volume of the items
+* __valueMin/Max__: bounds for the value of the items
+* __min/maxReq__: bounds for the number of required items for assembly
+* __reqAmountMin/Max__: bounds for the amount per required item for assembly
+* __toolsMin/Max__: bounds for the number of tools
+* __toolProbability__: probability of an item needing a tool for assembly
 
 ## Commands
 
