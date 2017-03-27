@@ -432,7 +432,7 @@ public class CitySimulation extends AbstractSimulation {
         switch (command[0]){
             case "give": // "give item0 agentA1 1"
                 if(command.length == 4){
-                    Item item = world.getItem(command[1]);
+                    Item item = world.getItemOrTool(command[1]);
                     Entity agent = world.getEntity(command[2]);
                     int amount = -1;
                     try{amount = Integer.parseInt(command[3]);} catch (NumberFormatException ignored){}
@@ -449,7 +449,7 @@ public class CitySimulation extends AbstractSimulation {
             case "store": // "store storage0 item0 A 1"
                 if(command.length == 5){
                     Facility facility = world.getFacility(command[1]);
-                    Item item = world.getItem(command[2]);
+                    Item item = world.getItemOrTool(command[2]);
                     int amount = -1;
                     try{amount = Integer.parseInt(command[4]);} catch (NumberFormatException ignored){}
                     if(facility instanceof Storage && item != null && amount > 0){
@@ -472,7 +472,7 @@ public class CitySimulation extends AbstractSimulation {
                     Facility facility = world.getFacility(command[4]);
                     Map<Item, Integer> requirements = new HashMap<>();
                     for(int i = 5; i < command.length; i += 2){
-                        Item item = world.getItem(command[i]);
+                        Item item = world.getItemOrTool(command[i]);
                         int amount = -1;
                         try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
                         if(item != null && amount > 0) requirements.put(item, amount);
@@ -501,7 +501,7 @@ public class CitySimulation extends AbstractSimulation {
                     Facility facility = world.getFacility(command[6]);
                     Map<Item, Integer> requirements = new HashMap<>();
                     for(int i = 7; i < command.length; i += 2){
-                        Item item = world.getItem(command[i]);
+                        Item item = world.getItemOrTool(command[i]);
                         int amount = -1;
                         try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
                         if(item != null && amount > 0) requirements.put(item, amount);

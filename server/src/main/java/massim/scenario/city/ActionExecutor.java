@@ -136,7 +136,7 @@ public class ActionExecutor {
                 }
                 else {
                     String receiver = params.get(0);
-                    Item item = world.getItem(params.get(1));
+                    Item item = world.getItemOrTool(params.get(1));
                     Entity receiverEntity = world.getEntity(receiver);
                     int amount = -1;
                     try { amount = Integer.parseInt(params.get(2)); } catch (NumberFormatException ignored) {}
@@ -185,7 +185,7 @@ public class ActionExecutor {
                     return;
                 }
                 Storage storage = (Storage)facility;
-                Item item = world.getItem(params.get(0));
+                Item item = world.getItemOrTool(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     return;
@@ -227,7 +227,7 @@ public class ActionExecutor {
                     return;
                 }
                 storage = (Storage)facility;
-                item = world.getItem(params.get(0));
+                item = world.getItemOrTool(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     return;
@@ -311,7 +311,7 @@ public class ActionExecutor {
                     break;
                 }
                 Shop shop = (Shop)facility;
-                item = world.getItem(params.get(0));
+                item = world.getItemOrTool(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     break;
@@ -433,7 +433,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
-                item = world.getItem(params.get(0));
+                item = world.getItemOrTool(params.get(0));
                 if (item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     break;
@@ -523,7 +523,7 @@ public class ActionExecutor {
                 // check item requirements
                 Map<Item, Integer> requirements = new HashMap<>();
                 for (int i = 3; i < params.size(); i += 2){
-                    item = world.getItem(params.get(i));
+                    item = world.getItemOrTool(params.get(i));
                     if(item == null){
                         entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                         break;
@@ -592,7 +592,7 @@ public class ActionExecutor {
         // assemblers and assistants are performing correct actions in the correct facility
         // agents are in the same workshop
         assemblers.forEach(assembler -> {
-            Item item = world.getItem(assembler.getLastAction().getParameters().get(0));
+            Item item = world.getNonToolItem(assembler.getLastAction().getParameters().get(0));
             if(item == null){
                 assembler.setLastActionResult(FAILED_UNKNOWN_ITEM);
                 assistants.get(assembler).forEach(a -> a.setLastActionResult(FAILED_COUNTERPART));

@@ -32,7 +32,7 @@ public class WorldState {
     private double minLat;
     private double maxLat;
 
-    private List<Tool> tools;
+    private Map<String, Tool> tools = new HashMap<>();
     private Map<String, Item> items = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
 
@@ -122,8 +122,9 @@ public class WorldState {
         }
 
         // generate the things
-        tools = generator.generateTools(new ArrayList<>(roles.values()));
-        generator.generateItems(tools).forEach(i -> items.put(i.getName(), i));
+        List<Tool> genTools = generator.generateTools(new ArrayList<>(roles.values()));
+        genTools.forEach(t -> tools.put(t.getName(), t));
+        generator.generateItems(genTools).forEach(i -> items.put(i.getName(), i));
         generator.generateFacilities(new ArrayList<>(items.values()), this).forEach(f -> facilities.put(f.getName(), f));
         facilities.values().forEach(f -> facilityByLocation.put(f.getLocation(), f));
         facilities.values().forEach(f -> {
@@ -249,9 +250,9 @@ public class WorldState {
 
     /**
      * @param name the name of an item
-     * @return the item with the given name or null if no item with that name exists
+     * @return the non-tool item with the given name or null if no item with that name exists
      */
-    public Item getItem(String name) {
+    public Item getNonToolItem(String name) {
         return items.get(name);
     }
 
@@ -367,7 +368,7 @@ public class WorldState {
      * @return a new list containing all existing tools
      */
     public List<Tool> getTools() {
-        return new ArrayList<>(tools);
+        return new ArrayList<>(tools.values());
     }
 
     /**
@@ -431,5 +432,14 @@ public class WorldState {
      * @return maxLat
      */
     public double getMaxLat(){ return maxLat; }
+
+    /**
+     * @param name name of an item/tool
+     * @return the item or tool of the given name (or null)
+     */
+    public Item getItemOrTool(String name){
+        if(items.containsKey(name)) return items.get(name);
+        return tools.get(name);
+    }
 }
 

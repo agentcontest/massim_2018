@@ -289,6 +289,8 @@ public class CitySimulationTest {
         e3.clearInventory();
         e3.setLocation(shop.getLocation());
 
+        assert e3.getItemCount(item) == 0;
+
         sim.preStep(step);
         Map<String, Action> actions = buildActionMap();
         actions.put("agentA3", new Action("buy", item.getName(), "1"));
