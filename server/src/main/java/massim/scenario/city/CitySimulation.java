@@ -338,7 +338,7 @@ public class CitySimulation extends AbstractSimulation {
         world.getJobs().stream()
                 .filter(job -> job instanceof AuctionJob
                                && job.getBeginStep() + ((AuctionJob)job).getAuctionTime() - 1 == stepNo
-                               && ((AuctionJob)job).isAssigned())
+                               && !((AuctionJob)job).isAssigned())
                 .forEach(job -> ((AuctionJob)job).assign());
     }
 
@@ -417,6 +417,14 @@ public class CitySimulation extends AbstractSimulation {
     @Override
     public StaticWorldData getStaticData() {
         return staticData;
+    }
+
+    /**
+     * Retrieves the simulation state. This is not a replica. Handle with care!!
+     * @return the simulation's world state
+     */
+    public WorldState getWorldState(){
+        return world;
     }
 
     @Override

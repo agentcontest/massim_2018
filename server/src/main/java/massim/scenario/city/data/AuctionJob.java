@@ -57,14 +57,14 @@ public class AuctionJob extends Job{
     /**
      * @return the fine to pay if the job is not completed
      */
-    int getFine(){
+    public int getFine(){
         return fine;
     }
 
     /**
-     * @return the current lowest bid
+     * @return the current lowest bid (may be null)
      */
-    int getLowestBid(){
+    public Integer getLowestBid(){
         return lowestBid;
     }
 
@@ -93,10 +93,12 @@ public class AuctionJob extends Job{
 
     /**
      * Bids a certain reward for this job.
+     * If the bid exceeds the max reward, it is silently ignored.
      * @param team the team that is bidding
      * @param amount the amount to bid
      */
     public void bid(TeamState team, int amount){
+        if(amount > getReward()) return;
         if (lowestBid == null || amount < lowestBid){
             lowestBid = amount;
             currentAuctionWinner = team;

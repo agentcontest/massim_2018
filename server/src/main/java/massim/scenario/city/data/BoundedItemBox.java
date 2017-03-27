@@ -8,7 +8,7 @@ public class BoundedItemBox extends ItemBox{
     private int capacity;
     private int currentVolume = 0;
 
-    public BoundedItemBox(int capacity){
+    BoundedItemBox(int capacity){
         this.capacity = capacity;
     }
 
@@ -39,14 +39,21 @@ public class BoundedItemBox extends ItemBox{
     /**
      * @return the free volume in this box
      */
-    public int getFreeSpace(){
+    int getFreeSpace(){
         return capacity - currentVolume;
     }
 
     /**
      * @return the total volume of items in this box
      */
-    public int getCurrentVolume(){
+    int getCurrentVolume(){
         return currentVolume;
+    }
+
+    /**
+     * @return the capacity of this box
+     */
+    int getCapacity(){
+        return capacity;
     }
 }

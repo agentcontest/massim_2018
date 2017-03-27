@@ -372,7 +372,7 @@ public class ActionExecutor {
                     String teamName = world.getTeamForAgent(agent);
                     if (job.checkCompletion(teamName)) {
                         // add reward to completing team
-                        int reward = job.getReward();
+                        int reward = job instanceof AuctionJob? ((AuctionJob)job).getLowestBid() : job.getReward();
                         world.getTeam(teamName).addMoney(reward);
                         // if job posted by another team, subtract payment
                         if (!job.getPoster().equals(JobData.POSTER_SYSTEM))

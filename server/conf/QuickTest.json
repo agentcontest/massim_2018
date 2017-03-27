@@ -41,7 +41,7 @@
           "speed" : 100000,
           "load" : 550000,
           "battery" : 99999999,
-          "roads" : ["air"]
+          "roads" : ["road"]
         }
       },
 

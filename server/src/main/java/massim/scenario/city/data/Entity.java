@@ -169,4 +169,26 @@ public class Entity {
     public ItemBox getInventory(){
         return items;
     }
+
+    /**
+     * "Moves" this entity to a new location.
+     * @param newLoc the location to move the entity to
+     */
+    public void setLocation(Location newLoc){
+        location = newLoc;
+    }
+
+    /**
+     * Removes all items from this entity.
+     */
+    public void clearInventory() {
+        items = new BoundedItemBox(items.getCurrentVolume() + items.getFreeSpace());
+    }
+
+    /**
+     * Completely drains the entity's battery.
+     */
+    public void discharge(){
+        this.currentBattery = 0;
+    }
 }

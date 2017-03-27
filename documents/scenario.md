@@ -352,7 +352,7 @@ failed_wrong_param | Not exactly 1 parameter has been given.
 failed_unknown_job | No job by the given name is known.
 failed_job_status | The given job is not active, or the job is an auction and has not been assigned yet or has not been assigned to the agent's team.
 failed_location | The agent is not in the storage associated with the job.
-partial_success | Not really a failue. Items have been delivered but the job has not been completed by this action.
+successful_partial | Not really a failue. Items have been delivered but the job has not been completed by this action.
 useless | The agent does not have any items to contribute to the job.
 
 #### bid_for_job
@@ -411,7 +411,7 @@ failed_wrong_param | Not exactly 2 parameters have been given.
 failed_location | The agent is not in a facility.
 failed_wrong_facility | The agent is not at a dump location.
 failed_unknown_item | No item by the given name is known.
-failed_item_amount | The given amount is not a positive integer.
+failed_item_amount | The given amount is not a positive integer or more than the agent is carrying.
 
 #### charge
 

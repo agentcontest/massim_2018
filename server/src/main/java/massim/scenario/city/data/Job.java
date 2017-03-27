@@ -99,7 +99,7 @@ public class Job {
     public boolean checkCompletion(String team) {
         if(status == JobStatus.ACTIVE) {
             ItemBox delivered = getDelivered(team);
-            boolean completed = delivered.isSubset(requiredItems);
+            boolean completed = requiredItems.isSubset(delivered);
             if(completed){
                 status = JobStatus.COMPLETED;
                 // transfer partially delivered items
