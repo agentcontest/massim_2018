@@ -4,18 +4,30 @@ import massim.protocol.WorldData;
 import massim.protocol.scenario.city.data.DynamicCityData;
 import massim.protocol.scenario.city.data.StaticCityData;
 
+import org.webbitserver.WebServers;
+import org.webbitserver.WebServer;
+import org.webbitserver.handler.StaticFileHandler;
+import org.webbitserver.handler.HttpToWebSocketHandler;
+
+import java.util.concurrent.ExecutionException;
+
 /**
  * The web monitor for the MASSim server.
- * Can also be used to watch replays.
  */
 public class Monitor {
+
+    private final SocketHandler socketHandler = new SocketHandler();
 
     /**
      * Constructor.
      * Used by the massim server to create the "live" monitor.
      */
-    public Monitor(){
-        // TODO
+    public Monitor() throws ExecutionException, InterruptedException {
+        WebServer server = WebServers.createWebServer(7777)
+            .add("/socket", new HttpToWebSocketHandler(this.socketHandler))
+            .add(new StaticFileHandler("webmonitor/www"))
+            .start()
+            .get();
     }
 
     /**
@@ -31,15 +43,11 @@ public class Monitor {
      * Called by the massim server after each step.
      */
     public void updateState(WorldData worldData){
-        System.out.println("MONITOR GOT " + worldData);
-
-        if (worldData instanceof StaticCityData){
+        if (worldData instanceof StaticCityData) {
             // TODO
-        }
-        else if (worldData instanceof DynamicCityData){
+        } else if (worldData instanceof DynamicCityData){
             // TODO
-        }
-        else{
+        } else{
             System.out.println("Monitor: wrong scenario");
             return;
         }
