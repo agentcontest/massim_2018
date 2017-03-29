@@ -25,6 +25,11 @@ function bundle() {
     .pipe(gulp.dest('www/'));
 }
 
-gulp.task('default', [], bundle);
+gulp.task('ol-css', function() {
+  gulp.src('node_modules/openlayers/dist/ol.css')
+    .pipe(gulp.dest('www/'));
+});
+
+gulp.task('default', ['ol-css'], bundle);
 watchedBrowserify.on('update', bundle);
 watchedBrowserify.on('log', gutil.log);
