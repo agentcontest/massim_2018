@@ -2,4 +2,5 @@ server/target
 server/logs
 server/replays
 server/results
+server/graphs
 target
