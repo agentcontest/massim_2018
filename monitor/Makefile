@@ -3,9 +3,12 @@ all: pngs
 pngs: facility_pngs facility_pngs_h agent_pngs agent_pngs_h
 
 
-facility_pngs: www/img/chargingStation.png www/img/dump.png www/img/shop.png www/img/storage.png www/img/workshop.png
+facility_pngs: www/img/chargingStation.png www/img/resourceNode.png www/img/dump.png www/img/shop.png www/img/storage.png www/img/workshop.png
 
 www/img/chargingStation.png: svg/chargingStation.svg
+	inkscape -z -e $@ -w 35 -h 50 $<
+
+www/img/resourceNode.png: svg/resourceNode.svg
 	inkscape -z -e $@ -w 35 -h 50 $<
 
 www/img/dump.png: svg/dump.svg
@@ -21,9 +24,12 @@ www/img/workshop.png: svg/workshop.svg
 	inkscape -z -e $@ -w 35 -h 50 $<
 
 
-facility_pngs_h: www/img/chargingStation-h.png www/img/dump-h.png www/img/shop-h.png www/img/storage-h.png www/img/workshop-h.png
+facility_pngs_h: www/img/chargingStation-h.png www/img/resourceNode-h.png www/img/dump-h.png www/img/shop-h.png www/img/storage-h.png www/img/workshop-h.png
 
 www/img/chargingStation-h.png: svg/chargingStation.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 35 -h 50 -f /dev/stdin
+
+www/img/resourceNode-h.png: svg/resourceNode.svg
 	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 35 -h 50 -f /dev/stdin
 
 www/img/dump-h.png: svg/dump.svg
