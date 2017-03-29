@@ -31,6 +31,7 @@ public class Monitor {
      * Called by the massim server after each step.
      */
     public void updateState(WorldData worldData){
+        System.out.println("MONITOR GOT " + worldData);
 
         if (worldData instanceof StaticCityData){
             // TODO

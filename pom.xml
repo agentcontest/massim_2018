@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>massim</groupId>
   <artifactId>massim</artifactId>
@@ -10,19 +9,19 @@
   <url>http://multiagentcontest.org</url>
 
   <properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <modules>
     <module>server</module>
     <module>eismassim</module>
     <module>protocol</module>
-      <module>javaagents</module>
-      <module>monitor</module>
+    <module>javaagents</module>
+    <module>monitor</module>
   </modules>
 
-<build>
-   <plugins>
+  <build>
+    <plugins>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <version>3.0.0</version>
@@ -36,21 +35,20 @@
           </execution>
         </executions>
       </plugin>
-     <plugin>
-       <artifactId>maven-assembly-plugin</artifactId>
-       <executions>
-         <execution>
-           <goals>
-             <goal>attached</goal>
-           </goals>
-           <phase>package</phase>
-         </execution>
-       </executions>
-       <configuration>
-         <descriptor>dep.xml</descriptor>
-       </configuration>
-     </plugin>
-</plugins>
-</build>
-
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>dep.xml</descriptor>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
