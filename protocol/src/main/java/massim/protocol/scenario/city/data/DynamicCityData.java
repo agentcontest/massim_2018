@@ -31,7 +31,7 @@ public class DynamicCityData extends DynamicWorldData {
     public List<JobData> jobs;
 
     @XmlElement(name="storage")
-    public List<StorageData> storage;
+    public List<StorageData> storages;
 
     @XmlElement(name="resourceNode")
     public List<ResourceNodeData> resourceNodes;
@@ -45,7 +45,7 @@ public class DynamicCityData extends DynamicWorldData {
 
     public DynamicCityData(int step, List<EntityData> entities, List<ShopData> shops, List<WorkshopData> workshops,
                            List<ChargingStationData> stations, List<DumpData> dumps, List<ResourceNodeData> resourceNodes, List<JobData> jobs,
-                           List<StorageData> storage){
+                           List<StorageData> storages){
         super(step);
         this.entities = entities;
         this.shops = shops;
@@ -53,7 +53,7 @@ public class DynamicCityData extends DynamicWorldData {
         this.chargingStations = stations;
         this.dumps = dumps;
         this.jobs = jobs;
-        this.storage = storage;
+        this.storages = storages;
         this.resourceNodes = resourceNodes;
     }
 }
