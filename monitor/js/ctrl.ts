@@ -12,6 +12,7 @@ export default function(redraw: Redraw): Ctrl {
       const data = JSON.parse(msg.data);
       console.log(data);
       if (data.workshops) vm.dynamic = data;
+      redraw();
     };
 
     ws.onopen = function() {
