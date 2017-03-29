@@ -71,6 +71,10 @@ public class Monitor {
     private void updateDynamicCityData(DynamicCityData data) {
         JSONObject d = new JSONObject();
         d.put("workshops", data.workshops);
+        d.put("chargingStations", data.chargingStations);
+        d.put("shops", data.shops);
+        d.put("dumps", data.dumps);
+        d.put("resourceNodes", data.resourceNodes);
         this.socketHandler.broadcast(d.toString());
     }
 }

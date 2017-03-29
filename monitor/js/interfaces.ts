@@ -14,7 +14,7 @@ export interface ViewModel {
   dynamic?: DynamicWorld;
 }
 
-export type FacilityType = 'workshop';
+export type FacilityType = 'workshop' | 'resourceNode' | 'shop' | 'dump' | 'chargingStation';
 
 export interface Workshop {
   lat: number;
@@ -22,8 +22,32 @@ export interface Workshop {
   name: string;
 }
 
+export interface Dump {
+  lat: number;
+  lon: number;
+}
+
+export interface ResourceNode {
+  lat: number;
+  lon: number;
+}
+
+export interface Shop {
+  lat: number;
+  lon: number;
+}
+
+export interface ChargingStation {
+  lat: number;
+  lon: number;
+}
+
 export interface DynamicWorld {
   workshops: Workshop[];
+  dumps: Dump[];
+  resourceNodes: ResourceNode[];
+  shops: Shop[];
+  chargingStations: ChargingStation[];
 }
 
 export interface Located {

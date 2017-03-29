@@ -76,6 +76,10 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     };
 
     ctrl.vm.dynamic.workshops.forEach(renderFacility('workshop'));
+    ctrl.vm.dynamic.dumps.forEach(renderFacility('dump'));
+    ctrl.vm.dynamic.shops.forEach(renderFacility('shop'));
+    ctrl.vm.dynamic.chargingStations.forEach(renderFacility('chargingStation'));
+    ctrl.vm.dynamic.resourceNodes.forEach(renderFacility('resourceNode'));
   };
 
   return {
