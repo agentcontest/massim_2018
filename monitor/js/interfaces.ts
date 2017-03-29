@@ -14,6 +14,8 @@ export interface ViewModel {
   dynamic?: DynamicWorld;
 }
 
+export type FacilityType = 'workshop';
+
 export interface Workshop {
   lat: number;
   lon: number;

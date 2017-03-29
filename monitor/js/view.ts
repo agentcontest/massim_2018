@@ -1,4 +1,4 @@
-import { Ctrl, MapView, Located } from './interfaces';
+import { Ctrl, MapView, Located, FacilityType } from './interfaces';
 
 import { h } from 'snabbdom';
 import ol = require('openlayers');
@@ -20,6 +20,19 @@ const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
 
 function xy(lonlat: Located): ol.Coordinate {
   return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
+}
+
+function facilityStyle(type: FacilityType, active: boolean) {
+  const suffix = active ? '-h' : '';
+
+  return new ol.style.Style({
+    image: new ol.style.Icon({
+      src: '/img/' + type + suffix + '.png',
+      anchor: [17, 50],
+      anchorXUnits: 'pixels',
+      anchorYUnits: 'pixels'
+    })
+  });
 }
 
 export function makeMap(target: Element, ctrl: Ctrl): MapView {
@@ -54,6 +67,8 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
       const feature = new ol.Feature({
         geometry: new ol.geom.Point(xy(workshop))
       });
+
+      feature.setStyle(facilityStyle('workshop', false));
 
       vectorSource.addFeature(feature);
     });
