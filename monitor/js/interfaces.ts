@@ -24,4 +24,9 @@ export interface DynamicWorld {
   workshops: Workshop[];
 }
 
+export interface Located {
+  lat: number;
+  lon: number;
+}
+
 export type Redraw = () => void;

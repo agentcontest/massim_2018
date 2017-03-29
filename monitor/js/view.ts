@@ -1,4 +1,4 @@
-import { Ctrl, MapView } from './interfaces';
+import { Ctrl, MapView, Located } from './interfaces';
 
 import { h } from 'snabbdom';
 import ol = require('openlayers');
@@ -17,6 +17,10 @@ function disconnected() {
 }
 
 const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+
+function xy(lonlat: Located): ol.Coordinate {
+  return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
+}
 
 export function makeMap(target: Element, ctrl: Ctrl): MapView {
 
@@ -43,6 +47,16 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
   });
 
   const redraw = function() {
+    vectorSource.clear();
+    if (!ctrl.vm.dynamic) return;
+
+    ctrl.vm.dynamic.workshops.forEach(workshop => {
+      const feature = new ol.Feature({
+        geometry: new ol.geom.Point(xy(workshop))
+      });
+
+      vectorSource.addFeature(feature);
+    });
   };
 
   return {
