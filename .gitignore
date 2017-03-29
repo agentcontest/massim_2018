@@ -4,3 +4,5 @@ server/replays
 server/results
 server/graphs
 target
+monitor/node_modules
+monitor/www/main.js

@@ -7,7 +7,10 @@ const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
 
 function build() {
-  return browserify('js/main.ts')
+  return browserify('js/main.ts', {
+      standalone: 'Monitor',
+      debug: true
+    })
     .plugin(tsify);
 }
 
