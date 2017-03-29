@@ -49,7 +49,7 @@ public class Monitor {
         if (worldData instanceof StaticCityData) {
             updateStaticCityData((StaticCityData) worldData);
         } else if (worldData instanceof DynamicCityData){
-            // TODO
+            updateDynamicCityData((DynamicCityData) worldData);
         } else{
             System.out.println("Monitor: wrong scenario");
             return;
@@ -63,6 +63,14 @@ public class Monitor {
         d.put("map", data.map);
         d.put("seedCapital", data.seedCapital);
         d.put("teams", data.teams);
+        // TODO: roles
+        // TODO: items
+        this.socketHandler.broadcast(d.toString());
+    }
+
+    private void updateDynamicCityData(DynamicCityData data) {
+        JSONObject d = new JSONObject();
+        d.put("workshop", data.workshops);
         this.socketHandler.broadcast(d.toString());
     }
 }

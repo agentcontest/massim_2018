@@ -1,6 +1,7 @@
-import { Ctrl } from './interfaces';
+import { Ctrl, MapView } from './interfaces';
 
 import { h } from 'snabbdom';
+import ol = require('openlayers');
 
 function loading() {
   return h('div.modal-overlay', h('div.loader', 'Loading ...'));
@@ -15,7 +16,41 @@ function disconnected() {
   ]);
 }
 
-export default function(ctrl: Ctrl) {
+const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+
+export function makeMap(target: Element, ctrl: Ctrl): MapView {
+
+  const vectorSource = new ol.source.Vector();
+
+  const openStreetMapLayer = new ol.layer.Tile({
+    source: new ol.source.OSM({
+      attributions: [ol.source.OSM.ATTRIBUTION],
+      url: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    })
+  });
+
+  const vectorLayer = new ol.layer.Vector({
+    source: vectorSource
+  });
+
+  new ol.Map({
+    target: target,
+    layers: [openStreetMapLayer, vectorLayer],
+    view: new ol.View({
+      center: ol.proj.fromLonLat(CLAUSTHAL),
+      zoom: 15
+    })
+  });
+
+  const redraw = function() {
+  };
+
+  return {
+    redraw: redraw
+  };
+}
+
+export function overlay(ctrl: Ctrl) {
   console.log(ctrl.vm.state);
   if (ctrl.vm.state === 'error') return disconnected();
   else if (ctrl.vm.state === 'connecting') return loading();

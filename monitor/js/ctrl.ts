@@ -9,8 +9,8 @@ export default function(redraw: Redraw): Ctrl {
     const ws = new WebSocket('ws://' + document.location.host + '/socket');
 
     ws.onmessage = function(msg) {
-      let data = JSON.parse(msg.data);
-      console.log(data);
+      const data = JSON.parse(msg.data);
+      if (data.workshops) vm.dynamic = data;
     };
 
     ws.onopen = function() {

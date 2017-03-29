@@ -5,8 +5,23 @@ export interface Ctrl {
   vm: ViewModel;
 }
 
+export interface MapView {
+  redraw(): void;
+}
+
 export interface ViewModel {
   state: ConnectionState;
+  dynamic?: DynamicWorld;
+}
+
+export interface Workshop {
+  lat: number;
+  lon: number;
+  name: string;
+}
+
+export interface DynamicWorld {
+  workshops: Workshop[];
 }
 
 export type Redraw = () => void;
