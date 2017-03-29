@@ -9,3 +9,16 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+.modal-overlay {
+  background: rgba(200, 200, 200, 0.8);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  padding-top: 4em;
+  font-size: 2em;
+}

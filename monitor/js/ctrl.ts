@@ -1,6 +1,10 @@
-import { Redraw, Ctrl } from './interfaces';
+import { Redraw, Ctrl, ViewModel } from './interfaces';
 
 export default function(redraw: Redraw): Ctrl {
+  const vm: ViewModel = {
+    state: 'connecting'
+  };
+
   const connect = function() {
     const ws = new WebSocket('ws://' + document.location.host + '/socket');
 
@@ -11,15 +15,20 @@ export default function(redraw: Redraw): Ctrl {
 
     ws.onopen = function() {
       console.log('Connected');
+      vm.state = 'online';
+      redraw();
     };
 
-    ws.onclose = function(event) {
-      console.log('Disconnected', event);
+    ws.onclose = function() {
+      console.log('Disconnected');
       setTimeout(connect, 5000);
+      vm.state = 'error';
+      redraw();
     };
   };
 
   return {
-    connect: connect
+    connect: connect,
+    vm: vm
   };
 }

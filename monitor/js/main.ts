@@ -11,24 +11,24 @@ import listeners from 'snabbdom/modules/eventlisteners';
 import view from './view';
 import makeCtrl from './ctrl';
 import { Ctrl } from './interfaces';
-import ol = require('openlayers');
+//import ol = require('openlayers');
 
 const patch = init([klass, props, attributes, listeners]);
 
-const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+//const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
 
 export default function Monitor(mapElement: Element, overlayElement: Element) {
-  let vnode: VNode | Element = mapElement;
+  let vnode: VNode | Element = overlayElement;
   let ctrl: Ctrl;
 
-  function redraw() {
+  const redraw = function() {
     vnode = patch(vnode, view(ctrl));
-  }
+  };
 
   ctrl = makeCtrl(redraw);
-  //patch(element, view(ctrl));
+  vnode = patch(overlayElement, view(ctrl));
 
-  const vectorSource = new ol.source.Vector();
+  /*const vectorSource = new ol.source.Vector();
 
   const openStreetMapLayer = new ol.layer.Tile({
     source: new ol.source.OSM({
@@ -41,14 +41,14 @@ export default function Monitor(mapElement: Element, overlayElement: Element) {
     source: vectorSource
   });
 
-  /* const map = */ new ol.Map({
+  const map = new ol.Map({
     target: mapElement,
     layers: [openStreetMapLayer, vectorLayer],
     view: new ol.View({
       center: ol.proj.fromLonLat(CLAUSTHAL),
       zoom: 15
     })
-  });
+  }); */
 
   ctrl.connect();
 }
