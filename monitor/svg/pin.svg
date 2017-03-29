@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="34.5"
-   height="50.318184"
+   width="36.799999"
+   height="53.672729"
    id="svg3360"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    viewBox="0 0 34.5 50.318184"
    sodipodi:docname="pin.svg">
   <defs
@@ -34,39 +34,45 @@
      inkscape:grid-bbox="true"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1016"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1"
+     inkscape:window-width="209"
+     inkscape:window-height="1041"
+     inkscape:window-x="2988"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0">
     <sodipodi:guide
-       position="17.25,61.795456"
+       position="17.25,61.795457"
        orientation="1,0"
-       id="guide3381" />
+       id="guide3381"
+       inkscape:locked="false" />
     <sodipodi:guide
-       position="9.25,41.431819"
+       position="9.2500001,41.431819"
        orientation="1,0"
-       id="guide3383" />
+       id="guide3383"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="25.25,42.886365"
        orientation="1,0"
-       id="guide3385" />
+       id="guide3385"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="1.25,31.977274"
        orientation="1,0"
-       id="guide3387" />
+       id="guide3387"
+       inkscape:locked="false" />
     <sodipodi:guide
        position="33.25,17.250001"
        orientation="1,0"
-       id="guide3389" />
+       id="guide3389"
+       inkscape:locked="false" />
     <sodipodi:guide
-       position="-80.931818,19.250001"
+       position="-80.931819,19.250001"
        orientation="0,1"
-       id="guide3391" />
+       id="guide3391"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata3365">
@@ -76,7 +82,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>

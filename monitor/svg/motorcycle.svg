@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="50"
-   height="50"
+   width="53.333332"
+   height="53.333332"
    viewBox="0 0 49.999997 49.999997"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="motorcycle.svg">
   <defs
      id="defs4" />
@@ -34,19 +34,21 @@
      units="px"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1016"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1">
+     inkscape:window-width="236"
+     inkscape:window-height="1041"
+     inkscape:window-x="3120"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0">
     <sodipodi:guide
-       position="30.084744,8.1920899"
+       position="30.084745,8.1920901"
        orientation="0,1"
-       id="guide4966" />
+       id="guide4966"
+       inkscape:locked="false" />
     <sodipodi:guide
-       position="30.36723,25.800375"
+       position="30.367231,25.800376"
        orientation="0,1"
-       id="guide4984" />
+       id="guide4984"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -56,7 +58,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
