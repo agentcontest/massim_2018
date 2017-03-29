@@ -75,6 +75,7 @@ public class Monitor {
         d.put("shops", data.shops);
         d.put("dumps", data.dumps);
         d.put("resourceNodes", data.resourceNodes);
+        d.put("storages", data.storages);
         this.socketHandler.broadcast(d.toString());
     }
 }
