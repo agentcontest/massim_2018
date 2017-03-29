@@ -49,4 +49,6 @@ export default function Monitor(mapElement: Element, overlayElement: Element) {
       zoom: 15
     })
   });
+
+  ctrl.connect();
 }
