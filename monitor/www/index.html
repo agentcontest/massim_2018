@@ -9,6 +9,8 @@
     <script src="/main.js"></script>
   </head>
   <body>
-    <script>Monitor.default(document.body);</script>
+    <div id="map"></div>
+    <div id="overlay"></div>
+    <script>Monitor.default(document.getElementById('map'), document.getElementById('overlay'));</script>
   </body>
 </html>
