@@ -5,7 +5,7 @@ import org.webbitserver.WebSocketConnection;
 
 import java.util.HashSet;
 
-public class SocketHandler extends BaseWebSocketHandler {
+class SocketHandler extends BaseWebSocketHandler {
 
     private final HashSet<WebSocketConnection> pool = new HashSet<WebSocketConnection>();
 
@@ -17,5 +17,11 @@ public class SocketHandler extends BaseWebSocketHandler {
     @Override
     public void onClose(WebSocketConnection connection) {
         this.pool.remove(connection);
+    }
+
+    public void broadcast(String message) {
+        for (WebSocketConnection client: this.pool) {
+            client.send(message);
+        }
     }
 }

@@ -55,5 +55,10 @@
             <artifactId>webbit</artifactId>
             <version>0.4.16-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+        </dependency>
     </dependencies>
 </project>

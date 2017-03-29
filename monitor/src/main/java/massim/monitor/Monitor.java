@@ -9,6 +9,9 @@ import org.webbitserver.WebServer;
 import org.webbitserver.handler.StaticFileHandler;
 import org.webbitserver.handler.HttpToWebSocketHandler;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -44,12 +47,22 @@ public class Monitor {
      */
     public void updateState(WorldData worldData){
         if (worldData instanceof StaticCityData) {
-            // TODO
+            updateStaticCityData((StaticCityData) worldData);
         } else if (worldData instanceof DynamicCityData){
             // TODO
         } else{
             System.out.println("Monitor: wrong scenario");
             return;
         }
+    }
+
+    private void updateStaticCityData(StaticCityData data) {
+        JSONObject d = new JSONObject();
+        d.put("simId", data.simId);
+        d.put("steps", data.steps);
+        d.put("map", data.map);
+        d.put("seedCapital", data.seedCapital);
+        d.put("teams", data.teams);
+        this.socketHandler.broadcast(d.toString());
     }
 }
