@@ -63,15 +63,19 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     vectorSource.clear();
     if (!ctrl.vm.dynamic) return;
 
-    ctrl.vm.dynamic.workshops.forEach(workshop => {
-      const feature = new ol.Feature({
-        geometry: new ol.geom.Point(xy(workshop))
-      });
+    const renderFacility = function(type: FacilityType) {
+      return function(facility: Located) {
+        const feature = new ol.Feature({
+          geometry: new ol.geom.Point(xy(facility))
+        });
 
-      feature.setStyle(facilityStyle('workshop', false));
+        feature.setStyle(facilityStyle(type, false));
 
-      vectorSource.addFeature(feature);
-    });
+        vectorSource.addFeature(feature);
+      };
+    };
+
+    ctrl.vm.dynamic.workshops.forEach(renderFacility('workshop'));
   };
 
   return {
