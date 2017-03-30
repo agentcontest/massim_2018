@@ -1,5 +1,6 @@
 package massim.util;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,19 +23,23 @@ public class InputManager {
             String line;
             while (!stopped) {
                 try {
-                    line = scanner.nextLine().replace("\n", "");
+                    if (scanner.hasNextLine()) {
+                        line = scanner.nextLine().replace("\n", "");
+                        if (line.equals("")) {
+                            // notify all threads waiting for an empty line (also known as ENTER)
+                            synchronized (this) {
+                                InputManager.this.notifyAll();
+                            }
+                        } else {
+                            Log.log(Log.Level.NORMAL, "You typed: " + line);
+                            inputQueue.add(line);
+                        }
+                    } else
+                        Thread.sleep(200);
                 } catch (IllegalStateException e) {
                     stopped = true;
                     break;
-                }
-                if (line.equals("")) {
-                    // notify all threads waiting for an empty line (also known as ENTER)
-                    synchronized (this) {
-                        InputManager.this.notifyAll();
-                    }
-                } else {
-                    Log.log(Log.Level.NORMAL, "You typed: " + line);
-                    inputQueue.add(line);
+                } catch (InterruptedException ignored) {
                 }
             }
         }).start();
@@ -45,7 +50,9 @@ public class InputManager {
      */
     public void stop(){
         this.stopped = true;
-        scanner.close();
+        try {
+            System.in.close();
+        } catch (IOException ignored) {}
     }
 
     /**

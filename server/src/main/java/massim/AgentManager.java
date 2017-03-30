@@ -329,7 +329,8 @@ class AgentManager {
         private void close() {
             sendMessage(new Message(System.currentTimeMillis(), new Bye()).toXML());
             try {
-                sendThread.join(5000); // give bye-message some time to be sent (but not too much)
+                if(sendThread!=null)
+                    sendThread.join(5000); // give bye-message some time to be sent (but not too much)
             } catch (InterruptedException e) {
                 Log.log(Log.Level.ERROR, "Interrupted while waiting for disconnection.");
             }

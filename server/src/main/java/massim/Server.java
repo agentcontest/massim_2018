@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -123,6 +124,7 @@ public class Server {
      * Cleanup all threads etc.
      */
     private void close() {
+        Log.log(Log.Level.NORMAL, "All simulations run - server ending now.");
         if (loginManager != null) loginManager.stop();
         if (agentManager != null) agentManager.stop();
         inputManager.stop();
@@ -159,7 +161,11 @@ public class Server {
         }
 
         // setup monitor
-        if(config.monitor) monitor = new Monitor();
+        if(config.monitor) try {
+            monitor = new Monitor();
+        } catch (ExecutionException e) {
+            Log.log(Log.Level.ERROR, "Monitor not started: " + e.getLocalizedMessage());
+        } catch (InterruptedException ignored) {}
 
         // delay tournament start according to launch type
         if (config.launch.equals("key")){
