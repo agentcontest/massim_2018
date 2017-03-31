@@ -1,4 +1,4 @@
-import { Ctrl, MapView, Located, FacilityType, Agent } from './interfaces';
+import { Ctrl, MapView, Located, Facility, FacilityType, Agent } from './interfaces';
 
 import { h } from 'snabbdom';
 import ol = require('openlayers');
@@ -73,13 +73,24 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     source: vectorSource
   });
 
-  new ol.Map({
+  const map = new ol.Map({
     target: target,
     layers: [openStreetMapLayer, vectorLayer],
     view: new ol.View({
       center: ol.proj.fromLonLat(LONDON),
       zoom: 13
     })
+  });
+
+  map.getViewport().addEventListener('click', e => {
+    let first = true;
+    map.forEachFeatureAtPixel(map.getEventPixel(e), feature => {
+      if (first) {
+        const userData = (feature as any).userData;
+        if (userData && userData.name) ctrl.toggleSelection(log(userData.name));
+        first = false;
+      }
+    });
   });
 
   const redraw = function() {
@@ -93,13 +104,14 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
       });
 
       feature.setStyle(style);
+      (feature as any).userData = loc;
 
       vectorSource.addFeature(feature);
     };
 
     const renderFacility = function(type: FacilityType) {
-      return function(facility: Located) {
-        addFeature(facility, facilityStyle(type, false));
+      return function(facility: Facility) {
+        addFeature(facility, facilityStyle(type, facility.name === ctrl.vm.selected));
       };
     };
 
@@ -111,7 +123,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     ctrl.vm.dynamic.storages.forEach(renderFacility('storage'));
 
     ctrl.vm.dynamic.entities.forEach(agent => {
-      addFeature(agent, agentIconStyle(agent, false, false));
+      addFeature(agent, agentIconStyle(agent, false, agent.name === ctrl.vm.selected));
     });
   };
 

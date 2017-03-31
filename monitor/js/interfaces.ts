@@ -1,6 +1,7 @@
 type ConnectionState = 'offline' | 'online' | 'connecting' | 'error';
 
 export interface Ctrl {
+  toggleSelection(name: string): void;
   connect(): void;
   vm: ViewModel;
 }
@@ -11,6 +12,7 @@ export interface MapView {
 
 export interface ViewModel {
   state: ConnectionState;
+  selected: string | null;
   dynamic?: DynamicWorld;
 }
 
@@ -48,6 +50,12 @@ export interface ChargingStation {
   lon: number;
 }
 
+export interface Facility {
+  lat: number;
+  lon: number;
+  name: string;
+}
+
 export type Role = 'SpaceShip';
 
 export interface Agent {
@@ -55,6 +63,7 @@ export interface Agent {
   lon: number;
   role: Role;
   team: string;
+  name: string;
 }
 
 export interface DynamicWorld {

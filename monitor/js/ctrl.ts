@@ -2,7 +2,8 @@ import { Redraw, Ctrl, ViewModel } from './interfaces';
 
 export default function(redraw: Redraw): Ctrl {
   const vm: ViewModel = {
-    state: 'connecting'
+    state: 'connecting',
+    selected: null
   };
 
   const connect = function() {
@@ -31,6 +32,11 @@ export default function(redraw: Redraw): Ctrl {
 
   return {
     connect: connect,
-    vm: vm
+    vm: vm,
+    toggleSelection(name: string) {
+      if (vm.selected === name) vm.selected = null;
+      else vm.selected = name;
+      redraw();
+    }
   };
 }
