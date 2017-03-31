@@ -64,19 +64,25 @@ export interface Facility {
   name: string;
 }
 
-export type Role = 'SpaceShip';
+export type RoleName = 'SpaceShip';
 
 export interface Agent {
   lat: number;
   lon: number;
-  role: Role;
   name: string;
+  role: RoleName;
   team: string;
+  load: number;
+  charge: number;
+  routeLength: number;
+  route: any[];
+  items: any[];
+  facility?: string;
   lastAction?: LastAction;
 }
 
-export function isAgent(entity: any): entity is Agent {
-  return entity.name && entity.role && entity.team;
+export function isAgent(entity: Agent | Facility): entity is Agent {
+  return !!(entity.name && (entity as Agent).role);
 }
 
 export type ActionResult = string;
@@ -123,9 +129,18 @@ export interface Located {
   lon: number;
 }
 
+export interface Role {
+  name: RoleName;
+  battery: number;
+  load: number;
+  speed: number;
+  tools: string[];
+}
+
 export interface StaticWorld {
   simId: string;
   teams: string[];
+  roles: Role[];
   steps: number;
 }
 

@@ -29,19 +29,25 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
   )));
 }
 
-function details(ctrl: Ctrl) {
+function details(ctrl: Ctrl, staticWorld: StaticWorld) {
   const selection = ctrl.selection();
 
-  if (selection) {
+  if (!selection) return h('div', [
+    h('strong', 'Details:'), ' select an agent or facility'
+  ])
+  else if (isAgent(selection)) {
+    const role = staticWorld.roles.filter(r => r.name === selection.role)[0];
     return h('div', [
-      h('div', h('strong', isAgent(selection) ? 'Agent:' : 'Facility:'))
-    ].concat(Object.keys(selection).map(key =>
-      h('div', [key, ': ', h('em', (selection as any)[key].toString())])
-    )));
+      h('div', h('strong',  ['Agent ', h('em', selection.name)])),
+      h('div', ['Charge: ', h('em', n(selection.charge))].concat(role ? [' / ', n(role.battery)] : [])),
+      h('div', ['Load: ', h('em', n(selection.load))]),
+    ]);
   }
   else return h('div', [
-    h('strong', 'Details:'), ' select an agent or facility'
-  ]);
+    h('div', h('strong', 'Facility:'))
+  ].concat(Object.keys(selection).map(key =>
+    h('div', [key, ': ', h('em', (selection as any)[key].toString())])
+  )));
 }
 
 function jobs(dynamic: DynamicWorld) {
@@ -61,7 +67,7 @@ export default function(ctrl: Ctrl) {
     return loading();
   else return h('div#overlay', [
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
-    h('div.btn', details(ctrl)),
+    h('div.btn', details(ctrl, ctrl.vm.static)),
     h('div.btn', jobs(ctrl.vm.dynamic))
   ]);
 }
