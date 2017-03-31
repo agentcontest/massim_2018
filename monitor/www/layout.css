@@ -45,3 +45,12 @@ body {
   padding-right: 0.4em;
   max-width: 300px;
 }
+
+.ol-zoom {
+  left: auto;
+  right: 0.5em;
+}
+
+.ol-rotate {
+  top: 5.5em;
+}
