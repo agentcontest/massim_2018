@@ -1,20 +1,6 @@
 import { Ctrl, MapView, Located, Facility, FacilityType, Agent } from './interfaces';
 
-import { h } from 'snabbdom';
 import ol = require('openlayers');
-
-function loading() {
-  return h('div.modal-overlay', h('div.loader', 'Loading ...'));
-}
-
-function disconnected() {
-  return h('div.modal-overlay', [
-    h('p', 'Not connected to the monitor.'),
-    h('a', {
-      props: { href: '/' }
-    }, 'Retry now.')
-  ]);
-}
 
 //const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
 const LONDON: ol.Coordinate = [-0.1257400, 51.5085300];
@@ -36,12 +22,7 @@ function facilityStyle(type: FacilityType, selected: boolean): ol.style.Style {
   });
 }
 
-function log<T>(s: T): T {
-  console.log(s);
-  return s;
-}
-
-export function makeMap(target: Element, ctrl: Ctrl): MapView {
+export default function(target: Element, ctrl: Ctrl): MapView {
 
   const vectorSource = new ol.source.Vector();
 
@@ -132,11 +113,4 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
   return {
     redraw: redraw
   };
-}
-
-export function overlay(ctrl: Ctrl) {
-  log(ctrl.vm.state);
-  if (ctrl.vm.state === 'error') return disconnected();
-  else if (ctrl.vm.state === 'connecting') return loading();
-  else return h('div', 'yay :)');
 }

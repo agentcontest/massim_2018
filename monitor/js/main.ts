@@ -9,8 +9,9 @@ import props from 'snabbdom/modules/props';
 import attributes from 'snabbdom/modules/attributes';
 import listeners from 'snabbdom/modules/eventlisteners';
 
-import { makeMap, overlay } from './view';
 import makeCtrl from './ctrl';
+import makeMap from './map';
+import overlay from './overlay';
 
 const patch = init([klass, props, attributes, listeners]);
 
