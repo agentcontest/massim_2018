@@ -50,7 +50,7 @@ public class Monitor {
             updateStaticCityData((StaticCityData) worldData);
         } else if (worldData instanceof DynamicCityData){
             updateDynamicCityData((DynamicCityData) worldData);
-        } else{
+        } else {
             System.out.println("Monitor: wrong scenario");
             return;
         }
@@ -63,8 +63,8 @@ public class Monitor {
         d.put("map", data.map);
         d.put("seedCapital", data.seedCapital);
         d.put("teams", data.teams);
-        // TODO: roles
-        // TODO: items
+        d.put("roles", data.roles);
+        d.put("items", data.items);
         this.socketHandler.broadcast(d.toString());
     }
 
@@ -76,6 +76,7 @@ public class Monitor {
         d.put("dumps", data.dumps);
         d.put("resourceNodes", data.resourceNodes);
         d.put("storages", data.storages);
+        d.put("entities", data.entities);
         this.socketHandler.broadcast(d.toString());
     }
 }
