@@ -16,7 +16,8 @@ function disconnected() {
   ]);
 }
 
-const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+//const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+const LONDON: ol.Coordinate = [-0.1257400, 51.5085300];
 
 function xy(lonlat: Located): ol.Coordinate {
   return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
@@ -49,9 +50,11 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     if (selected) suffix = '-h';
     else if (!active) suffix = '-i';
 
+    const team = entity.team.toLowerCase();
+
     return new ol.style.Style({
       image: new ol.style.Icon({
-        src: log('/img/' + entity.role + '-' + entity.team + suffix + '.png'),
+        src: log('/img/' + entity.role + '-' + team + suffix + '.png'),
         anchor: [25, 25],
         anchorXUnits: 'pixels',
         anchorYUnits: 'pixels'
@@ -74,8 +77,8 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     target: target,
     layers: [openStreetMapLayer, vectorLayer],
     view: new ol.View({
-      center: ol.proj.fromLonLat(CLAUSTHAL),
-      zoom: 15
+      center: ol.proj.fromLonLat(LONDON),
+      zoom: 12
     })
   });
 
