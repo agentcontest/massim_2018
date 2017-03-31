@@ -64,3 +64,10 @@ body {
 .team.b {
   background: #009e73;
 }
+
+ul {
+  margin: 0;
+  font-size: 0.8em;
+  line-height: 1.2em;
+  padding-left: 1.5em;
+}

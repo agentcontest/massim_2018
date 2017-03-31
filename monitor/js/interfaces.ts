@@ -78,6 +78,24 @@ export interface LastAction {
   type: ActionType;
 }
 
+export interface RequiredItem {
+  name: string;
+  amount: number;
+}
+
+export interface Job {
+  id: string;
+  poster: string;
+  start: number;
+  end: number;
+  requiredItems: RequiredItem[];
+  deliveredItems: RequiredItem[];
+  lowestBid: number;
+  reward: number;
+  storage: string;
+  auctionTime: number;
+}
+
 export interface DynamicWorld {
   step: number;
   workshops: Workshop[];
@@ -87,6 +105,7 @@ export interface DynamicWorld {
   chargingStations: ChargingStation[];
   storages: Storage[];
   entities: Agent[];
+  jobs: Job[];
 }
 
 export interface Located {

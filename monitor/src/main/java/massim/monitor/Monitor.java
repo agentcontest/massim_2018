@@ -104,6 +104,7 @@ public class Monitor {
         d.put("resourceNodes", data.resourceNodes);
         d.put("storages", data.storages);
         d.put("entities", data.entities);
+        d.put("jobs", data.jobs);
         return d.toString();
     }
 }
