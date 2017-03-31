@@ -30,23 +30,28 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
 }
 
 function details(ctrl: Ctrl, staticWorld: StaticWorld) {
-  const selection = ctrl.selection();
+  const sel = ctrl.selection();
 
-  if (!selection) return h('div', [
+  if (!sel) return h('div', [
     h('strong', 'Details:'), ' select an agent or facility'
   ])
-  else if (isAgent(selection)) {
-    const role = staticWorld.roles.filter(r => r.name === selection.role)[0];
+  else if (isAgent(sel)) {
+    const role = staticWorld.roles.filter(r => r.name === sel.role)[0];
+    const lastAction = sel.lastAction || {
+      type: 'noAction',
+      result: 'successful'
+    };
     return h('div', [
-      h('div', h('strong',  ['Agent ', h('em', selection.name)])),
-      h('div', ['Charge: ', h('em', n(selection.charge))].concat(role ? [' / ', n(role.battery)] : [])),
-      h('div', ['Load: ', h('em', n(selection.load))]),
+      h('div', h('strong',  ['Agent ', h('em', sel.name)])),
+      h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
+      h('div', ['load: ', h('em', n(sel.load))]),
+      h('div', ['lastAction: ', h('em', [lastAction.type, '(', ') = ', lastAction.result])])
     ]);
   }
   else return h('div', [
     h('div', h('strong', 'Facility:'))
-  ].concat(Object.keys(selection).map(key =>
-    h('div', [key, ': ', h('em', (selection as any)[key].toString())])
+  ].concat(Object.keys(sel).map(key =>
+    h('div', [key, ': ', h('em', (sel as any)[key].toString())])
   )));
 }
 
