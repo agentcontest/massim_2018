@@ -3,16 +3,13 @@ package massim.monitor;
 import massim.protocol.WorldData;
 import massim.protocol.scenario.city.data.DynamicCityData;
 import massim.protocol.scenario.city.data.StaticCityData;
-
-import org.webbitserver.WebServers;
-import org.webbitserver.WebServer;
-import org.webbitserver.BaseWebSocketHandler;
-import org.webbitserver.WebSocketConnection;
-import org.webbitserver.handler.StaticFileHandler;
-import org.webbitserver.handler.HttpToWebSocketHandler;
-
 import org.json.JSONObject;
-import org.json.JSONArray;
+import org.webbitserver.BaseWebSocketHandler;
+import org.webbitserver.WebServer;
+import org.webbitserver.WebServers;
+import org.webbitserver.WebSocketConnection;
+import org.webbitserver.handler.HttpToWebSocketHandler;
+import org.webbitserver.handler.StaticFileHandler;
 
 import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
@@ -105,6 +102,7 @@ public class Monitor {
         d.put("storages", data.storages);
         d.put("entities", data.entities);
         d.put("jobs", data.jobs);
+        d.put("teams", data.teams);
         return d.toString();
     }
 }

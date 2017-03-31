@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TeamData {
 
     @XmlAttribute
+    private String name;
+
+    @XmlAttribute
     private long money;
 
     /**
@@ -21,9 +24,11 @@ public class TeamData {
     private TeamData() {}
 
     /**
+     * @param name the team's name (may be null)
      * @param money the current money of the team
      */
-    public TeamData(long money) {
+    public TeamData(String name, long money) {
+        this.name = name;
         this.money = money;
     }
 
@@ -32,5 +37,12 @@ public class TeamData {
      */
     public long getMoney() {
         return money;
+    }
+
+    /**
+     * @return the name of the team or an empty string if that name is not known
+     */
+    public String getName(){
+        return name == null? "": name;
     }
 }
