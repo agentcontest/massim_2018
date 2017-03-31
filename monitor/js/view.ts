@@ -1,4 +1,4 @@
-import { Ctrl, MapView, Located, FacilityType } from './interfaces';
+import { Ctrl, MapView, Located, FacilityType, Agent } from './interfaces';
 
 import { h } from 'snabbdom';
 import ol = require('openlayers');
@@ -22,8 +22,8 @@ function xy(lonlat: Located): ol.Coordinate {
   return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
 }
 
-function facilityStyle(type: FacilityType, active: boolean) {
-  const suffix = active ? '-h' : '';
+function facilityStyle(type: FacilityType, selected: boolean): ol.style.Style {
+  const suffix = selected ? '-h' : '';
 
   return new ol.style.Style({
     image: new ol.style.Icon({
@@ -35,9 +35,29 @@ function facilityStyle(type: FacilityType, active: boolean) {
   });
 }
 
+function log<T>(s: T): T {
+  console.log(s);
+  return s;
+}
+
 export function makeMap(target: Element, ctrl: Ctrl): MapView {
 
   const vectorSource = new ol.source.Vector();
+
+  const agentIconStyle = function(entity: Agent, active: boolean, selected: boolean): ol.style.Style {
+    let suffix = '';
+    if (selected) suffix = '-h';
+    else if (!active) suffix = '-i';
+
+    return new ol.style.Style({
+      image: new ol.style.Icon({
+        src: log('/img/' + entity.role + '-' + entity.team + suffix + '.png'),
+        anchor: [25, 25],
+        anchorXUnits: 'pixels',
+        anchorYUnits: 'pixels'
+      })
+    });
+  };
 
   const openStreetMapLayer = new ol.layer.Tile({
     source: new ol.source.OSM({
@@ -63,15 +83,20 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     vectorSource.clear();
     if (!ctrl.vm.dynamic) return;
 
+
+    const addFeature = function(loc: Located, style: ol.style.Style) {
+      const feature = new ol.Feature({
+        geometry: new ol.geom.Point(xy(loc))
+      });
+
+      feature.setStyle(style);
+
+      vectorSource.addFeature(feature);
+    };
+
     const renderFacility = function(type: FacilityType) {
       return function(facility: Located) {
-        const feature = new ol.Feature({
-          geometry: new ol.geom.Point(xy(facility))
-        });
-
-        feature.setStyle(facilityStyle(type, false));
-
-        vectorSource.addFeature(feature);
+        addFeature(facility, facilityStyle(type, false));
       };
     };
 
@@ -81,6 +106,10 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     ctrl.vm.dynamic.chargingStations.forEach(renderFacility('chargingStation'));
     ctrl.vm.dynamic.resourceNodes.forEach(renderFacility('resourceNode'));
     ctrl.vm.dynamic.storages.forEach(renderFacility('storage'));
+
+    ctrl.vm.dynamic.entities.forEach(agent => {
+      addFeature(agent, agentIconStyle(agent, false, false));
+    });
   };
 
   return {

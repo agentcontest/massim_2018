@@ -50,7 +50,7 @@ export interface ChargingStation {
 
 export type Role = 'SpaceShip';
 
-export interface Entity {
+export interface Agent {
   lat: number;
   lon: number;
   role: Role;
@@ -64,7 +64,7 @@ export interface DynamicWorld {
   shops: Shop[];
   chargingStations: ChargingStation[];
   storages: Storage[];
-  entities: Entity[];
+  entities: Agent[];
 }
 
 export interface Located {
