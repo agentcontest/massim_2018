@@ -1,4 +1,4 @@
-import { Ctrl, StaticWorld, DynamicWorld } from './interfaces';
+import { Ctrl, StaticWorld, DynamicWorld, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 
@@ -29,10 +29,19 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
   )));
 }
 
-function details() {
-  return h('div', [
+function details(ctrl: Ctrl) {
+  const selection = ctrl.selection();
+
+  if (selection) {
+    return h('div', [
+      h('div', h('strong', isAgent(selection) ? 'Agent:' : 'Facility:'))
+    ].concat(Object.keys(selection).map(key =>
+      h('div', [key, ': ', h('em', (selection as any)[key].toString())])
+    )));
+  }
+  else return h('div', [
     h('strong', 'Details:'), ' select an agent or facility'
-  ])
+  ]);
 }
 
 function jobs(dynamic: DynamicWorld) {
@@ -52,7 +61,7 @@ export default function(ctrl: Ctrl) {
     return loading();
   else return h('div#overlay', [
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
-    h('div.btn', details()),
+    h('div.btn', details(ctrl)),
     h('div.btn', jobs(ctrl.vm.dynamic))
   ]);
 }

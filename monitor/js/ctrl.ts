@@ -1,4 +1,4 @@
-import { Redraw, Ctrl, ViewModel } from './interfaces';
+import { Redraw, Ctrl, ViewModel, Agent, Facility } from './interfaces';
 
 const TEAMS = ['a', 'b'];
 
@@ -33,12 +33,30 @@ export default function(redraw: Redraw): Ctrl {
     };
   };
 
+  const entities = function(): Array<Agent | Facility> {
+    const d = vm.dynamic;
+    if (!d) return [];
+    return ([] as Array<Agent | Facility>).concat(
+      d.entities,
+      d.workshops,
+      d.dumps,
+      d.resourceNodes,
+      d.shops,
+      d.chargingStations,
+      d.storages
+    );
+  };
+
   return {
     connect: connect,
     vm: vm,
     setSelection(name: string | null) {
       vm.selected = name;
       redraw();
+    },
+    selection: () => {
+      if (!vm.selected) return null;
+      return entities().filter(entity => entity.name === vm.selected)[0];
     },
     normalizeTeam(team: string) {
       if (vm.static) return TEAMS[vm.static.teams.indexOf(team)] || 'a';

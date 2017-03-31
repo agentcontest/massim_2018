@@ -2,6 +2,7 @@ type ConnectionState = 'offline' | 'online' | 'connecting' | 'error';
 
 export interface Ctrl {
   setSelection(name: string | null): void;
+  selection(): Agent | Facility | null;
   normalizeTeam(team: string): string;
   connect(): void;
   vm: ViewModel;
@@ -30,26 +31,31 @@ export interface Workshop {
 export interface Dump {
   lat: number;
   lon: number;
+  name: string;
 }
 
 export interface Storage {
   lat: number;
   lon: number;
+  name: string;
 }
 
 export interface ResourceNode {
   lat: number;
   lon: number;
+  name: string;
 }
 
 export interface Shop {
   lat: number;
   lon: number;
+  name: string;
 }
 
 export interface ChargingStation {
   lat: number;
   lon: number;
+  name: string;
 }
 
 export interface Facility {
@@ -64,9 +70,13 @@ export interface Agent {
   lat: number;
   lon: number;
   role: Role;
-  team: string;
   name: string;
+  team: string;
   lastAction?: LastAction;
+}
+
+export function isAgent(entity: any): entity is Agent {
+  return entity.name && entity.role && entity.team;
 }
 
 export type ActionResult = string;
