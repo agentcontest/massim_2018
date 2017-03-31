@@ -79,6 +79,7 @@ export interface LastAction {
 }
 
 export interface DynamicWorld {
+  step: number;
   workshops: Workshop[];
   dumps: Dump[];
   resourceNodes: ResourceNode[];

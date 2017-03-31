@@ -18,7 +18,7 @@ function disconnected() {
 function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld) {
   return h('div', [
     h('div', [h('strong', 'Simulation:'), ' ', staticWorld.simId]),
-    h('div', [h('strong', 'Step:'), ' ', 0, ' / ', staticWorld.steps])
+    h('div', [h('strong', 'Step:'), ' ', dynamic.step, ' / ', staticWorld.steps])
   ].concat(staticWorld.teams.map(team =>
     h('div', [h('strong', ['Team ', h('span.team.' + ctrl.normalizeTeam(team), team), ':']), ' ', 0])
   )));

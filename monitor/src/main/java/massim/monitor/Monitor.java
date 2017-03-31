@@ -96,6 +96,7 @@ public class Monitor {
 
     private String dynamicToJson(DynamicCityData data) {
         JSONObject d = new JSONObject();
+        d.put("step", data.step);
         d.put("workshops", data.workshops);
         d.put("chargingStations", data.chargingStations);
         d.put("shops", data.shops);
