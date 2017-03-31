@@ -31,11 +31,9 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     if (selected) suffix = '-h';
     else if (!active) suffix = '-i';
 
-    const team = entity.team.toLowerCase();
-
     return new ol.style.Style({
       image: new ol.style.Icon({
-        src: '/img/' + entity.role + '-' + team + suffix + '.png',
+        src: '/img/' + entity.role + '-' + ctrl.normalizeTeam(entity.team) + suffix + '.png',
         anchor: [25, 25],
         anchorXUnits: 'pixels',
         anchorYUnits: 'pixels'

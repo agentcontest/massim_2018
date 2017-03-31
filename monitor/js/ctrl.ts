@@ -1,5 +1,7 @@
 import { Redraw, Ctrl, ViewModel } from './interfaces';
 
+const TEAMS = ['a', 'b'];
+
 export default function(redraw: Redraw): Ctrl {
   const vm: ViewModel = {
     state: 'connecting',
@@ -38,6 +40,10 @@ export default function(redraw: Redraw): Ctrl {
       if (vm.selected === name) vm.selected = null;
       else vm.selected = name;
       redraw();
+    },
+    normalizeTeam(team: string) {
+      if (vm.static) return TEAMS[vm.static.teams.indexOf(team)] || 'a';
+      else return 'a';
     }
   };
 }

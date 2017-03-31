@@ -15,14 +15,13 @@ function disconnected() {
   ]);
 }
 
-function simulation(staticWorld: StaticWorld, dynamic: DynamicWorld) {
+function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld) {
   return h('div', [
     h('div', [h('strong', 'Simulation:'), ' ', staticWorld.simId]),
     h('div', [h('strong', 'Step:'), ' ', 0, ' / ', staticWorld.steps])
-  ].concat(staticWorld.teams.map(team => {
-    console.log(team);
-    return h('div', [h('strong', 'Team ' + team + ':'), ' ', 0]);
-  })));
+  ].concat(staticWorld.teams.map(team =>
+    h('div', [h('strong', ['Team ', h('span.team.' + ctrl.normalizeTeam(team), team), ':']), ' ', 0])
+  )));
 }
 
 function details() {
@@ -42,7 +41,7 @@ export default function(ctrl: Ctrl) {
   else if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
     return loading();
   else return h('div#overlay', [
-    h('div.btn', simulation(ctrl.vm.static, ctrl.vm.dynamic)),
+    h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
     h('div.btn', details()),
     h('div.btn', jobs())
   ]);

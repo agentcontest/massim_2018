@@ -36,7 +36,6 @@ body {
   padding: 2px;
   line-height: 1.4em;
 }
-
 .btn > div {
   background: rgba(0, 60, 136, 0.5);
   color: white;
@@ -50,7 +49,18 @@ body {
   left: auto;
   right: 0.5em;
 }
-
 .ol-rotate {
   top: 5.5em;
+}
+
+.team {
+  vertical-align: middle;
+  height: 1.8em;
+  border: 2px solid white;
+}
+.team.a {
+  background: #0072b2;
+}
+.team.b {
+  background: #009e73;
 }

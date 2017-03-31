@@ -2,6 +2,7 @@ type ConnectionState = 'offline' | 'online' | 'connecting' | 'error';
 
 export interface Ctrl {
   toggleSelection(name: string | null): void;
+  normalizeTeam(team: string): string;
   connect(): void;
   vm: ViewModel;
 }
