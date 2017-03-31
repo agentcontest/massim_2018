@@ -78,7 +78,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     layers: [openStreetMapLayer, vectorLayer],
     view: new ol.View({
       center: ol.proj.fromLonLat(LONDON),
-      zoom: 12
+      zoom: 13
     })
   });
 
