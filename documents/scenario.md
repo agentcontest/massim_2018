@@ -120,25 +120,25 @@ The roles in the scenario can be configured under the top-level `roles` key in t
 
 ```JSON
 "roles" : {
-  "Car" : {
+  "car" : {
     "speed" : 3,
     "load" : 550,
     "battery" : 500,
     "roads" : ["road"]
   },
-  "Drone" : {
+  "drone" : {
     "speed" : 5,
     "load" : 100,
     "battery" : 250,
     "roads" : ["air"]
   },
-  "Motorcycle" : {
+  "motorcycle" : {
     "speed" : 4,
     "load" : 300,
     "battery" : 350,
     "roads" : ["road"]
   },
-  "Truck" : {
+  "truck" : {
     "speed" : 2,
     "load" : 3000,
     "battery" : 1000,
@@ -702,10 +702,10 @@ Example:
   "roles" : {},
 
   "entities" : [
-    {"Car" : 2},
-    {"Drone" : 2},
-    {"Motorcycle" : 1},
-    {"Truck" : 1}
+    {"car" : 2},
+    {"drone" : 2},
+    {"motorcycle" : 1},
+    {"truck" : 1}
   ],
 
   "generate" : {}

@@ -37,7 +37,7 @@
       "visibilityRange" : 500,
 
       "roles" : {
-        "SpaceShip" : {
+        "spaceShip" : {
           "speed" : 100000,
           "load" : 550000,
           "battery" : 99999999,
@@ -45,7 +45,7 @@
         }
       },
 
-      "entities" : [{"SpaceShip" : 6}],
+      "entities" : [{"spaceShip" : 6}],
 
       "generate" : {
         "facilities" : {
