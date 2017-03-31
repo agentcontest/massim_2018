@@ -2,8 +2,7 @@ import { Ctrl, MapView, Located, Facility, FacilityType, Agent } from './interfa
 
 import ol = require('openlayers');
 
-//const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
-const LONDON: ol.Coordinate = [-0.1257400, 51.5085300];
+const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
 
 function xy(lonlat: Located): ol.Coordinate {
   return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
@@ -23,6 +22,7 @@ function facilityStyle(type: FacilityType, selected: boolean): ol.style.Style {
 }
 
 export default function(target: Element, ctrl: Ctrl): MapView {
+  let simId: string | undefined;
 
   const vectorSource = new ol.source.Vector();
 
@@ -58,7 +58,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     target: target,
     layers: [openStreetMapLayer, vectorLayer],
     view: new ol.View({
-      center: ol.proj.fromLonLat(LONDON),
+      center: ol.proj.fromLonLat(CLAUSTHAL),
       zoom: 13
     })
   });
@@ -76,7 +76,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
 
   const redraw = function() {
     vectorSource.clear();
-    if (!ctrl.vm.dynamic) return;
+    if (!ctrl.vm.static || !ctrl.vm.dynamic) return;
 
 
     const addFeature = function(loc: Located, style: ol.style.Style) {
@@ -108,6 +108,12 @@ export default function(target: Element, ctrl: Ctrl): MapView {
                      agent.lastAction.result.indexOf('successful') === 0;
       addFeature(agent, agentIconStyle(agent, agent.name === ctrl.vm.selected, active));
     });
+
+    if (simId !== ctrl.vm.static.simId) {
+      // adjust the map when a new simulation starts
+      map.getView().fit(vectorSource.getExtent(), map.getSize());
+      simId = ctrl.vm.static.simId;
+    }
   };
 
   return {
