@@ -36,9 +36,8 @@ export default function(redraw: Redraw): Ctrl {
   return {
     connect: connect,
     vm: vm,
-    toggleSelection(name: string | null) {
-      if (vm.selected === name) vm.selected = null;
-      else vm.selected = name;
+    setSelection(name: string | null) {
+      vm.selected = name;
       redraw();
     },
     normalizeTeam(team: string) {

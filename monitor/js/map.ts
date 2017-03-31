@@ -62,15 +62,15 @@ export default function(target: Element, ctrl: Ctrl): MapView {
   });
 
   map.getViewport().addEventListener('click', e => {
-    let first = true;
+    let found = false;
     map.forEachFeatureAtPixel(map.getEventPixel(e), feature => {
-      if (first) {
+      if (!found) {
         const userData = (feature as any).userData;
-        if (userData && userData.name) ctrl.toggleSelection(userData.name);
-        first = false;
+        if (userData && userData.name) ctrl.setSelection(userData.name);
+        found = true;
       }
     });
-    if (first) ctrl.toggleSelection(null);
+    if (!found) ctrl.setSelection(null);
   });
 
   const redraw = function() {
