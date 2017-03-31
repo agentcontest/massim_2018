@@ -45,7 +45,7 @@ www/img/workshop-h.png: svg/workshop.svg
 	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 35 -h 50 -f /dev/stdin
 
 
-agent_pngs: www/img/car-a.png www/img/car-b.png www/img/drone-a.png www/img/drone-b.png www/img/motorcycle-a.png www/img/motorcycle-b.png www/img/truck-a.png www/img/truck-b.png
+agent_pngs: www/img/car-a.png www/img/car-b.png www/img/drone-a.png www/img/drone-b.png www/img/motorcycle-a.png www/img/motorcycle-b.png www/img/truck-a.png www/img/truck-b.png www/img/spaceShip-a.png www/img/spaceShip-b.png
 
 www/img/car-a.png: svg/car.svg
 	cat $< | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
@@ -71,8 +71,14 @@ www/img/truck-a.png: svg/truck.svg
 www/img/truck-b.png: svg/truck.svg
 	cat $< | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
 
+www/img/spaceShip-a.png: svg/spaceShip.svg
+	cat $< | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
 
-agent_pngs_h: www/img/car-a-h.png www/img/car-b-h.png www/img/drone-a-h.png www/img/drone-b-h.png www/img/motorcycle-a-h.png www/img/motorcycle-b-h.png www/img/truck-a-h.png www/img/truck-b-h.png
+www/img/spaceShip-b.png: svg/spaceShip.svg
+	cat $< | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
+
+
+agent_pngs_h: www/img/car-a-h.png www/img/car-b-h.png www/img/drone-a-h.png www/img/drone-b-h.png www/img/motorcycle-a-h.png www/img/motorcycle-b-h.png www/img/truck-a-h.png www/img/truck-b-h.png www/img/spaceShip-a-h.png www/img/spaceShip-b-h.png
 
 www/img/car-a-h.png: svg/car.svg
 	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
@@ -98,8 +104,14 @@ www/img/truck-a-h.png: svg/truck.svg
 www/img/truck-b-h.png: svg/truck.svg
 	cat $< | sed -e 's/#000000/#ffffff/g' | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
 
+www/img/spaceShip-a-h.png: svg/spaceShip.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
 
-agent_pngs_i: www/img/car-a-i.png www/img/car-b-i.png www/img/drone-a-i.png www/img/drone-b-i.png www/img/motorcycle-a-i.png www/img/motorcycle-b-i.png www/img/truck-a-i.png www/img/truck-b-i.png
+www/img/spaceShip-b-h.png: svg/spaceShip.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
+
+
+agent_pngs_i: www/img/car-a-i.png www/img/car-b-i.png www/img/drone-a-i.png www/img/drone-b-i.png www/img/motorcycle-a-i.png www/img/motorcycle-b-i.png www/img/truck-a-i.png www/img/truck-b-i.png www/img/spaceShip-a-i.png www/img/spaceShip-b-i.png
 
 www/img/car-a-i.png: svg/car.svg
 	cat $< | sed -e 's/#000000/#ff7070/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
@@ -123,4 +135,10 @@ www/img/truck-a-i.png: svg/truck.svg
 	cat $< | sed -e 's/#000000/#ff7070/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
 
 www/img/truck-b-i.png: svg/truck.svg
+	cat $< | sed -e 's/#000000/#ff7070/g' | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
+
+www/img/spaceShip-a-i.png: svg/spaceShip.svg
+	cat $< | sed -e 's/#000000/#ff7070/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
+
+www/img/spaceShip-b-i.png: svg/spaceShip.svg
 	cat $< | sed -e 's/#000000/#ff7070/g' | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
