@@ -48,6 +48,15 @@ export interface ChargingStation {
   lon: number;
 }
 
+export type Role = 'SpaceShip';
+
+export interface Entity {
+  lat: number;
+  lon: number;
+  role: Role;
+  team: string;
+}
+
 export interface DynamicWorld {
   workshops: Workshop[];
   dumps: Dump[];
@@ -55,6 +64,7 @@ export interface DynamicWorld {
   shops: Shop[];
   chargingStations: ChargingStation[];
   storages: Storage[];
+  entities: Entity[];
 }
 
 export interface Located {
