@@ -45,7 +45,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
 
   const vectorSource = new ol.source.Vector();
 
-  const agentIconStyle = function(entity: Agent, active: boolean, selected: boolean): ol.style.Style {
+  const agentIconStyle = function(entity: Agent, selected: boolean, active?: boolean): ol.style.Style {
     let suffix = '';
     if (selected) suffix = '-h';
     else if (!active) suffix = '-i';
@@ -54,7 +54,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
 
     return new ol.style.Style({
       image: new ol.style.Icon({
-        src: log('/img/' + entity.role + '-' + team + suffix + '.png'),
+        src: '/img/' + entity.role + '-' + team + suffix + '.png',
         anchor: [25, 25],
         anchorXUnits: 'pixels',
         anchorYUnits: 'pixels'
@@ -87,7 +87,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     map.forEachFeatureAtPixel(map.getEventPixel(e), feature => {
       if (first) {
         const userData = (feature as any).userData;
-        if (userData && userData.name) ctrl.toggleSelection(log(userData.name));
+        if (userData && userData.name) ctrl.toggleSelection(userData.name);
         first = false;
       }
     });
@@ -123,7 +123,9 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
     ctrl.vm.dynamic.storages.forEach(renderFacility('storage'));
 
     ctrl.vm.dynamic.entities.forEach(agent => {
-      addFeature(agent, agentIconStyle(agent, false, agent.name === ctrl.vm.selected));
+      const active = agent.lastAction && agent.lastAction.type !== 'noAction' &&
+                     agent.lastAction.result.indexOf('successful') === 0;
+      addFeature(agent, agentIconStyle(agent, agent.name === ctrl.vm.selected, active));
     });
   };
 
@@ -133,7 +135,7 @@ export function makeMap(target: Element, ctrl: Ctrl): MapView {
 }
 
 export function overlay(ctrl: Ctrl) {
-  console.log(ctrl.vm.state);
+  log(ctrl.vm.state);
   if (ctrl.vm.state === 'error') return disconnected();
   else if (ctrl.vm.state === 'connecting') return loading();
   else return h('div', 'yay :)');

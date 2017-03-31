@@ -64,6 +64,16 @@ export interface Agent {
   role: Role;
   team: string;
   name: string;
+  lastAction?: LastAction;
+}
+
+export type ActionResult = string;
+
+export type ActionType = 'noAction' | string;
+
+export interface LastAction {
+  result: ActionResult;
+  type: ActionType;
 }
 
 export interface DynamicWorld {
