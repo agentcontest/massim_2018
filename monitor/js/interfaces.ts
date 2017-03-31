@@ -14,6 +14,7 @@ export interface ViewModel {
   state: ConnectionState;
   selected: string | null;
   dynamic?: DynamicWorld;
+  static?: StaticWorld;
 }
 
 export type FacilityType = 'workshop' | 'resourceNode' | 'shop' | 'dump' |
@@ -89,6 +90,12 @@ export interface DynamicWorld {
 export interface Located {
   lat: number;
   lon: number;
+}
+
+export interface StaticWorld {
+  simId: string;
+  teams: string[];
+  steps: number;
 }
 
 export type Redraw = () => void;
