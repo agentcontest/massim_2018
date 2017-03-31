@@ -34,7 +34,7 @@ export default function(redraw: Redraw): Ctrl {
   return {
     connect: connect,
     vm: vm,
-    toggleSelection(name: string) {
+    toggleSelection(name: string | null) {
       if (vm.selected === name) vm.selected = null;
       else vm.selected = name;
       redraw();

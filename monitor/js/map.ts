@@ -72,6 +72,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
         first = false;
       }
     });
+    if (first) ctrl.toggleSelection(null);
   });
 
   const redraw = function() {

@@ -1,7 +1,7 @@
 type ConnectionState = 'offline' | 'online' | 'connecting' | 'error';
 
 export interface Ctrl {
-  toggleSelection(name: string): void;
+  toggleSelection(name: string | null): void;
   connect(): void;
   vm: ViewModel;
 }
