@@ -122,11 +122,17 @@ export interface DynamicWorld {
   storages: Storage[];
   entities: Agent[];
   jobs: Job[];
+  teams: Team[];
 }
 
 export interface Located {
   lat: number;
   lon: number;
+}
+
+export interface Team {
+  name: string;
+  money: number;
 }
 
 export interface Role {
