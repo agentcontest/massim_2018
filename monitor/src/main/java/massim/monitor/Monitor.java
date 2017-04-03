@@ -3,7 +3,9 @@ package massim.monitor;
 import massim.protocol.WorldData;
 import massim.protocol.scenario.city.data.DynamicCityData;
 import massim.protocol.scenario.city.data.StaticCityData;
+
 import org.json.JSONObject;
+
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
@@ -31,11 +33,13 @@ public class Monitor {
             pool.add(client);
             if (latestStatic != null) client.send(latestStatic);
             if (latestDynamic != null) client.send(latestDynamic);
+            System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
         }
 
         @Override
         public void onClose(WebSocketConnection client) {
             pool.remove(client);
+            System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
         }
     };
 
@@ -49,6 +53,8 @@ public class Monitor {
             .add(new EmbeddedResourceHandler("www"))
             .start()
             .get();
+
+        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://localhost:%d/", port));
     }
 
     /**
