@@ -1,0 +1,5 @@
+language: java
+
+before_script: cd monitor && npm install && gulp && cd ..
+
+script: nvm package
