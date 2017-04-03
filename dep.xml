@@ -32,9 +32,6 @@
         <fileSet>
             <directory>server/conf</directory>
             <outputDirectory>server/conf</outputDirectory>
-            <includes>
-                <include>*.json</include>
-            </includes>
         </fileSet>
         <fileSet>
             <directory>server/osm</directory>
