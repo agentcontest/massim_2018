@@ -9,7 +9,7 @@ import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 import org.webbitserver.WebSocketConnection;
 import org.webbitserver.handler.HttpToWebSocketHandler;
-import org.webbitserver.handler.StaticFileHandler;
+import org.webbitserver.handler.EmbeddedResourceHandler;
 
 import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
@@ -46,7 +46,7 @@ public class Monitor {
     public Monitor() throws ExecutionException, InterruptedException {
         WebServer server = WebServers.createWebServer(7777)
             .add("/socket", new HttpToWebSocketHandler(this.socketHandler))
-            .add(new StaticFileHandler("webmonitor/www"))
+            .add(new EmbeddedResourceHandler("www"))
             .start()
             .get();
     }
