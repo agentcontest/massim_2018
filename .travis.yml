@@ -2,13 +2,24 @@ sudo: false
 dist: trusty
 
 language: java
+
 jdk:
- - oraclejdk8
+- oraclejdk8
 node_js:
- - node
+- node
 
 install: npm install -g gulp-cli
-
 before_script: cd monitor && npm install && gulp && cd ..
+script: mvn package
 
-script: nvm package
+deploy:
+  provider: releases
+  api_key:
+    secure: B9mrLrIif4S7O5CHn3S5zJrg62vGZ3iJ1OeUSEhBvrr5yM5U3w9sKSnS2Lh8wYQIQcE62PB6A0O+kN5BHLJhU5rcQmqpCpVXkpefD3alYRDrVDTjOp7n1UjNaVwXmJG0rHdYexxMhw4GgVzXpy/RJZyuvbH4c9cXowTpS1SHpXOft+6FWQ0yfplH39n1BoggVL9VdFCiOH4O6nKURL633z1sDPjZ8ynzbXyeaop/bzQpzKOTTZuJQevx1LFZBuzf6vMUnTQ+u3tKukMw025iNReLIOlWTd96jNINxkjvfdZ74HqdUIKdfS8k886J3O7SE5GjyiKrh9jM5D678LEO+oGDiaXPtKCZzrWHPispIhKhdJ1HKobIh5ljH+2fIrFoJdSJmn5Y1KUgSRNPASVwpiETRRctFqEj66ywdUcS+k/RnNTT0XSJ0HFMi3x5xul5H6YlOjh3tFe5rBUCprwxXd1mRBX+Blcu8oofbhecjxgTfuRyC9lSeoqOrogL5QNXQLjRqr4LldUwqX7fMkqBHU8pclr/rCdKYVDqNkJIYRSoOpB1OMd7VzlhNsh41Bofq31K0ZiTR73jIn0M3h4dmJJf3rxov/7ULaYyepyScUIf0wqJdnevvVq+n8TmYmeU+mlWIr08zqrCMezpCr1nRNWQ0k6/P0l/gjndAv97cwg=
+  file: target/massim-*.tar.gz
+  file_glob: true
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: agentcontest/massim
+    branch: master
