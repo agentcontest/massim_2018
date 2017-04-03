@@ -14,22 +14,7 @@ executed by _MASSim_.
 Building MASSim
 ---------------
 
-### Prerequisites
-
-* `mvn` (Maven)
-
-If you also want to build the webmonitor:
-
-* `npm` (from nodejs)
-* `gulp-cli` (`sudo npm install -g gulp-cli`)
-
-### Optional: Building the web monitor
-
-1. `cd monitor`
-2. `npm install`
-3. `gulp`
-
-### Building MASSim
+The build requires Maven.
 
 Run `mvn package` in the main directory. Maven should automatically
 fetch all nescessary dependencies.
