@@ -6,8 +6,15 @@
     <fileSets>
         <!-- Documents -->
         <fileSet>
-            <directory>documents</directory>
-            <outputDirectory>documents</outputDirectory>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>docs</directory>
+            <outputDirectory>docs</outputDirectory>
             <includes>
                 <include>*.md</include>
             </includes>
