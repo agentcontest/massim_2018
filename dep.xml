@@ -10,6 +10,7 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>README.md</include>
+                <include>COPYING.txt</include>
             </includes>
         </fileSet>
         <fileSet>

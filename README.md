@@ -46,3 +46,9 @@ Documentation
 [docs/eismassim.md](eismassim.md) explains _EISMASSim_, a Java library using the Environment Interface Standard (EIS) to communicate with the _MASSim_ server, that can be used with platforms which support the EIS.
 
 [docs/javaagents.md](javaagents.md) gives a short introduction to the java agents framework, which holds skeletons that can already communicate with the MASSim server and have basic agent capabilities.
+
+License
+-------
+
+_MASSim_ is licensed under the AGPLv3+. See COPYING.txt for the full
+license text.
