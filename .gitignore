@@ -5,5 +5,5 @@ server/results
 server/graphs
 target
 monitor/node_modules
-monitor/www/main.js
-monitor/www/ol.css
+monitor/src/main/resources/www/main.js
+monitor/src/main/resources/www/ol.css

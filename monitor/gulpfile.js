@@ -6,6 +6,8 @@ const watchify = require('watchify');
 const buffer = require('vinyl-buffer');
 const source = require('vinyl-source-stream');
 
+const www = 'src/main/resources/www/';
+
 function build() {
   return browserify('js/main.ts', {
       standalone: 'Monitor',
@@ -22,14 +24,24 @@ function bundle() {
     .on('error', (e) => gutil.log(gutil.colors.red(e.message)))
     .pipe(source('main.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('www/'));
+    .pipe(gulp.dest(www));
 }
+
+watchedBrowserify.on('update', bundle);
+watchedBrowserify.on('log', gutil.log);
 
 gulp.task('ol-css', function() {
   gulp.src('node_modules/openlayers/dist/ol.css')
-    .pipe(gulp.dest('www/'));
+    .pipe(gulp.dest(www));
 });
 
-gulp.task('default', ['ol-css'], bundle);
-watchedBrowserify.on('update', bundle);
-watchedBrowserify.on('log', gutil.log);
+gulp.task('dev', ['ol-css'], function() {
+  return build()
+    .bundle()
+    .pipe(source('main.js'))
+    .pipe(gulp.dest(www));
+});
+
+gulp.task('watch', ['ol-css'], bundle);
+
+gulp.task('default', ['watch']);
