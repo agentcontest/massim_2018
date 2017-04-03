@@ -16,6 +16,7 @@ public class Item {
     private Set<Tool> toolsNeeded = new HashSet<>();
     private int value;
     private int assembleValue;
+    private Map<Item, Integer> requiredBaseItems = new HashMap<>();
 
     public Item(String id, int volume, int value, Set<Tool> tools){
         this.id = id;
@@ -90,6 +91,43 @@ public class Item {
             return 0;
         }
         return assembleValue;
+    }
+
+    /**
+     * @return all base items that are needed to build the item and its required items
+     */
+    public Map<Item, Integer> getRequiredBaseItems(){
+        if(requiredBaseItems.isEmpty()){
+            if(needsAssembly()){
+                Map<Item, Integer> reqBaseItems = new HashMap<>();
+                for(Item item: requiredItems.keySet()){
+                    if(item.needsAssembly()){
+                        Map<Item, Integer> tmpItems = item.getRequiredBaseItems();
+                        for(int i=0; i<requiredItems.get(item); i++){
+                            for(Item tmpItem: tmpItems.keySet()){
+                                if(reqBaseItems.containsKey(tmpItem)){
+                                    int amount = reqBaseItems.get(tmpItem);
+                                    reqBaseItems.replace(tmpItem, amount, amount + tmpItems.get(tmpItem));
+                                }else{
+                                    reqBaseItems.put(tmpItem,tmpItems.get(tmpItem));
+                                }
+                            }
+                        }
+                    }else{
+                        if(reqBaseItems.containsKey(item)){
+                            int amount = reqBaseItems.get(item);
+                            reqBaseItems.replace(item, amount, amount + requiredItems.get(item));
+                        }else {
+                            reqBaseItems.put(item, requiredItems.get(item));
+                        }
+                    }
+                }
+                this.requiredBaseItems = reqBaseItems;
+                return reqBaseItems;
+            }
+            return requiredBaseItems;
+        }
+        return requiredBaseItems;
     }
 
     @Override

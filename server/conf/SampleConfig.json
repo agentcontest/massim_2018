@@ -115,7 +115,20 @@
           "toolsMax" : 10,
           "toolProbability" : 0.5
         },
-        "jobs" : {}
+        "jobs" : {
+          "rate" : 0.2,
+          "auctionProbability" : 0.4,
+          "productTypesMin" : 1,
+          "productTypesMax" : 5,
+          "difficultyMin" : 3,
+          "difficultyMax" : 12,
+          "timeMin" : 100,
+          "timeMax" : 400,
+          "auctions" : {
+            "auctionTimeMin" : 2,
+            "auctionTimeMax" : 10
+          }
+        }
       }
     }
   ],

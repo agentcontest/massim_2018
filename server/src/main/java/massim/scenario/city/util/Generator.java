@@ -65,6 +65,18 @@ public class Generator {
     private int toolsMax;
     private double toolProbability;
 
+    private double rate;
+    private double auctionProbability;
+    private int productTypesMin;
+    private int productTypesMax;
+    private int difficultyMin;
+    private int difficultyMax;
+    private int timeMin;
+    private int timeMax;
+
+    private int auctionTimeMin;
+    private int auctionTimeMax;
+
     private int truckCapacity;
 
     private Vector<Item> baseItems = new Vector<>();
@@ -217,7 +229,33 @@ public class Generator {
         if(jobs == null){
             Log.log(Log.Level.ERROR, "No jobs in configuration.");
         }else{
-            //TODO parse job parameters from config
+            rate = jobs.optDouble("rate", 0.2);
+            Log.log(Log.Level.NORMAL, "Configuring jobs rate: " + rate);
+            auctionProbability = jobs.optDouble("auctionProbability", 0.4);
+            Log.log(Log.Level.NORMAL, "Configuring jobs auctionProbability: " + auctionProbability);
+            productTypesMin = jobs.optInt("productTypesMin", 1);
+            Log.log(Log.Level.NORMAL, "Configuring jobs productTypesMin: " + productTypesMin);
+            productTypesMax = jobs.optInt("productTypesMax", 4);
+            Log.log(Log.Level.NORMAL, "Configuring jobs productTypesMax: " + productTypesMax);
+            difficultyMin = jobs.optInt("difficultyMin", 3);
+            Log.log(Log.Level.NORMAL, "Configuring jobs difficultyMin: " + difficultyMin);
+            difficultyMax = jobs.optInt("difficultyMax", 12);
+            Log.log(Log.Level.NORMAL, "Configuring jobs difficultyMax: " + difficultyMax);
+            timeMin = jobs.optInt("timeMin", 100);
+            Log.log(Log.Level.NORMAL, "Configuring jobs timeMin: " + timeMin);
+            timeMax = jobs.optInt("timeMax", 400);
+            Log.log(Log.Level.NORMAL, "Configuring jobs timeMax: " + timeMax);
+
+            //parse auctions
+            JSONObject auctions = jobs.optJSONObject("auctions");
+            if (auctions == null) {
+                Log.log(Log.Level.ERROR, "No auctions in configuration.");
+            } else {
+                auctionTimeMin = auctions.optInt("auctionTimeMin", 2);
+                Log.log(Log.Level.NORMAL, "Configuring jobs auctionTimeMin: " + auctionTimeMin);
+                auctionTimeMax = auctions.optInt("auctionTimeMax", 10);
+                Log.log(Log.Level.NORMAL, "Configuring jobs auctionTimeMax: " + auctionTimeMax);
+            }
         }
     }
 
@@ -392,6 +430,17 @@ public class Generator {
                     item.addRequiredTool(reqTool);
                 }
                 item.getAssembleValue();
+
+                //test
+                item.getRequiredBaseItems();
+                Vector<String> reqBaseItems = new Vector<>();
+                for(Item reqItem: item.getRequiredBaseItems().keySet()){
+                    reqBaseItems.add(item.getRequiredBaseItems().get(reqItem) + "x " + reqItem.getName());
+                    //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
+                }
+                System.out.println("Base Items for " + item.getName() + ": " + String.join(",", reqBaseItems));
+
+
                 items.add(item);
                 levelItems.add(item);
                 counter++;
@@ -745,31 +794,45 @@ public class Generator {
             int reward;
             ArrayList<Storage> tmpStorages = new ArrayList<>(world.getStorages());
             int storageNumber;
+            Vector<Item> jobItems = new Vector<>();
 
             //generate jobs
             if(!itemGraph.get(1).isEmpty()){
                 //easy job
                 storageNumber = RNG.nextInt(tmpStorages.size());
                 itemNumber = RNG.nextInt(itemGraph.get(1).size());
-                reward = 100 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
-                Job job1 = new Job(reward, tmpStorages.get(storageNumber), 5, 205, JobData.POSTER_SYSTEM);
-                job1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+                jobItems.add(itemGraph.get(1).get(itemNumber));
+                reward = computeReward(jobItems);
+                Job job1 = new Job(reward,tmpStorages.get(storageNumber), 5, 205, JobData.POSTER_SYSTEM);
+                for(Item item: jobItems){
+                    job1.addRequiredItem(item, 3);
+                }
                 jobs.add(job1);
+
                 if(!itemGraph.get(2).isEmpty()){
                     //medium job
+                    jobItems.clear();
                     storageNumber = RNG.nextInt(tmpStorages.size());
                     itemNumber = RNG.nextInt(itemGraph.get(2).size());
-                    reward = 500 + itemGraph.get(2).get(itemNumber).getAssembleValue()*100;
-                    Job job2 = new Job(reward, tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
-                    job2.addRequiredItem(itemGraph.get(2).get(itemNumber), 3);
+                    jobItems.add(itemGraph.get(2).get(itemNumber));
+                    reward = computeReward(jobItems);
+                    Job job2 = new Job(reward,tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
+                    for(Item item: jobItems){
+                        job2.addRequiredItem(item, 3);
+                    }
                     jobs.add(job2);
+
                     if(!itemGraph.get(3).isEmpty()){
                         //hard job
+                        jobItems.clear();
                         storageNumber = RNG.nextInt(tmpStorages.size());
                         itemNumber = RNG.nextInt(itemGraph.get(3).size());
-                        reward = 1000 + itemGraph.get(3).get(itemNumber).getAssembleValue()*100;
-                        Job job3 = new Job(reward, tmpStorages.get(storageNumber), 505, 905, JobData.POSTER_SYSTEM);
-                        job3.addRequiredItem(itemGraph.get(3).get(itemNumber), 3);
+                        jobItems.add(itemGraph.get(3).get(itemNumber));
+                        reward = computeReward(jobItems);
+                        Job job3 = new Job(reward,tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
+                        for(Item item: jobItems){
+                            job3.addRequiredItem(item, 3);
+                        }
                         jobs.add(job3);
                     }
                 }
@@ -811,4 +874,22 @@ public class Generator {
         }
         return jobs;
     }
+
+    /**
+     *
+     * @param requiredItems items required to complete the job
+     * @return reward for a job with the corresponding required items
+     */
+    private int computeReward(Vector<Item> requiredItems){
+        int reward = 0;
+        for(Item reqItem: requiredItems){
+            for(Item reqBaseItem: reqItem.getRequiredBaseItems().keySet()){
+                reward = reward + (reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue());
+            }
+            reward = reward + (reqItem.getAssembleValue() * 100);
+        }
+        return reward;
+    }
+
+
 }
