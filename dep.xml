@@ -4,7 +4,7 @@
         <format>tar.gz</format>
     </formats>
     <fileSets>
-        <!-- Documents -->
+        <!-- Documentation and starter kits -->
         <fileSet>
             <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>
@@ -16,9 +16,10 @@
         <fileSet>
             <directory>docs</directory>
             <outputDirectory>docs</outputDirectory>
-            <includes>
-                <include>*.md</include>
-            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>starterKits</directory>
+            <outputDirectory>starterKits</outputDirectory>
         </fileSet>
 
         <!-- MASSim-server -->
