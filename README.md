@@ -1,6 +1,10 @@
 MASSim
 ======
 
+[![Build Status](https://travis-ci.org/agentcontest/massim.svg?branch=master)](https://travis-ci.org/agentcontest/massim)
+
+![Agents in the City](https://multiagentcontest.org/2016/banner.jpg)
+
 _MASSim_ (Multi-Agent Systems Simulation Platform), the simulation (server)
 software used in the
 [Multi-Agent Programming Contest](https://multiagentcontest.org/),
@@ -22,15 +26,15 @@ fetch all nescessary dependencies.
 Documentation
 -------------
 
-[docs/server.md](server.md) describes how the _MASSim_ server can be configured and started.
+[server.md](docs/server.md) describes how the _MASSim_ server can be configured and started.
 
-[docs/scenario.md](scenario.md) contains the description of the current scenario.
+[scenario.md](docs/scenario.md) contains the description of the current scenario.
 
-[docs/protocol.md](protocol.md) describes the _MASSim_ protocol, i.e. XML message formats for communicating with the _MASSim_ server.
+[protocol.md](docs/protocol.md) describes the _MASSim_ protocol, i.e. XML message formats for communicating with the _MASSim_ server.
 
-[docs/eismassim.md](eismassim.md) explains _EISMASSim_, a Java library using the Environment Interface Standard (EIS) to communicate with the _MASSim_ server, that can be used with platforms which support the EIS.
+[eismassim.md](docs/eismassim.md) explains _EISMASSim_, a Java library using the Environment Interface Standard (EIS) to communicate with the _MASSim_ server, that can be used with platforms which support the EIS.
 
-[docs/javaagents.md](javaagents.md) gives a short introduction to the java agents framework, which holds skeletons that can already communicate with the MASSim server and have basic agent capabilities.
+[javaagents.md](docs/javaagents.md) gives a short introduction to the java agents framework, which holds skeletons that can already communicate with the MASSim server and have basic agent capabilities.
 
 License
 -------
