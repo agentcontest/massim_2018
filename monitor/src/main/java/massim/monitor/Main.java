@@ -8,6 +8,6 @@ public class Main {
 
     public static void main(String[] args){
         if(args.length != 1) System.out.println("Must be called with 1 argument");
-        new Monitor(args[0]);
+        new Monitor(8000, args[0]);
     }
 }

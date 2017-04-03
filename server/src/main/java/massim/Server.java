@@ -48,7 +48,8 @@ public class Server {
 
         Server server = new Server();
 
-        boolean monitor = false;
+        int monitorPort = 0;
+
         // parse command line arguments
         for (int i = 0; i < args.length; i++) {
             switch (args[i]){
@@ -71,7 +72,16 @@ public class Server {
                     }
                     break;
                 case "--monitor":
-                    monitor = true;
+                    if (i + 1 < args.length) {
+                        try {
+                            monitorPort = Integer.parseInt(args[++i]);
+                        } catch (NumberFormatException e) {
+                            monitorPort = 8000;
+                            i--;
+                        }
+                    } else {
+                        monitorPort = 8000;
+                    }
                     break;
 
                 default:
@@ -114,7 +124,7 @@ public class Server {
                 }
             }
         }
-        server.config.monitor = monitor;
+        server.config.monitorPort = monitorPort;
 
         server.go();
         server.close();
@@ -161,8 +171,8 @@ public class Server {
         }
 
         // setup monitor
-        if(config.monitor) try {
-            monitor = new Monitor();
+        if (config.monitorPort > 0) try {
+            monitor = new Monitor(config.monitorPort);
         } catch (ExecutionException e) {
             Log.log(Log.Level.ERROR, "Monitor not started: " + e.getLocalizedMessage());
         } catch (InterruptedException ignored) {}

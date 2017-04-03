@@ -43,5 +43,4 @@ gulp.task('dev', ['ol-css'], function() {
 });
 
 gulp.task('watch', ['ol-css'], bundle);
-
-gulp.task('default', ['watch']);
+gulp.task('default', ['dev']);

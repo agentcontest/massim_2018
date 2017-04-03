@@ -25,6 +25,7 @@ public class Monitor {
     private final HashSet<WebSocketConnection> pool = new HashSet<WebSocketConnection>();
 
     private final BaseWebSocketHandler socketHandler = new BaseWebSocketHandler() {
+
         @Override
         public void onOpen(WebSocketConnection client) {
             pool.add(client);
@@ -36,15 +37,14 @@ public class Monitor {
         public void onClose(WebSocketConnection client) {
             pool.remove(client);
         }
-
     };
 
     /**
      * Constructor.
      * Used by the massim server to create the "live" monitor.
      */
-    public Monitor() throws ExecutionException, InterruptedException {
-        WebServer server = WebServers.createWebServer(7777)
+    public Monitor(int port) throws ExecutionException, InterruptedException {
+        WebServer server = WebServers.createWebServer(port)
             .add("/socket", new HttpToWebSocketHandler(this.socketHandler))
             .add(new EmbeddedResourceHandler("www"))
             .start()
@@ -55,7 +55,7 @@ public class Monitor {
      * Creates a new monitor to watch replays with.
      * @param replayPath the path to a replay file
      */
-    Monitor(String replayPath){
+    Monitor(int port, String replayPath) {
         // TODO
     }
 
@@ -73,7 +73,7 @@ public class Monitor {
         if (worldData instanceof StaticCityData) {
             this.latestStatic = staticToJson((StaticCityData) worldData);
             this.broadcast(this.latestStatic);
-        } else if (worldData instanceof DynamicCityData){
+        } else if (worldData instanceof DynamicCityData) {
             this.latestDynamic = dynamicToJson((DynamicCityData) worldData);
             this.broadcast(this.latestDynamic);
         }

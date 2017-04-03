@@ -49,7 +49,7 @@ public class ServerConfig {
     public String replayPath;
 
     /**
-     * Whether to run the live monitor as well.
+     * The port for the webmonitor or 0.
      */
-    public boolean monitor;
+    public int monitorPort;
 }
