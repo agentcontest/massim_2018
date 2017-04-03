@@ -3,8 +3,6 @@ MASSim
 
 [![Build Status](https://travis-ci.org/agentcontest/massim.svg?branch=master)](https://travis-ci.org/agentcontest/massim)
 
-![Agents in the City](https://multiagentcontest.org/2016/banner.jpg)
-
 _MASSim_ (Multi-Agent Systems Simulation Platform), the simulation (server)
 software used in the
 [Multi-Agent Programming Contest](https://multiagentcontest.org/),
@@ -14,6 +12,10 @@ predefined game.
 _MASSim_ simulations run in discrete steps. Agents connect remotely to the
 contest server, receive percepts and send their actions, which are in turn
 executed by _MASSim_.
+
+<p align="center">
+  <img src="https://multiagentcontest.org/2016/banner.jpg">
+</p>
 
 Building MASSim
 ---------------
