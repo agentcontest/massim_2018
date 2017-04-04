@@ -104,7 +104,29 @@
           "toolsMax" : 10,
           "toolProbability" : 0.5
         },
-        "jobs" : {}
+        "jobs" : {
+          "rate" : 0.2,
+          "auctionProbability" : 0.4,
+          "missionProbability" : 0.1,
+          "productTypesMin" : 1,
+          "productTypesMax" : 5,
+          "difficultyMin" : 3,
+          "difficultyMax" : 12,
+          "timeMin" : 100,
+          "timeMax" : 400,
+          "rewardAddMin" : 50,
+          "rewardAddMax" : 100,
+          "auctions" : {
+            "auctionTimeMin" : 2,
+            "auctionTimeMax" : 10,
+            "fineSub" : 50,
+            "fineAdd" : 50,
+            "maxRewardAdd" : 50
+          },
+          "missions" : {
+            "missionDifficultyMax" : 6
+          }
+        }
       }
     }
   ],

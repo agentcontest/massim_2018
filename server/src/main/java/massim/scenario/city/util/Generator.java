@@ -67,15 +67,23 @@ public class Generator {
 
     private double rate;
     private double auctionProbability;
+    private double missionProbability;
     private int productTypesMin;
     private int productTypesMax;
     private int difficultyMin;
     private int difficultyMax;
     private int timeMin;
     private int timeMax;
+    private int rewardAddMin;
+    private int rewardAddMax;
 
     private int auctionTimeMin;
     private int auctionTimeMax;
+    private int fineSub;
+    private int fineAdd;
+    private int maxRewardAdd;
+
+    private int missionDifficultyMax;
 
     private int truckCapacity;
 
@@ -83,6 +91,9 @@ public class Generator {
     private Vector<Vector<Item>> itemGraph = new Vector<>();
     private List<Item> resources = new Vector<>();
     private List<Tool> allTools = new Vector<>();
+    private List<Item> allJobItems = new Vector<>();
+    private int missionID = 0;
+    private int missionEnd = 0;
 
     public Generator(JSONObject randomConf){
         //parse random parameters from config
@@ -233,6 +244,8 @@ public class Generator {
             Log.log(Log.Level.NORMAL, "Configuring jobs rate: " + rate);
             auctionProbability = jobs.optDouble("auctionProbability", 0.4);
             Log.log(Log.Level.NORMAL, "Configuring jobs auctionProbability: " + auctionProbability);
+            missionProbability = jobs.optDouble("missionProbability", 0.1);
+            Log.log(Log.Level.NORMAL, "Configuring jobs missionProbability: " + missionProbability);
             productTypesMin = jobs.optInt("productTypesMin", 1);
             Log.log(Log.Level.NORMAL, "Configuring jobs productTypesMin: " + productTypesMin);
             productTypesMax = jobs.optInt("productTypesMax", 4);
@@ -245,6 +258,11 @@ public class Generator {
             Log.log(Log.Level.NORMAL, "Configuring jobs timeMin: " + timeMin);
             timeMax = jobs.optInt("timeMax", 400);
             Log.log(Log.Level.NORMAL, "Configuring jobs timeMax: " + timeMax);
+            rewardAddMin = jobs.optInt("rewardAddMin", 50);
+            Log.log(Log.Level.NORMAL, "Configuring jobs rewardAddMin: " + rewardAddMin);
+            rewardAddMax = jobs.optInt("rewardAddMax", 100);
+            Log.log(Log.Level.NORMAL, "Configuring jobs rewardAddMax: " + rewardAddMax);
+
 
             //parse auctions
             JSONObject auctions = jobs.optJSONObject("auctions");
@@ -255,6 +273,21 @@ public class Generator {
                 Log.log(Log.Level.NORMAL, "Configuring jobs auctionTimeMin: " + auctionTimeMin);
                 auctionTimeMax = auctions.optInt("auctionTimeMax", 10);
                 Log.log(Log.Level.NORMAL, "Configuring jobs auctionTimeMax: " + auctionTimeMax);
+                fineSub = auctions.optInt("fineSub", 50);
+                Log.log(Log.Level.NORMAL, "Configuring jobs fineSub: " + fineSub);
+                fineAdd = auctions.optInt("fineAdd", 50);
+                Log.log(Log.Level.NORMAL, "Configuring jobs fineAdd: " + fineAdd);
+                maxRewardAdd = auctions.optInt("maxRewardAdd", 50);
+                Log.log(Log.Level.NORMAL, "Configuring jobs maxRewardAdd: " + maxRewardAdd);
+            }
+
+            //parse missions
+            JSONObject missions = jobs.optJSONObject("missions");
+            if (missions == null) {
+                Log.log(Log.Level.ERROR, "No missions in configuration.");
+            } else {
+                missionDifficultyMax = missions.optInt("missionDifficultyMax", 2);
+                Log.log(Log.Level.NORMAL, "Configuring jobs missionDifficultyMax: " + missionDifficultyMax);
             }
         }
     }
@@ -443,6 +476,7 @@ public class Generator {
 
                 items.add(item);
                 levelItems.add(item);
+                allJobItems.add(item);
                 counter++;
             }
             itemGraph.add(levelItems);
@@ -788,90 +822,97 @@ public class Generator {
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
-        // TODO generate more jobs
-        if(stepNo==1){
-            int itemNumber;
-            int reward;
-            ArrayList<Storage> tmpStorages = new ArrayList<>(world.getStorages());
-            int storageNumber;
+
+        if(RNG.nextDouble() <= rate){
+            ArrayList<Storage> tmpStorage = new ArrayList<>(world.getStorages());
+            int storageNumber = RNG.nextInt(tmpStorage.size());
+
             Vector<Item> jobItems = new Vector<>();
+            int numberOfProducts = RNG.nextInt((productTypesMax-productTypesMin) + 1) + productTypesMin;
+            numberOfProducts = Math.min(numberOfProducts, allJobItems.size());
+            int difficulty = 0;
 
-            //generate jobs
-            if(!itemGraph.get(1).isEmpty()){
-                //easy job
-                storageNumber = RNG.nextInt(tmpStorages.size());
-                itemNumber = RNG.nextInt(itemGraph.get(1).size());
-                jobItems.add(itemGraph.get(1).get(itemNumber));
-                reward = computeReward(jobItems);
-                Job job1 = new Job(reward,tmpStorages.get(storageNumber), 5, 205, JobData.POSTER_SYSTEM);
-                for(Item item: jobItems){
-                    job1.addRequiredItem(item, 3);
+            if(RNG.nextDouble() > missionProbability || stepNo<missionEnd){
+                for(int i=0; i<numberOfProducts; i++){
+                    int itemNumber = RNG.nextInt(allJobItems.size());
+                    if((difficulty + allJobItems.get(itemNumber).getAssembleValue() ) < difficultyMax){
+                        difficulty = difficulty + allJobItems.get(itemNumber).getAssembleValue();
+                        jobItems.add(allJobItems.get(itemNumber));
+                    }
                 }
-                jobs.add(job1);
 
-                if(!itemGraph.get(2).isEmpty()){
-                    //medium job
-                    jobItems.clear();
-                    storageNumber = RNG.nextInt(tmpStorages.size());
-                    itemNumber = RNG.nextInt(itemGraph.get(2).size());
-                    jobItems.add(itemGraph.get(2).get(itemNumber));
-                    reward = computeReward(jobItems);
-                    Job job2 = new Job(reward,tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
+                int reward = computeReward(jobItems) + (RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin);
+                int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
+                reward = reward + rewardAdd;
+                int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
+
+                if(RNG.nextDouble() > auctionProbability){
+                    //generate job
+                    Job job1 = new Job(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, JobData.POSTER_SYSTEM);
                     for(Item item: jobItems){
-                        job2.addRequiredItem(item, 3);
+                        job1.addRequiredItem(item, 1);
                     }
-                    jobs.add(job2);
-
-                    if(!itemGraph.get(3).isEmpty()){
-                        //hard job
-                        jobItems.clear();
-                        storageNumber = RNG.nextInt(tmpStorages.size());
-                        itemNumber = RNG.nextInt(itemGraph.get(3).size());
-                        jobItems.add(itemGraph.get(3).get(itemNumber));
-                        reward = computeReward(jobItems);
-                        Job job3 = new Job(reward,tmpStorages.get(storageNumber), 205, 505, JobData.POSTER_SYSTEM);
-                        for(Item item: jobItems){
-                            job3.addRequiredItem(item, 3);
-                        }
-                        jobs.add(job3);
+                    jobs.add(job1);
+                }else{
+                    //generate auction
+                    int auctionTime = RNG.nextInt((auctionTimeMax - auctionTimeMin) + 1) + auctionTimeMin;
+                    int fine;
+                    int fineMod = 1 + RNG.nextInt(fineAdd+fineSub);
+                    if(fineMod > fineSub){
+                        fine = reward + (int) (reward * ((fineMod-fineSub)/100.0f));
+                    }else{
+                        fine = reward - (int) (reward * (fineMod/100.0f));
                     }
+                    maxRewardAdd = 1 + RNG.nextInt(rewardAddMax);
+                    reward = reward + (int) (reward*maxRewardAdd/100.0f);
+                    AuctionJob auction1 = new AuctionJob(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, auctionTime, fine);
+                    for(Item item: jobItems){
+                        auction1.addRequiredItem(item, 1);
+                    }
+                    jobs.add(auction1);
                 }
             }else{
-                Log.log(Log.Level.NORMAL, "Configuring jobs: Could not configure Jobs, not enough items!");
-            }
+                //generate mission
+                for(int i=0; i<numberOfProducts; i++){
+                    int itemNumber = RNG.nextInt(allJobItems.size());
+                    if((difficulty + allJobItems.get(itemNumber).getAssembleValue() ) < missionDifficultyMax){
+                        difficulty = difficulty + allJobItems.get(itemNumber).getAssembleValue();
+                        jobItems.add(allJobItems.get(itemNumber));
+                    }
+                }
 
-            //generate auctions
-            if(!itemGraph.get(1).isEmpty()){
-                storageNumber = RNG.nextInt(tmpStorages.size());
-                itemNumber = RNG.nextInt(itemGraph.get(1).size());
-                reward = 500 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
-                AuctionJob auction1 = new AuctionJob(reward, tmpStorages.get(storageNumber), 5, 205, 5, 1000);
-                auction1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
-                jobs.add(auction1);
-            }
-
-            //generate missions
-            for(TeamState team: world.getTeams()){
-                if(!itemGraph.get(1).isEmpty()){
-                    storageNumber = RNG.nextInt(tmpStorages.size());
-                    itemNumber = RNG.nextInt(itemGraph.get(1).size());
-                    reward = 500 + itemGraph.get(1).get(itemNumber).getAssembleValue()*100;
-                    Mission mission1 = new Mission(reward, tmpStorages.get(storageNumber), 100, 300, 1000, team, "mission1");
-                    mission1.addRequiredItem(itemGraph.get(1).get(itemNumber), 3);
+                int reward = computeReward(jobItems) + (RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin);
+                int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
+                reward = reward + rewardAdd;
+                int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
+                missionEnd = stepNo+1+length;
+                int fine;
+                int fineMod = 1 + RNG.nextInt(fineAdd+fineSub);
+                if(fineMod > fineSub){
+                    fine = reward + (int) (reward * ((fineMod-fineSub)/100.0f));
+                }else{
+                    fine = reward - (int) (reward * (fineMod/100.0f));
+                }
+                for(TeamState team: world.getTeams()){
+                    Mission mission1 = new Mission(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, fine, team, Integer.toString(missionID));
+                    for(Item item: jobItems){
+                        mission1.addRequiredItem(item, 1);
+                    }
                     jobs.add(mission1);
                 }
+                missionID++;
             }
-
-            for(Job job: jobs){
-                String itemName = "";
-                for(Item item: job.getRequiredItems().getStoredTypes()){
-                    itemName = item.getName();
-                }
-                Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() +
-                        " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass());
-            }
-
         }
+
+        for(Job job: jobs){
+            String itemName = "";
+            for(Item item: job.getRequiredItems().getStoredTypes()){
+                itemName = item.getName();
+            }
+            Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() +
+                    " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass());
+        }
+
         return jobs;
     }
 
