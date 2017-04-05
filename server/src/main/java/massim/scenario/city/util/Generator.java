@@ -827,17 +827,33 @@ public class Generator {
             ArrayList<Storage> tmpStorage = new ArrayList<>(world.getStorages());
             int storageNumber = RNG.nextInt(tmpStorage.size());
 
-            Vector<Item> jobItems = new Vector<>();
+            Map<Item, Integer> jobItems = new HashMap<>();
             int numberOfProducts = RNG.nextInt((productTypesMax-productTypesMin) + 1) + productTypesMin;
             numberOfProducts = Math.min(numberOfProducts, allJobItems.size());
-            int difficulty = 0;
+            int currentDifficulty = 0;
 
             if(RNG.nextDouble() > missionProbability || stepNo<missionEnd){
-                for(int i=0; i<numberOfProducts; i++){
-                    int itemNumber = RNG.nextInt(allJobItems.size());
-                    if((difficulty + allJobItems.get(itemNumber).getAssembleValue() ) < difficultyMax){
-                        difficulty = difficulty + allJobItems.get(itemNumber).getAssembleValue();
-                        jobItems.add(allJobItems.get(itemNumber));
+                int difficulty = RNG.nextInt((difficultyMax-difficultyMin) + 1) + difficultyMin;
+
+                while(jobItems.isEmpty()){
+                    for(int i=0; i<numberOfProducts; i++){
+                        int itemNumber = RNG.nextInt(allJobItems.size());
+                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) < difficulty){
+                            currentDifficulty = currentDifficulty + allJobItems.get(itemNumber).getAssembleValue();
+                            jobItems.put(allJobItems.get(itemNumber),1);
+                        }
+                    }
+                }
+
+                ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
+                while(currentDifficulty<difficulty){
+                    RNG.shuffle(itemList);
+                    if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
+                        currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
+                        int amount = jobItems.get(itemList.get(0));
+                        jobItems.replace(itemList.get(0), amount, amount+1);
+                    }else{
+                        break;
                     }
                 }
 
@@ -849,8 +865,8 @@ public class Generator {
                 if(RNG.nextDouble() > auctionProbability){
                     //generate job
                     Job job1 = new Job(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, JobData.POSTER_SYSTEM);
-                    for(Item item: jobItems){
-                        job1.addRequiredItem(item, 1);
+                    for(Item item: jobItems.keySet()){
+                        job1.addRequiredItem(item, jobItems.get(item));
                     }
                     jobs.add(job1);
                 }else{
@@ -866,18 +882,34 @@ public class Generator {
                     maxRewardAdd = 1 + RNG.nextInt(rewardAddMax);
                     reward = reward + (int) (reward*maxRewardAdd/100.0f);
                     AuctionJob auction1 = new AuctionJob(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, auctionTime, fine);
-                    for(Item item: jobItems){
-                        auction1.addRequiredItem(item, 1);
+                    for(Item item: jobItems.keySet()){
+                        auction1.addRequiredItem(item, jobItems.get(item));
                     }
                     jobs.add(auction1);
                 }
             }else{
                 //generate mission
-                for(int i=0; i<numberOfProducts; i++){
-                    int itemNumber = RNG.nextInt(allJobItems.size());
-                    if((difficulty + allJobItems.get(itemNumber).getAssembleValue() ) < missionDifficultyMax){
-                        difficulty = difficulty + allJobItems.get(itemNumber).getAssembleValue();
-                        jobItems.add(allJobItems.get(itemNumber));
+                int difficulty = RNG.nextInt((missionDifficultyMax-difficultyMin) + 1) + difficultyMin;
+
+                while(jobItems.isEmpty()){
+                    for(int i=0; i<numberOfProducts; i++){
+                        int itemNumber = RNG.nextInt(allJobItems.size());
+                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) < difficulty){
+                            currentDifficulty = currentDifficulty + allJobItems.get(itemNumber).getAssembleValue();
+                            jobItems.put(allJobItems.get(itemNumber),1);
+                        }
+                    }
+                }
+
+                ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
+                while(currentDifficulty<difficulty){
+                    RNG.shuffle(itemList);
+                    if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
+                        currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
+                        int amount = jobItems.get(itemList.get(0));
+                        jobItems.replace(itemList.get(0), amount, amount+1);
+                    }else{
+                        break;
                     }
                 }
 
@@ -895,8 +927,8 @@ public class Generator {
                 }
                 for(TeamState team: world.getTeams()){
                     Mission mission1 = new Mission(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, fine, team, Integer.toString(missionID));
-                    for(Item item: jobItems){
-                        mission1.addRequiredItem(item, 1);
+                    for(Item item: jobItems.keySet()){
+                        mission1.addRequiredItem(item, jobItems.get(item));
                     }
                     jobs.add(mission1);
                 }
@@ -905,11 +937,11 @@ public class Generator {
         }
 
         for(Job job: jobs){
-            String itemName = "";
+            Vector<String> reqItems = new Vector<>();
             for(Item item: job.getRequiredItems().getStoredTypes()){
-                itemName = item.getName();
+                reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
             }
-            Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + itemName + " " + job.getReward() +
+            Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + String.join(",", reqItems) + " " + job.getReward() +
                     " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass());
         }
 
@@ -921,13 +953,15 @@ public class Generator {
      * @param requiredItems items required to complete the job
      * @return reward for a job with the corresponding required items
      */
-    private int computeReward(Vector<Item> requiredItems){
+    private int computeReward(Map<Item, Integer> requiredItems){
         int reward = 0;
-        for(Item reqItem: requiredItems){
-            for(Item reqBaseItem: reqItem.getRequiredBaseItems().keySet()){
-                reward = reward + (reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue());
+        for(Item reqItem: requiredItems.keySet()){
+            for(int i=0; i<requiredItems.get(reqItem); i++){
+                for(Item reqBaseItem: reqItem.getRequiredBaseItems().keySet()){
+                    reward = reward + (reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue());
+                }
+                reward = reward + (reqItem.getAssembleValue() * 100);
             }
-            reward = reward + (reqItem.getAssembleValue() * 100);
         }
         return reward;
     }

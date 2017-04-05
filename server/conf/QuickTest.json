@@ -108,7 +108,7 @@
           "rate" : 0.2,
           "auctionProbability" : 0.4,
           "missionProbability" : 0.1,
-          "productTypesMin" : 1,
+          "productTypesMin" : 3,
           "productTypesMax" : 5,
           "difficultyMin" : 3,
           "difficultyMax" : 12,
