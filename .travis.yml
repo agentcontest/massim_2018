@@ -26,6 +26,7 @@ addons:
     bucket: agentcontest
     s3_region: eu-west-1
     paths: $(ls target/massim-*.tar.gz)
+    target_paths: massim
     key:
       secure: EiF8xTt3IKzYDbytjLMhlQwHlMqWQxWpAcfMOxyuIWuFdIf016Z2SUihm85Z/uFF1im77ZXP/aanPu44S+UJh/tYziDuQPP48QCtkpk/1BarGTk4zr+YEWJspUdd3+b2bCOcF1JZiXnAiq/2pX2OTC5pUqmgZ/7/mR2LKhSuddHZotYj2j8JqFbdipM6EoeLOeHPQHRYWrQmPDVhSSuoI5SEeiWVnsRVX0mcVRTzpAC4qD9Q8oNs5GQlHxA/juYuyWr+sK6OAZd694QtIU0M5utLI7VY36+rTvHj52vZjQ07mk2K1/lrve4+Si/E8JxhfftaHg2x770QdTn2Nrh3r4Pj6BDYuTS+DMmtuAgG+6E2sqBvKL7tP8jeeVGWyateEyHcStwkfakB4lXkYm5ZgHl1f5/ehBPUkzBuBTOT5z/0k3lp6a737OTAlEQiosRtGoduy71SJE02H9+X0VETSkshQlbX8C0Xg1TH+wMtv2ZvVpE9hNHfmmctjgSk2DyKmLvgff+hf9qg6uUn+WSLR5yv2iOk6HEEVJ7r+5TKqujjRMdWGGark/oQxepzlgQko4VPMKXr/Q0BhdYwdl6RswVTcLw/UGiiiNu91GryycJUIWwMGqfReN9QXVYAt0wUIw2CgPaOR90CtM3hwHkbYVXaKKqDvUsyrFHRANF/P3M=
     secret:
