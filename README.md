@@ -17,6 +17,11 @@ executed by _MASSim_.
   <img src="https://multiagentcontest.org/2016/banner.jpg">
 </p>
 
+Download
+--------
+
+We upload binary releases to GitHub: https://github.com/agentcontest/massim/releases
+
 Building MASSim
 ---------------
 
