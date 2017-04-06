@@ -20,7 +20,7 @@ string value to the command with the `-confString [conf-string]` option.
 
 To enable the web monitor (to view what's happening), you need to call the
 server with the `--monitor` option.
-For more info on the monitor, see [monitor.md](monitor.md).
+The monitor will be available at [http://localhost:8000/](http://localhost:8000/) by default.
 
 ## Terminology
 * __Simulation__: one round of the respective scenario lasting a predefined
