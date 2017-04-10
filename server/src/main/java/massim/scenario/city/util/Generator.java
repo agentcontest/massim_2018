@@ -464,7 +464,6 @@ public class Generator {
                 }
                 item.getAssembleValue();
 
-                //test
                 item.getRequiredBaseItems();
                 Vector<String> reqBaseItems = new Vector<>();
                 for(Item reqItem: item.getRequiredBaseItems().keySet()){
@@ -568,8 +567,6 @@ public class Generator {
                 for(int i = 0; i < numberOfFacilities; i++){
                     Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
                     Shop shop1 = new Shop("shop" + shopCounter, loc,RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-                    shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                            items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
                     facilities.add(shop1);
                     locations.add(shop1.getLocation());
                     shops.add(shop1);
@@ -580,8 +577,6 @@ public class Generator {
         if(shopCounter==0){
             Shop shop1 = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),
                     RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-            shop1.addItem(items.get(0), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
             facilities.add(shop1);
             locations.add(shop1.getLocation());
             shops.add(shop1);
@@ -598,12 +593,14 @@ public class Generator {
         Vector<Item> usedItems = new Vector<>();
         for(Shop shop: shops){
             int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
+            numberOfProducts = Math.min(numberOfProducts, shopItems.size());
 
             Vector<Item> unusedItems = new Vector<>(shopItems);
             for(int j=0; j<numberOfProducts; j++){
                 int productNumber = RNG.nextInt(unusedItems.size());
-                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                        items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin );
+                float priceAdd = (RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin) / 100.0f;
+                int price = (int) (unusedItems.get(productNumber).getValue() * priceAdd);
+                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, price);
                 Item tmpItem = unusedItems.get(productNumber);
                 unusedItems.remove(productNumber);
                 usedItems.add(tmpItem);
@@ -613,14 +610,15 @@ public class Generator {
         for(Item item: shopItems){
             int shopNumber = RNG.nextInt(shops.size());
             Shop shop = shops.get(shopNumber);
-            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin,
-                    items.get(0).getValue() + RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin);
+            float priceAdd = (RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin) / 100.0f;
+            int price = (int) (item.getValue() * priceAdd);
+            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, price);
         }
 
         /*for(Shop shop: shops){
             Log.log(Log.Level.NORMAL, shop.getName() + ":");
             for(Item item: shop.getOfferedItems()){
-                Log.log(Log.Level.NORMAL, item.getName());
+                Log.log(Log.Level.NORMAL, item.getName() + " for " + shop.getPrice(item));
             }
         }*/
 

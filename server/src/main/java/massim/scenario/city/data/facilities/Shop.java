@@ -16,6 +16,7 @@ public class Shop extends Facility{
 
     private ItemBox stock = new ItemBox();
     private Map<Item, Integer> prices = new HashMap<>();
+    private Map<Item, Integer> initialAmounts = new HashMap<>();
     private int restock;
     private int nextRestock;
 
@@ -48,6 +49,7 @@ public class Shop extends Facility{
     public void addItem(Item item, int initialAmount, int price){
         prices.put(item, price);
         stock.store(item, initialAmount);
+        initialAmounts.put(item, initialAmount);
     }
 
     /**
@@ -92,7 +94,12 @@ public class Shop extends Facility{
         nextRestock = Math.max(0, nextRestock - 1);
         if(nextRestock == 0){
             nextRestock = restock;
-            stock.getStoredTypes().forEach(item -> restock(item, 1));
+            //stock.getStoredTypes().forEach(item -> restock(item, 1));
+            for(Item item: stock.getStoredTypes()){
+                if(getItemCount(item) < initialAmounts.get(item)){
+                    restock(item, 1);
+                }
+            }
         }
     }
 
