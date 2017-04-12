@@ -535,6 +535,62 @@ public class CitySimulationTest {
 
     // TODO test facility creation/generation
 
+    @Test
+    public void chargingStationsWork(){
+        //there is at least one charging station in the simulation
+        assert !sim.getWorldState().getChargingStations().isEmpty();
+    }
+
+    @Test
+    public void shopsWork(){
+        WorldState world = sim.getWorldState();
+
+        //there is at least one shop in the simulation
+        assert !world.getShops().isEmpty();
+
+        for(Shop shop: world.getShops()){
+            //every shop offers at least one item
+            assert !shop.getOfferedItems().isEmpty();
+
+            //the price for every item is >0
+            for(Item item: shop.getOfferedItems()){
+                assert shop.getPrice(item)>0;
+            }
+        }
+    }
+
+    @Test
+    public void dumpsWork(){
+        //there is at least one dump in the simulation
+        assert !sim.getWorldState().getDumps().isEmpty();
+    }
+
+    @Test
+    public void workshopsWork(){
+        //there is at least one workshop in the simulation
+        assert !sim.getWorldState().getWorkshops().isEmpty();
+    }
+
+    @Test
+    public void storageWork(){
+        //there is at least one storage in the simulation
+        assert !sim.getWorldState().getStorages().isEmpty();
+    }
+
+    //TODO resource nodes
+
+    @Test
+    public void toolsWork(){
+        Vector<Tool> tools = new Vector<>(sim.getWorldState().getTools());
+
+        for(Tool tool: tools){
+            //every tool can be used by at least one role
+            assert !tool.getRoles().isEmpty();
+        }
+    }
+
+    //TODO items
+
     /**
      * @return a new action-map where each agent just skips
      */
