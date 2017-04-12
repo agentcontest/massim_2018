@@ -334,7 +334,7 @@ public class Generator {
                     continue;
                 }
             }
-            tools.add(new Tool(name, volume, value, roles.get(randomRole).getName()));
+            tools.add(new Tool(name, volume, value, role1));
             Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() +
                     ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() +
                     " roles=" + tools.get(i).getRoles());
