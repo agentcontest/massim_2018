@@ -630,6 +630,16 @@ Example:
 
 The storage contains a child node for each item type that is stored or delivered (or both) for an agent's team.
 
+##### ResourceNode details
+
+Example:
+
+```XML
+<resourceNode lat="51.478" lon="-0.03632" name="resourceNode1" resource="item7"/>
+```
+
+The resource node element contains the item that can be mined. Attention: This percept is only visible if the agent is "close" to the node (see `visibilityRange` parameter).
+
 #### Job details
 
 An element for each job is added (`job`, `auction`, `mission` or `posted`).

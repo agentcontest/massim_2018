@@ -155,7 +155,7 @@ Thus, any IILang _DataContainer_ forms a tree structure that can also be represe
 
 ### Actions
 
-The actions for the current scenario can be reviewed in [scenario.md](scenario.md). An IILang action takes a name and a number or parameters. Just pass the required parameters in the same order as described in
+The actions for the current scenario can be reviewed in [scenario.md](scenario.md). An IILang action takes a name and a number of parameters. Just pass the required parameters in the same order as described in
 [scenario.md](scenario.md).
 
 Example:

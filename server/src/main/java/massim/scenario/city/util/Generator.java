@@ -85,7 +85,7 @@ public class Generator {
 
     private int missionDifficultyMax;
 
-    private int truckCapacity;
+    private int maxCapacity;
 
     private Vector<Item> baseItems = new Vector<>();
     private Vector<Vector<Item>> itemGraph = new Vector<>();
@@ -299,12 +299,16 @@ public class Generator {
     public List<Tool> generateTools(List<Role> roles){
         int toolAmount = RNG.nextInt((toolsMax-toolsMin)+1) + toolsMin;
 
-        //get maxLoad of truck
+        //find role with maximum capacity
+        maxCapacity = 0;
+        Role maxRole = roles.get(0);
         for(Role role: roles){
-            if(role.getName().equals("Truck")){
-                truckCapacity = role.getMaxLoad();
+            if(role.getMaxLoad()>maxCapacity){
+                maxCapacity = role.getMaxLoad();
+                maxRole = role;
             }
         }
+        Log.log(Log.Level.NORMAL, "maxCapacity= " + maxCapacity);
 
         List<Tool> tools = new Vector<>();
         for(int i=0; i<toolAmount; i++){
@@ -318,10 +322,10 @@ public class Generator {
                 role1=roles.get(randomRole).getName();
             }
             else{
-                if(volume>truckCapacity){
-                    volume = (int) (truckCapacity * 0.9);
+                if(volume>maxCapacity){
+                    volume = (int) (maxCapacity * 0.9);
                 }
-                role1="Truck";
+                role1=maxRole.getName();
             }
             if(RNG.nextInt(100)<50){
                 randomRole = RNG.nextInt(roles.size());
@@ -449,9 +453,9 @@ public class Generator {
                 }
                 //subtract random percentage (up to 50%)
                 volume = volume - (int) ((RNG.nextDouble()) * 0.5 * volume);
-                //ensure that at least the truck can carry this item
-                if(volume>truckCapacity){
-                    volume = (int) (truckCapacity * 0.9);
+                //ensure that at least the role with max capacity can carry this item
+                if(volume>maxCapacity){
+                    volume = (int) (maxCapacity * 0.9);
                 }
 
                 //generate assembled item
