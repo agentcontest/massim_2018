@@ -4,6 +4,7 @@ import massim.config.TeamConfig;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.scenario.city.data.ActionData;
+import massim.protocol.scenario.city.data.JobData;
 import massim.protocol.scenario.city.percept.CityStepPercept;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
@@ -95,6 +96,57 @@ public class CitySimulationTest {
         assert(action.getParams().get(1).equals("item0"));
         assert(action.getParams().get(2).equals("1"));
         assert(action.getResult().equals("failed_counterpart"));
+        sim.step(step, buildActionMap());
+    }
+
+    /**
+     * Checks whether most things are included in the percept as expected.
+     */
+    @Test
+    public void perceptIsComplete(){
+
+        // add some perceivable jobs
+        Storage storage = (Storage) sim.getWorldState().getFacility("storage1");
+        TeamState teamA = sim.getWorldState().getTeam("A");
+        Item item = sim.getWorldState().getItemOrTool("item0");
+        Mission mission = new Mission(1000, storage, step + 1, step + 100, 1000, teamA, "myMission");
+        mission.addRequiredItem(item, 3);
+        sim.getWorldState().addJob(mission);
+        AuctionJob auction = new AuctionJob(1001, storage, step + 1, step + 100, 2, 10002);
+        auction.addRequiredItem(item, 17);
+        sim.getWorldState().addJob(auction);
+        Job job = new Job(777, storage, step + 1, step + 100, JobData.POSTER_SYSTEM);
+        job.addRequiredItem(item, 9);
+        sim.getWorldState().addJob(job);
+
+        // store something
+        storage.store(item, 2, "A");
+
+        // move agent to resource node
+        Entity e1 = sim.getWorldState().getEntity("agentA1");
+        ResourceNode node = (ResourceNode) sim.getWorldState().getFacility("resourceNode1");
+        e1.setLocation(node.getLocation());
+
+        // one step for activating jobs
+        sim.preStep(step);
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentB1", new Action("post_job",
+                "998",
+                "20",
+                storage.getName(), item.getName(), "5"));
+        sim.step(step, actions);
+        step++;
+        sim.preStep(step);
+        sim.step(step, buildActionMap());
+        step++;
+
+        // one step for getting the final percept(s)
+        Map<String, RequestAction> percepts = sim.preStep(step);
+        CityStepPercept percept = (CityStepPercept) percepts.get("agentA1");
+
+        // TODO check percept
+//        Log.log(Log.Level.NORMAL, Conversions.docToString(new Message(null, percept).toXML(), true));
+
         sim.step(step, buildActionMap());
     }
 

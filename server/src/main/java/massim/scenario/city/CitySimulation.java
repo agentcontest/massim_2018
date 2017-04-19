@@ -187,14 +187,14 @@ public class CitySimulation extends AbstractSimulation {
         world.getTeams().forEach(team -> {
             List<AuctionJobData> teamJobs = new Vector<>(auctioningJobs);
             List<MissionData> teamMissions = new Vector<>();
-            world.getJobs().stream()
-                    .filter(job -> job instanceof AuctionJob
-                            && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
-                            && job.isActive())
-                    .map(job ->  job instanceof Mission?
-                             teamMissions.add((MissionData) job.toJobData(false, false))
-                            :teamJobs.add((AuctionJobData) job.toJobData(false, false))
-                    );
+            for (Job job : world.getJobs()) {
+                if(job instanceof AuctionJob
+                        && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
+                        && job.isActive()){
+                    if(job instanceof Mission) teamMissions.add((MissionData) job.toJobData(false, false));
+                    else teamJobs.add((AuctionJobData) job.toJobData(false, false));
+                }
+            }
             auctionsPerTeam.put(team.getName(), teamJobs);
             missionsPerTeam.put(team.getName(), teamMissions);
         });
