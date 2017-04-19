@@ -533,6 +533,7 @@ The roles and their details will be defined (and made public) in before and not 
 ### Step percept
 
 This percept contains information about the simulation state at the beginning of each step.
+A more or less complete example can be found [here](resources/example-requestAction.xml).
 
 Example:
 
@@ -753,7 +754,7 @@ In the first section of the random generation the parameters for the generation 
   * __density__: see above
 * Parameters for workshops:
   * __density__: see above
-* Parameters for storage: 
+* Parameters for storage:
   * __density__: see above
   * __capacityMin/Max__: bounds for the storage's capacity
 * Parameter for resource nodes:

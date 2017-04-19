@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<message timestamp="1489514146201" type="request-action">
+  <percept deadline="1489514150201" id="23">
+    <simulation step="23"/>
+    <self charge="99999999" facility="resourceNode1" lat="51.478" load="33" lon="-0.03632" name="agentA1" role="car" team="A">
+      <action result="successful" type="skip"/>
+      <items amount="3" name="item0"/>
+    </self>
+    <team money="77787"/>
+    <entity lat="51.47519" lon="-0.19454" name="agentA2" role="car" team="A"/>
+    <entity lat="51.48515" lon="-0.16794" name="agentB3" role="car" team="B"/>
+    <entity lat="51.48515" lon="-0.16794" name="agentA3" role="car" team="A"/>
+    <entity lat="51.47286" lon="-0.19774" name="agentB4" role="car" team="B"/>
+    <entity lat="51.50929" lon="-0.08256" name="agentB1" role="car" team="B"/>
+    <entity lat="51.478" lon="-0.03632" name="agentA1" role="car" team="A"/>
+    <entity lat="51.47519" lon="-0.19454" name="agentB2" role="car" team="B"/>
+    <entity lat="51.49972" lon="-0.12612" name="agentA6" role="car" team="A"/>
+    <entity lat="51.48944" lon="-0.16373" name="agentA4" role="car" team="A"/>
+    <entity lat="51.48944" lon="-0.16373" name="agentB5" role="car" team="B"/>
+    <entity lat="51.48944" lon="-0.16373" name="agentA5" role="car" team="A"/>
+    <entity lat="51.49972" lon="-0.12612" name="agentB6" role="car" team="B"/>
+    <shop lat="51.51215" lon="-0.08702" name="shop7" restock="2">
+      <item amount="19" name="item6" price="20"/>
+      <item amount="15" name="tool7" price="40"/>
+      <item amount="17" name="item4" price="55"/>
+      <item amount="8" name="tool3" price="132"/>
+      <item amount="6" name="item7" price="116"/>
+      <item amount="13" name="item9" price="93"/>
+    </shop>
+    <shop lat="51.50931" lon="-0.06382" name="shop8" restock="1">
+      <item amount="19" name="item2" price="108"/>
+      <item amount="16" name="tool3" price="108"/>
+      <item amount="20" name="tool5" price="23"/>
+      <item amount="18" name="item9" price="85"/>
+      <item amount="14" name="item8" price="53"/>
+      <item amount="20" name="tool1" price="51"/>
+    </shop>
+    <shop lat="51.51424" lon="-0.17036" name="shop5" restock="2">
+      <item amount="6" name="item2" price="107"/>
+      <item amount="5" name="tool3" price="124"/>
+      <item amount="18" name="item1" price="12"/>
+      <item amount="19" name="tool1" price="45"/>
+      <item amount="16" name="item9" price="90"/>
+      <item amount="17" name="item0" price="21"/>
+    </shop>
+    <shop lat="51.51955" lon="-0.0356" name="shop9" restock="4">
+      <item amount="12" name="item2" price="91"/>
+      <item amount="6" name="tool3" price="110"/>
+      <item amount="17" name="tool5" price="25"/>
+      <item amount="5" name="tool0" price="64"/>
+      <item amount="5" name="tool1" price="52"/>
+    </shop>
+    <shop lat="51.46772" lon="-0.15284" name="shop1" restock="3">
+      <item amount="15" name="item6" price="20"/>
+      <item amount="11" name="tool7" price="44"/>
+      <item amount="11" name="tool6" price="32"/>
+      <item amount="5" name="item1" price="13"/>
+      <item amount="12" name="tool0" price="79"/>
+      <item amount="13" name="item9" price="101"/>
+    </shop>
+    <shop lat="51.51983" lon="-0.13907" name="shop6" restock="2">
+      <item amount="7" name="tool2" price="75"/>
+      <item amount="17" name="item1" price="10"/>
+      <item amount="7" name="item9" price="78"/>
+    </shop>
+    <shop lat="51.47009" lon="-0.09819" name="shop2" restock="4">
+      <item amount="17" name="item3" price="25"/>
+      <item amount="11" name="item5" price="79"/>
+      <item amount="12" name="tool2" price="93"/>
+      <item amount="8" name="tool0" price="91"/>
+      <item amount="19" name="tool1" price="41"/>
+      <item amount="12" name="item0" price="22"/>
+    </shop>
+    <shop lat="51.48423" lon="-0.16027" name="shop0" restock="2">
+      <item amount="6" name="tool4" price="85"/>
+      <item amount="9" name="tool2" price="87"/>
+      <item amount="6" name="item1" price="11"/>
+      <item amount="15" name="tool6" price="31"/>
+      <item amount="20" name="item9" price="97"/>
+    </shop>
+    <shop lat="51.47674" lon="-0.04373" name="shop3" restock="4">
+      <item amount="14" name="item1" price="10"/>
+      <item amount="8" name="tool5" price="21"/>
+      <item amount="12" name="item8" price="45"/>
+    </shop>
+    <shop lat="51.46826" lon="-0.03644" name="shop4" restock="2">
+      <item amount="5" name="item5" price="74"/>
+      <item amount="17" name="item8" price="64"/>
+      <item amount="11" name="item9" price="80"/>
+    </shop>
+    <workshop lat="51.51664" lon="-0.05521" name="workshop4"/>
+    <workshop lat="51.46714" lon="-0.10021" name="workshop0"/>
+    <workshop lat="51.4972" lon="-0.07177" name="workshop1"/>
+    <workshop lat="51.51995" lon="-0.10079" name="workshop3"/>
+    <workshop lat="51.51681" lon="-0.12918" name="workshop2"/>
+    <chargingStation lat="51.52109" lon="-0.03585" name="chargingStation8" rate="67"/>
+    <chargingStation lat="51.48627" lon="-0.14593" name="chargingStation0" rate="141"/>
+    <chargingStation lat="51.5178" lon="-0.15223" name="chargingStation5" rate="54"/>
+    <chargingStation lat="51.51091" lon="-0.11246" name="chargingStation6" rate="113"/>
+    <chargingStation lat="51.51593" lon="-0.16349" name="chargingStation4" rate="59"/>
+    <chargingStation lat="51.5032" lon="-0.10458" name="chargingStation1" rate="104"/>
+    <chargingStation lat="51.47158" lon="-0.03683" name="chargingStation3" rate="82"/>
+    <chargingStation lat="51.50929" lon="-0.05063" name="chargingStation7" rate="148"/>
+    <chargingStation lat="51.49123" lon="-0.05872" name="chargingStation2" rate="137"/>
+    <dump lat="51.48414" lon="-0.19621" name="dump0"/>
+    <dump lat="51.4903" lon="-0.08966" name="dump2"/>
+    <dump lat="51.5027" lon="-0.03583" name="dump4"/>
+    <dump lat="51.50191" lon="-0.12427" name="dump1"/>
+    <dump lat="51.50475" lon="-0.06496" name="dump5"/>
+    <dump lat="51.46662" lon="-0.067" name="dump3"/>
+    <storage lat="51.50929" lon="-0.08256" name="storage6" totalCapacity="14605" usedCapacity="0"/>
+    <storage lat="51.50226" lon="-0.13958" name="storage1" totalCapacity="10941" usedCapacity="22">
+      <item delivered="0" name="item0" stored="2"/>
+    </storage>
+    <storage lat="51.51962" lon="-0.16399" name="storage5" totalCapacity="11906" usedCapacity="0"/>
+    <storage lat="51.48561" lon="-0.10318" name="storage2" totalCapacity="7917" usedCapacity="0"/>
+    <storage lat="51.48758" lon="-0.03767" name="storage4" totalCapacity="9699" usedCapacity="0"/>
+    <storage lat="51.51182" lon="-0.0362" name="storage8" totalCapacity="11734" usedCapacity="0"/>
+    <storage lat="51.49639" lon="-0.18029" name="storage0" totalCapacity="13186" usedCapacity="0"/>
+    <storage lat="51.48901" lon="-0.04475" name="storage3" totalCapacity="8107" usedCapacity="0"/>
+    <storage lat="51.51336" lon="-0.04553" name="storage7" totalCapacity="7883" usedCapacity="0"/>
+    <resourceNode lat="51.478" lon="-0.03632" name="resourceNode1" resource="item7"/>
+    <job end="121" id="job4" reward="777" start="22" storage="storage1">
+      <required amount="9" name="item0"/>
+    </job>
+    <job end="41" id="job6" reward="998" start="22" storage="storage1">
+      <required amount="5" name="item0"/>
+    </job>
+    <job end="119" id="job2" reward="7242" start="17" storage="storage6">
+      <required amount="2" name="item16"/>
+      <required amount="1" name="item15"/>
+    </job>
+    <job end="116" id="job0" reward="2107" start="3" storage="storage1">
+      <required amount="2" name="item12"/>
+      <required amount="1" name="item11"/>
+    </job>
+    <auction auctionTime="2" end="121" fine="10002" id="job5" reward="1001" start="22" storage="storage1">
+      <required amount="17" name="item0"/>
+    </auction>
+    <mission auctionTime="0" end="121" fine="1000" id="job3" lowestBid="1000" reward="1001" start="22" storage="storage1">
+      <required amount="3" name="item0"/>
+    </mission>
+  </percept>
+</message>
