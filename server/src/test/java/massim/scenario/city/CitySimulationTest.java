@@ -134,6 +134,10 @@ public class CitySimulationTest {
                 "998",
                 "20",
                 storage.getName(), item.getName(), "5"));
+        actions.put("agentA3", new Action("post_job",
+                "997",
+                "20",
+                storage.getName(), item.getName(), "5"));
         sim.step(step, actions);
         step++;
         sim.preStep(step);
@@ -144,8 +148,24 @@ public class CitySimulationTest {
         Map<String, RequestAction> percepts = sim.preStep(step);
         CityStepPercept percept = (CityStepPercept) percepts.get("agentA1");
 
-        // TODO check percept
-//        Log.log(Log.Level.NORMAL, Conversions.docToString(new Message(null, percept).toXML(), true));
+        // uncomment to print example request-action message
+//        Log.log(Log.Level.NORMAL, Conversions.docToString(new Message(System.currentTimeMillis(), percept).toXML(), true));
+
+        // check if percept contains the important things
+        assert percept.getShopData().size() > 0;
+        assert percept.getWorkshops().size() > 0;
+        assert percept.getDumps().size() > 0;
+        assert percept.getChargingStations().size() > 0;
+        assert percept.getResourceNodes().size() > 0;
+        assert percept.getStorage().size() > 0;
+        assert percept.getAuctions().size() > 0;
+        assert percept.getJobs().size() > 0;
+        assert percept.getPostedJobs().size() > 0;
+        assert percept.getMissions().size() > 0;
+        assert percept.getEntityData().size() > 0;
+        assert percept.getSelfData() != null;
+        assert percept.getSimData() != null;
+        assert percept.getSelfData().getCharge() == e1.getCurrentBattery();
 
         sim.step(step, buildActionMap());
     }
