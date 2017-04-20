@@ -140,5 +140,8 @@
     <mission auctionTime="0" end="121" fine="1000" id="job3" lowestBid="1000" reward="1001" start="22" storage="storage1">
       <required amount="3" name="item0"/>
     </mission>
+    <posted end="41" id="job3" reward="997" start="22" storage="storage1">
+      <required amount="5" name="item0"/>
+    </posted>
   </percept>
 </message>
