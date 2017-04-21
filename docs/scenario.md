@@ -489,6 +489,7 @@ The complete XML format is discussed in [protocol.md](protocol.md).
 ### Initial percept
 
 This percept contains information that does not change during the whole simulation. As mentioned in the protocol description, everything is contained in a `simulation` element.
+A more or less complete example can be found [here](resources/example-simStart.xml).
 
 Example:
 
