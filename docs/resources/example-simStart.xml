@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<message timestamp="1492776578245" type="sim-start">
+  <simulation id="2017-QuickTest-Sim" map="london" seedCapital="10" steps="10000" team="A">
+    <role battery="8000" load="10000" name="truck" speed="1">
+      <tool name="tool0"/>
+      <tool name="tool1"/>
+      <tool name="tool2"/>
+      <tool name="tool3"/>
+      <tool name="tool4"/>
+      <tool name="tool5"/>
+      <tool name="tool6"/>
+      <tool name="tool7"/>
+    </role>
+    <item name="item0" volume="11"/>
+    <item name="item2" volume="19"/>
+    <item name="item1" volume="50"/>
+    <item name="item19" volume="846">
+      <item amount="3" name="item15"/>
+      <tool name="tool1"/>
+      <tool name="tool4"/>
+    </item>
+    <item name="item18" volume="344">
+      <item amount="3" name="item10"/>
+      <item amount="3" name="item7"/>
+      <item amount="2" name="item3"/>
+      <tool name="tool2"/>
+      <tool name="tool7"/>
+    </item>
+    <item name="item17" volume="247">
+      <item amount="2" name="item8"/>
+      <item amount="1" name="item9"/>
+      <item amount="2" name="item12"/>
+    </item>
+    <item name="item16" volume="228">
+      <item amount="2" name="item11"/>
+      <tool name="tool0"/>
+    </item>
+    <item name="item15" volume="337">
+      <item amount="2" name="item10"/>
+      <item amount="3" name="item6"/>
+      <item amount="2" name="item3"/>
+      <tool name="tool7"/>
+      <tool name="tool0"/>
+    </item>
+    <item name="item14" volume="98">
+      <item amount="1" name="item1"/>
+      <item amount="3" name="item7"/>
+      <item amount="1" name="item2"/>
+    </item>
+    <item name="item13" volume="26">
+      <item amount="1" name="item6"/>
+      <tool name="tool6"/>
+      <tool name="tool7"/>
+    </item>
+    <item name="item12" volume="130">
+      <item amount="2" name="item8"/>
+      <item amount="1" name="item6"/>
+      <item amount="2" name="item9"/>
+    </item>
+    <item name="item11" volume="166">
+      <item amount="3" name="item6"/>
+      <item amount="3" name="item7"/>
+      <item amount="3" name="item5"/>
+      <tool name="tool1"/>
+      <tool name="tool5"/>
+    </item>
+    <item name="item10" volume="175">
+    <item amount="1" name="item1"/>
+      <item amount="3" name="item7"/>
+    </item>
+    <item name="item21" volume="443">
+      <item amount="1" name="item19"/>
+      <tool name="tool7"/>
+    </item>
+    <item name="item20" volume="277">
+      <item amount="3" name="item13"/>
+      <item amount="1" name="item18"/>
+      <item amount="3" name="item5"/>
+      <tool name="tool3"/>
+    </item>
+    <item name="item8" volume="24"/>
+    <item name="item7" volume="42"/>
+    <item name="item9" volume="22"/>
+    <item name="item4" volume="24"/>
+    <item name="item3" volume="12"/>
+    <item name="item6" volume="43"/>
+    <item name="item5" volume="18"/>
+    <item name="tool6" volume="41"/>
+    <item name="tool7" volume="37"/>
+    <item name="tool4" volume="49"/>
+    <item name="tool5" volume="47"/>
+    <item name="tool2" volume="24"/>
+    <item name="tool3" volume="17"/>
+    <item name="tool0" volume="35"/>
+    <item name="tool1" volume="47"/>
+  </simulation>
+</message>
