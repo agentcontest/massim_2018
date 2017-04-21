@@ -499,15 +499,14 @@ Example:
   <simulation id="2017-QuickTest-Sim" map="london"
               seedCapital="10" steps="1000" team="A">
     <role battery="500" load="1000" name="SampleRole" speed="10">
-      <tool>tool0</tool>
-      <tool>tool2</tool>
+      <tool name="tool0"/>
+      <tool name="tool1"/>
     </role>
     <item name="item0" volume="72"/>
     <item name="item14" volume="0">
       <item amount="2" name="item12"/>
       <item amount="1" name="item8"/>
-      <tool>tool5</tool>
-      <tool>tool2</tool>
+      <tool name="tool0"/>
     </item>
   </simulation>
 </message>
