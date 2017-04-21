@@ -51,7 +51,9 @@ public class CitySimulation extends AbstractSimulation {
         actionExecutor = new ActionExecutor(world);
 
         // create data objects for all items
-        List<ItemData> itemData = world.getItems().stream()
+        List<Item> allItems = world.getItems();
+        allItems.addAll(world.getTools());
+        List<ItemData> itemData = allItems.stream()
                 .map(item -> new ItemData(
                         item.getName(),
                         item.getVolume(),
