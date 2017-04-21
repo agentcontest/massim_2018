@@ -428,7 +428,7 @@ public class CitySimulation extends AbstractSimulation {
      * Retrieves the simulation state. This is not a replica. Handle with care!!
      * @return the simulation's world state
      */
-    public WorldState getWorldState(){
+    WorldState getWorldState(){
         return world;
     }
 
