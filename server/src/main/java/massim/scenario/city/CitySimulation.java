@@ -59,7 +59,7 @@ public class CitySimulation extends AbstractSimulation {
                                 .map(e -> new ItemAmountData(e.getKey().getName(), e.getValue()))
                                 .collect(Collectors.toList()),
                         item.getRequiredTools().stream()
-                                .map(Item::getName)
+                                .map(tool -> new ToolData(tool.getName()))
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
 

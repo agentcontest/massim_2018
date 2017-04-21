@@ -5,6 +5,7 @@ package massim.protocol.scenario.city.data;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Holds data of a role for serialization.
@@ -26,7 +27,7 @@ public class RoleData {
     private int load;
 
     @XmlElement(name="tool")
-    private List<String> tools;
+    private List<ToolData> tools;
 
     /**
      * For JAXB
@@ -41,7 +42,7 @@ public class RoleData {
      * @param maxLoad max capacity
      * @param tools tools usable by the role
      */
-    public RoleData(String name, int speed, int maxBattery, int maxLoad, List<String> tools){
+    public RoleData(String name, int speed, int maxBattery, int maxLoad, List<ToolData> tools){
         this.name = name;
         this.speed = speed;
         this.battery = maxBattery;
@@ -81,6 +82,16 @@ public class RoleData {
      * @return all tools usable by the role
      */
     public List<String> getTools() {
-        return tools == null? new Vector<>() : tools;
+        return tools == null? new Vector<>() : tools.stream()
+                                                    .map(ToolData::getName)
+                                                    .collect(Collectors.toList());
+    }
+
+    /**
+     * Adds a tool to this role.
+     * @param tool name of the tool
+     */
+    public void addTool(String tool) {
+        tools.add(new ToolData(tool));
     }
 }

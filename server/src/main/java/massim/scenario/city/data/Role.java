@@ -79,7 +79,7 @@ public class Role {
      */
     public void addTools(Collection<Tool> tools){
         this.tools.addAll(tools);
-        tools.forEach(tool -> roleData.getTools().add(tool.getName()));
+        tools.forEach(tool -> roleData.addTool(tool.getName()));
     }
 
     /**

@@ -1,13 +1,16 @@
 package massim.scenario.city;
 
 import massim.config.TeamConfig;
+import massim.protocol.Message;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
+import massim.protocol.messagecontent.SimStart;
 import massim.protocol.scenario.city.data.ActionData;
 import massim.protocol.scenario.city.data.JobData;
 import massim.protocol.scenario.city.percept.CityStepPercept;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
+import massim.util.Conversions;
 import massim.util.IOUtil;
 import massim.util.Log;
 import massim.util.RNG;
@@ -62,7 +65,9 @@ public class CitySimulationTest {
             }
         }
 
-        sim.init(steps, matchConf, teams);
+        Map<String, SimStart> initialPercepts = sim.init(steps, matchConf, teams);
+        SimStart percept = initialPercepts.get("agentA1");
+        Log.log(Log.Level.NORMAL, Conversions.docToString(new Message(System.currentTimeMillis(), percept).toXML(), true));
     }
 
     /**

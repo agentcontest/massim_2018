@@ -3,6 +3,7 @@ package massim.protocol.scenario.city.data;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Holds complete info of an item for serialization.
@@ -21,7 +22,7 @@ public class ItemData {
     private List<ItemAmountData> parts;
 
     @XmlElement(name="tool")
-    private List<String> tools;
+    private List<ToolData> tools;
 
     /**
      * For JAXB
@@ -35,7 +36,7 @@ public class ItemData {
      * @param requiredParts items required to assemble the item (may be null or empty)
      * @param tools tools required to assemble the item (may be null or empty)
      */
-    public ItemData(String name, int volume, List<ItemAmountData> requiredParts, List<String> tools){
+    public ItemData(String name, int volume, List<ItemAmountData> requiredParts, List<ToolData> tools){
         this.name = name;
         this.volume = volume;
         if(requiredParts.size() > 0) parts = requiredParts;
@@ -67,6 +68,8 @@ public class ItemData {
      * @return a list of all tools necessary to craft this item or null if no tools required
      */
     public List<String> getTools() {
-        return tools == null? new Vector<>() : tools;
+        return tools == null? new Vector<>() : tools.stream()
+                                                    .map(ToolData::getName)
+                                                    .collect(Collectors.toList());
     }
 }
