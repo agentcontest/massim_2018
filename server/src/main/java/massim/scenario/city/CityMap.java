@@ -53,12 +53,13 @@ public class CityMap implements Serializable {
 	 */
     Route findRoute(Location from, Location to, Set<String> permissions){
 		if(from == null || to == null) return null;
-		if(!isInBounds(to) || !existsRoute(to, from)) return null; // target must be in bounds and route back must exist
-		Route route = null;
-		if (permissions.contains(GraphHopperManager.PERMISSION_AIR)) route = getNewAirRoute(from, to);
-		else if (permissions.contains(GraphHopperManager.PERMISSION_ROAD)) route = getNewCarRoute(from, to);
-		else Log.log(Log.Level.ERROR, "Cannot find a route with those permissions");
-		return route;
+		if(!isInBounds(to)) return null; // target must be in bounds
+		if (permissions.contains(GraphHopperManager.PERMISSION_AIR))
+			return getNewAirRoute(from, to);
+		if (permissions.contains(GraphHopperManager.PERMISSION_ROAD) && existsRoute(to, from))
+			return getNewCarRoute(from, to);
+		Log.log(Log.Level.ERROR, "Cannot find a route with those permissions");
+		return null;
 	}
 
     /**
