@@ -825,7 +825,9 @@ public class Generator {
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
 
-        if(RNG.nextDouble() <= rate){
+        double jobProb = Math.exp((-1)*(double) (float) stepNo/world.getSteps()) * rate;
+        Log.log(Log.Level.NORMAL, "job probability=" + jobProb);
+        if(RNG.nextDouble() <= jobProb){
             ArrayList<Storage> tmpStorage = new ArrayList<>(world.getStorages());
             int storageNumber = RNG.nextInt(tmpStorage.size());
 
