@@ -9,6 +9,8 @@ jdk:
 install: true
 script: mvn package
 
+after_success: cp target/massim-*.tar.gz massim-${TRAVIS_BRANCH}.tar.gz
+
 deploy:
   provider: releases
   api_key:
@@ -25,7 +27,7 @@ addons:
   artifacts:
     bucket: agentcontest
     s3_region: eu-west-1
-    paths: $(ls target/massim-*.tar.gz)
+    paths: $(ls massim-*.tar.gz)
     target_paths: massim
     cache_control: public
     key:
