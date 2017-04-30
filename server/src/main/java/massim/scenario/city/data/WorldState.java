@@ -36,6 +36,10 @@ public class WorldState {
     private Map<String, Item> items = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
 
+    private List<Item> resources = new Vector<>();
+    private List<Item> baseItems = new Vector<>();
+
+
     private Map<String, Facility> facilities = new HashMap<>();
     private Set<Workshop> workshops = new HashSet<>();
     private Set<Dump> dumps = new HashSet<>();
@@ -135,6 +139,9 @@ public class WorldState {
             else if(f instanceof Dump) dumps.add((Dump) f);
             else if(f instanceof ResourceNode) resourceNodes.add((ResourceNode) f);
         });
+
+        resources = new Vector<>(generator.getResources());
+        baseItems = new Vector<>(generator.getBaseItems());
 
         // draw initial locations
         Location[] initialLocations = new Location[matchTeams.iterator().next().getSize()];
@@ -441,5 +448,15 @@ public class WorldState {
         if(items.containsKey(name)) return items.get(name);
         return tools.get(name);
     }
+
+    /**
+     * @return a list containing all resources
+     */
+    public List<Item> getResources(){ return resources;}
+
+    /**
+     * @return a list containing all base items
+     */
+    public List<Item> getBaseItems(){ return baseItems;}
 }
 

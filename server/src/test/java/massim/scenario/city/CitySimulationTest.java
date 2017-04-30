@@ -626,6 +626,15 @@ public class CitySimulationTest {
     @Test
     public void shopsWork(){
         WorldState world = sim.getWorldState();
+        List<Item> baseItems = new Vector<>(world.getBaseItems());
+        Vector<Tool> tools = new Vector<>(sim.getWorldState().getTools());
+        Vector<Item> shopItems = new Vector<>();
+        for(Item item: baseItems){
+            shopItems.add(item);
+        }
+        for(Item tool: tools){
+            shopItems.add(tool);
+        }
 
         //there is at least one shop in the simulation
         assert !world.getShops().isEmpty();
@@ -634,11 +643,15 @@ public class CitySimulationTest {
             //every shop offers at least one item
             assert !shop.getOfferedItems().isEmpty();
 
-            //the price for every item is >0
             for(Item item: shop.getOfferedItems()){
+                //the price for every item is >0
                 assert shop.getPrice(item)>0;
+
+                shopItems.remove(item);
             }
         }
+        //for every shop item (base item, resource or tool) there is at least one shop were it can be bought
+        assert shopItems.isEmpty();
     }
 
     @Test
@@ -659,7 +672,17 @@ public class CitySimulationTest {
         assert !sim.getWorldState().getStorages().isEmpty();
     }
 
-    //TODO resource nodes
+    @Test
+    public void resourceNodesWork(){
+        WorldState world = sim.getWorldState();
+        List<Item> resources = new Vector<>(world.getResources());
+
+        //for every resource there is at least one resource node where that resource is available
+        for(ResourceNode node: world.getResourceNodes()){
+            resources.remove(node.getResource());
+        }
+        assert resources.isEmpty();
+    }
 
     @Test
     public void toolsWork(){
@@ -671,7 +694,35 @@ public class CitySimulationTest {
         }
     }
 
-    //TODO items
+    @Test
+    public void itemsWork(){
+        WorldState world = sim.getWorldState();
+        List<Item> baseItems = new Vector<>(world.getBaseItems());
+        List<Item> assembledItems = new Vector<>(world.getItems());
+        assembledItems.removeAll(baseItems);
+
+        assert !world.getItems().isEmpty();
+        assert !world.getResources().isEmpty();
+        assert !baseItems.isEmpty();
+        assert !assembledItems.isEmpty();
+
+        for(Item item: baseItems){
+            assert item.getVolume()>0;
+            assert item.getValue()>0;
+            assert item.getAssembleValue()==0;
+            assert item.getRequiredBaseItems().isEmpty();
+            assert !item.needsAssembly();
+        }
+
+        for(Item item: assembledItems){
+            assert item.getVolume()>0;
+            assert item.getValue()==0;
+            assert item.getAssembleValue()>0;
+            assert !item.getRequiredBaseItems().isEmpty();
+            assert item.needsAssembly();
+        }
+
+    }
 
     /**
      * @return a new action-map where each agent just skips

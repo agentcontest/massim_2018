@@ -970,5 +970,14 @@ public class Generator {
         return reward;
     }
 
+    /**
+     * @return a list containing all resources
+     */
+    public List<Item> getResources(){ return resources;}
+
+    /**
+     * @return a list containing all base items
+     */
+    public List<Item> getBaseItems(){ return baseItems;}
 
 }
