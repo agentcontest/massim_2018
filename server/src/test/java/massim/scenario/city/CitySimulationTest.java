@@ -52,7 +52,7 @@ public class CitySimulationTest {
         // make agents really fast
         JSONObject roles = matchConf.getJSONObject("roles");
         roles.keySet().forEach(role -> {
-            roles.getJSONObject(role).put("speed", 100000);
+            roles.getJSONObject(role).put("speed", 10000);
             roles.getJSONObject(role).put("load", 100000);
         });
 
@@ -136,6 +136,9 @@ public class CitySimulationTest {
         Entity e1 = sim.getWorldState().getEntity("agentA1");
         ResourceNode node = (ResourceNode) sim.getWorldState().getFacility("resourceNode1");
         e1.setLocation(node.getLocation());
+        // give an item to the agent
+        e1.addItem(item, 1);
+        e1.addItem(sim.getWorldState().getItemOrTool("tool1"), 1);
 
         // one step for activating jobs
         sim.preStep(step);
@@ -151,7 +154,11 @@ public class CitySimulationTest {
         sim.step(step, actions);
         step++;
         sim.preStep(step);
-        sim.step(step, buildActionMap());
+
+        // let the agent execute an action
+        actions = buildActionMap();
+        actions.put("agentA1", new Action("goto", "shop1"));
+        sim.step(step, actions);
         step++;
 
         // one step for getting the final percept(s)
@@ -166,7 +173,6 @@ public class CitySimulationTest {
         assert percept.getWorkshops().size() > 0;
         assert percept.getDumps().size() > 0;
         assert percept.getChargingStations().size() > 0;
-        assert percept.getResourceNodes().size() > 0;
         assert percept.getStorage().size() > 0;
         assert percept.getAuctions().size() > 0;
         assert percept.getJobs().size() > 0;
@@ -176,6 +182,7 @@ public class CitySimulationTest {
         assert percept.getSelfData() != null;
         assert percept.getSimData() != null;
         assert percept.getSelfData().getCharge() == e1.getCurrentBattery();
+        assert percept.getSelfData().getItems().size() > 0;
 
         sim.step(step, buildActionMap());
     }
