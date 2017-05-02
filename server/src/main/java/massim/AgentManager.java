@@ -36,6 +36,11 @@ class AgentManager {
     private int maxPacketLength;
 
     /**
+     * If an agent's sendQueue is already "full", the oldest element will be removed before a new one is added
+     */
+    private int sendBufferSize = 4;
+
+    /**
      * Creates a new agent manager responsible for sending and receiving messages.
      * @param teams a list of all teams to configure the manager for
      * @param agentTimeout the timeout to use for request-action messages (to wait for actions) in milliseconds
@@ -348,6 +353,9 @@ class AgentManager {
          * @param message the message document to send
          */
         private void sendMessage(Document message){
+            if(sendQueue.size() > sendBufferSize) try {
+                sendQueue.take();
+            } catch (InterruptedException ignored) {}
             try {
                 sendQueue.put(message);
             } catch (InterruptedException e) {
