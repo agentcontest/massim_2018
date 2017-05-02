@@ -5,6 +5,14 @@
     <self charge="99999999" facility="resourceNode1" lat="51.478" load="33" lon="-0.03632" name="agentA1" role="car" team="A">
       <action result="successful" type="skip"/>
       <items amount="3" name="item0"/>
+      <items amount="4" name="tool1"/>
+      <route i="0" lat="51.4739" lon="-0.06657"/>
+      <route i="1" lat="51.47384" lon="-0.07346"/>
+      <route i="2" lat="51.47379" lon="-0.08041"/>
+      <route i="3" lat="51.47349" lon="-0.08759"/>
+      <route i="4" lat="51.47452" lon="-0.09439"/>
+      <route i="5" lat="51.47704" lon="-0.10037"/>
+      <route i="6" lat="51.4777" lon="-0.10676"/>
     </self>
     <team money="77787"/>
     <entity lat="51.47519" lon="-0.19454" name="agentA2" role="car" team="A"/>
