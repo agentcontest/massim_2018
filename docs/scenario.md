@@ -542,9 +542,18 @@ Example:
 <message timestamp="1489763697397" type="request-action">
   <percept deadline="1489763701395" id="0">
     <simulation step="0"/>
-    <self charge="101" lat="51.4675" load="0" lon="-0.0911" name="agentA1"
+    <self charge="101" facility="shop1" lat="51.4741" load="0" lon="-0.06057" name="agentA1"
           role="SampleRole" team="A">
-      <action result="successful" type="noAction"/>
+      <action result="successful" type="skip"/>
+      <items amount="4" name="item0"/>
+      <items amount="1" name="tool1"/>
+      <route i="0" lat="51.4739" lon="-0.06657"/>
+      <route i="1" lat="51.47384" lon="-0.07346"/>
+      <route i="2" lat="51.47379" lon="-0.08041"/>
+      <route i="3" lat="51.47349" lon="-0.08759"/>
+      <route i="4" lat="51.47452" lon="-0.09439"/>
+      <route i="5" lat="51.47704" lon="-0.10037"/>
+      <route i="6" lat="51.4777" lon="-0.10676"/>
     </self>
     <team money="10"/>
 
@@ -558,7 +567,9 @@ The information is contained in the `percept` element within the message. This e
 
 #### Self details
 
-The `self` element contains information about the agent itself; its current battery charge and used carrying capacity, position, role and team. The action the agent executed in the last step together with its result is included in a child node of the `self` element.
+The `self` element contains information about the agent itself; its current battery charge and used carrying capacity, position, role and team. If the agent is in the same location as a facility, that facility is listed as an attribute as well. The action the agent executed in the last step together with its result is included in a child node of the `self` element.
+
+Also, a child element for each carried item type is nested. Finally, if the agent currently follows a route, each waypoint of that route is listed in a child node, containing its location and index within the route.
 
 #### Team details
 
