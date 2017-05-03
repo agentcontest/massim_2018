@@ -823,6 +823,7 @@ public class Generator {
      * @param stepNo the number of the current step
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
+        if (difficultyMin == 0 && difficultyMax == 0) allJobItems = baseItems; // only require base items in this case
         Set<Job> jobs = new HashSet<>();
 
         double jobProb = Math.exp((-1)*(double) (float) stepNo/world.getSteps()) * rate;
@@ -842,7 +843,7 @@ public class Generator {
                 while(jobItems.isEmpty()){
                     for(int i=0; i<numberOfProducts; i++){
                         int itemNumber = RNG.nextInt(allJobItems.size());
-                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) < difficulty){
+                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) <= difficulty){
                             currentDifficulty = currentDifficulty + allJobItems.get(itemNumber).getAssembleValue();
                             jobItems.put(allJobItems.get(itemNumber),1);
                         }
