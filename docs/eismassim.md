@@ -225,6 +225,8 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * ln : Numeral - length of the agent's current route
 * `money(m)`
   * m : Numeral - the agent's team's current money
+* `facility(f)`
+  * f : Identifier - name of the agent's current facility
 * `lastAction(type)`
   * type : Identifier - name of the last executed action
 * `lastActionParams([param1, ...])`

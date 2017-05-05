@@ -95,6 +95,8 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("routeLength", new Numeral(self.getRouteLength())));
         ret.add(new Percept("money", new Numeral(percept.getTeamData().getMoney())));
 
+        if(self.getFacility() != null) ret.add(new Percept("facility", new Identifier(self.getFacility())));
+
         // add percepts for last action
         ActionData lastAction = self.getLastAction();
         ret.add(new Percept("lastAction", new Identifier(lastAction.getType())));
