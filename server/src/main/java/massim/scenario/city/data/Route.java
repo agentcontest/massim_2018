@@ -65,7 +65,7 @@ public class Route {
     /**
      * @return the number of waypoints in this route
      */
-    private int getRouteLength(){
+    public int getRouteLength(){
         return route == null? 0: route.size();
     }
 }
