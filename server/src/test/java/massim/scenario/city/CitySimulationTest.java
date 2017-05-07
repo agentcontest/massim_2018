@@ -716,19 +716,55 @@ public class CitySimulationTest {
         for(Item item: baseItems){
             assert item.getVolume()>0;
             assert item.getValue()>0;
-            assert item.getAssembleValue()==0;
-            assert item.getRequiredBaseItems().isEmpty();
+            boolean assembleValue = item.getAssembleValue()==0;
+            assert assembleValue;
+            boolean reqBaseItems = item.getRequiredBaseItems().isEmpty();
+            assert reqBaseItems;
             assert !item.needsAssembly();
         }
 
         for(Item item: assembledItems){
             assert item.getVolume()>0;
             assert item.getValue()==0;
-            assert item.getAssembleValue()>0;
+            boolean assembleValue = item.getAssembleValue()>0;
+            assert assembleValue;
             assert !item.getRequiredBaseItems().isEmpty();
             assert item.needsAssembly();
         }
 
+    }
+
+    @Test
+    public void restockWorks(){WorldState world = sim.getWorldState();
+        Entity e1 = world.getEntity("agentA1");
+        Shop shop = world.getShops().iterator().next();
+        Item item = shop.getOfferedItems().iterator().next();
+        int amount = shop.getItemCount(item);
+        int restock = shop.getRestock();
+
+        e1.clearInventory();
+        e1.setLocation(shop.getLocation());
+
+        //System.out.println("restock=" + restock);
+        //System.out.println(shop.getItemCount(item));
+
+        sim.preStep(step);
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("buy", item.getName(), "2"));
+        sim.step(step, actions);
+
+        //System.out.println(shop.getItemCount(item));
+        assert shop.getItemCount(item)<amount;
+
+        actions.put("agentA1", new Action("skip"));
+        for(int i = 0; i < (restock); i++){
+            sim.preStep(step);
+            sim.step(step, actions);
+            step++;
+        }
+        //System.out.println(shop.getItemCount(item));
+        //item is restocked after the corresponding number of steps
+        assert shop.getItemCount(item)<=amount;
     }
 
     /**
