@@ -233,7 +233,7 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * param1 : Identifier - first parameter of the last executed action (list might be empty)
 * `lastActionResult(result)`
   * result : Identifier - result of the last executed action
-* `item(name, qty)`
+* `hasItem(name, qty)`
   * name : Identifier - name of a carried item
   * qty : Numeral - carried quantity
 * `route([wp(index, lat, lon), ...])`

@@ -108,7 +108,7 @@ public class CityEntity extends EISEntity {
 
         // add carried items
         self.getItems().forEach(item -> ret.add(
-                new Percept("item", new Identifier(item.getName()), new Numeral(item.getAmount()))));
+                new Percept("hasItem", new Identifier(item.getName()), new Numeral(item.getAmount()))));
 
         // add waypoints if route exists
         if(self.getRoute() != null) {
