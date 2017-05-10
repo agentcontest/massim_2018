@@ -69,7 +69,7 @@ public class Location {
      * Sets the global proximity value
      * @param newProximity the new proximity value
      */
-    static void setProximity(int newProximity){
+    public static void setProximity(int newProximity){
         proximity = newProximity;
         divisor = 1d / Math.pow(10d, proximity);
     }
