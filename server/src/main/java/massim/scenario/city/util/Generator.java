@@ -824,7 +824,12 @@ public class Generator {
      * @param stepNo the number of the current step
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
-        if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) allJobItems = baseItems; // only require base items in this case
+        Vector<Item> tmpJobItems = new Vector<>();
+        if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
+            tmpJobItems.addAll(baseItems); // only require base items in this case
+        }else{
+            tmpJobItems.addAll(allJobItems);
+        }
         Set<Job> jobs = new HashSet<>();
 
         double jobProb = Math.exp((-1)*(double) (float) stepNo/world.getSteps()) * rate;
@@ -835,31 +840,36 @@ public class Generator {
 
             Map<Item, Integer> jobItems = new HashMap<>();
             int numberOfProducts = RNG.nextInt((productTypesMax-productTypesMin) + 1) + productTypesMin;
-            numberOfProducts = Math.min(numberOfProducts, allJobItems.size());
+            numberOfProducts = Math.min(numberOfProducts, tmpJobItems.size());
             int currentDifficulty = 0;
 
             if(RNG.nextDouble() > missionProbability || stepNo<missionEnd){
                 int difficulty = RNG.nextInt((difficultyMax-difficultyMin) + 1) + difficultyMin;
 
-                while(jobItems.isEmpty()){
-                    for(int i=0; i<numberOfProducts; i++){
-                        int itemNumber = RNG.nextInt(allJobItems.size());
-                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) <= difficulty){
-                            currentDifficulty = currentDifficulty + allJobItems.get(itemNumber).getAssembleValue();
-                            jobItems.put(allJobItems.get(itemNumber),1);
-                        }
+                //choose items for job
+                RNG.shuffle(tmpJobItems);
+                int currentNumberOfProducts = 0;
+                for(int i=0; i<tmpJobItems.size(); i++){
+                    if((currentDifficulty + tmpJobItems.get(i).getAssembleValue() ) <= difficulty){
+                        currentDifficulty = currentDifficulty + tmpJobItems.get(i).getAssembleValue();
+                        jobItems.put(tmpJobItems.get(i),1);
+                        currentNumberOfProducts++;
+                    }
+                    if(currentNumberOfProducts>=numberOfProducts){
+                        break;
                     }
                 }
 
+                //determine amount for each item
                 ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
-                while(currentDifficulty<difficulty){
+                while(currentDifficulty<difficulty && (!itemList.isEmpty())){
                     RNG.shuffle(itemList);
                     if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
                         currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
                         int amount = jobItems.get(itemList.get(0));
                         jobItems.replace(itemList.get(0), amount, amount+1);
                     }else{
-                        break;
+                        itemList.remove(0);
                     }
                 }
 
@@ -897,25 +907,30 @@ public class Generator {
                 //generate mission
                 int difficulty = RNG.nextInt((missionDifficultyMax-difficultyMin) + 1) + difficultyMin;
 
-                while(jobItems.isEmpty()){
-                    for(int i=0; i<numberOfProducts; i++){
-                        int itemNumber = RNG.nextInt(allJobItems.size());
-                        if((currentDifficulty + allJobItems.get(itemNumber).getAssembleValue() ) <= difficulty){
-                            currentDifficulty = currentDifficulty + allJobItems.get(itemNumber).getAssembleValue();
-                            jobItems.put(allJobItems.get(itemNumber),1);
-                        }
+                //choose items for job
+                RNG.shuffle(tmpJobItems);
+                int currentNumberOfProducts = 0;
+                for(int i=0; i<tmpJobItems.size(); i++){
+                    if((currentDifficulty + tmpJobItems.get(i).getAssembleValue() ) <= difficulty){
+                        currentDifficulty = currentDifficulty + tmpJobItems.get(i).getAssembleValue();
+                        jobItems.put(tmpJobItems.get(i),1);
+                        currentNumberOfProducts++;
+                    }
+                    if(currentNumberOfProducts>=numberOfProducts){
+                        break;
                     }
                 }
 
+                //determine amount for each item
                 ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
-                while(currentDifficulty<difficulty){
+                while(currentDifficulty<difficulty && (!itemList.isEmpty())){
                     RNG.shuffle(itemList);
                     if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
                         currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
                         int amount = jobItems.get(itemList.get(0));
                         jobItems.replace(itemList.get(0), amount, amount+1);
                     }else{
-                        break;
+                        itemList.remove(0);
                     }
                 }
 
