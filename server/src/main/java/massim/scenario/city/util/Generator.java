@@ -873,7 +873,7 @@ public class Generator {
                     }
                 }
 
-                int reward = computeReward(jobItems) + (RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin);
+                int reward = computeReward(jobItems);
                 int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
                 reward = reward + rewardAdd;
                 int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
@@ -934,7 +934,7 @@ public class Generator {
                     }
                 }
 
-                int reward = computeReward(jobItems) + (RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin);
+                int reward = computeReward(jobItems);
                 int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
                 reward = reward + rewardAdd;
                 int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;

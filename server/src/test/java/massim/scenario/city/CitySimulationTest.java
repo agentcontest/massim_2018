@@ -633,7 +633,7 @@ public class CitySimulationTest {
     @Test
     public void shopsWork(){
         WorldState world = sim.getWorldState();
-        List<Item> baseItems = new Vector<>(world.getBaseItems());
+        List<Item> baseItems = new Vector<>(world.getGenerator().getBaseItems());
         Vector<Tool> tools = new Vector<>(sim.getWorldState().getTools());
         Vector<Item> shopItems = new Vector<>();
         for(Item item: baseItems){
@@ -682,7 +682,7 @@ public class CitySimulationTest {
     @Test
     public void resourceNodesWork(){
         WorldState world = sim.getWorldState();
-        List<Item> resources = new Vector<>(world.getResources());
+        List<Item> resources = new Vector<>(world.getGenerator().getResources());
 
         //for every resource there is at least one resource node where that resource is available
         for(ResourceNode node: world.getResourceNodes()){
@@ -704,12 +704,12 @@ public class CitySimulationTest {
     @Test
     public void itemsWork(){
         WorldState world = sim.getWorldState();
-        List<Item> baseItems = new Vector<>(world.getBaseItems());
+        List<Item> baseItems = new Vector<>(world.getGenerator().getBaseItems());
         List<Item> assembledItems = new Vector<>(world.getItems());
         assembledItems.removeAll(baseItems);
 
         assert !world.getItems().isEmpty();
-        assert !world.getResources().isEmpty();
+        assert !world.getGenerator().getResources().isEmpty();
         assert !baseItems.isEmpty();
         assert !assembledItems.isEmpty();
 
@@ -735,25 +735,21 @@ public class CitySimulationTest {
     }
 
     @Test
-    public void restockWorks(){WorldState world = sim.getWorldState();
+    public void restockWorks(){
+        WorldState world = sim.getWorldState();
         Entity e1 = world.getEntity("agentA1");
         Shop shop = world.getShops().iterator().next();
         Item item = shop.getOfferedItems().iterator().next();
-        int amount = shop.getItemCount(item);
+        int amount = Math.max(shop.getItemCount(item), shop.getInitialAmount(item));
         int restock = shop.getRestock();
 
         e1.clearInventory();
         e1.setLocation(shop.getLocation());
 
-        //System.out.println("restock=" + restock);
-        //System.out.println(shop.getItemCount(item));
-
         sim.preStep(step);
         Map<String, Action> actions = buildActionMap();
         actions.put("agentA1", new Action("buy", item.getName(), "2"));
         sim.step(step, actions);
-
-        //System.out.println(shop.getItemCount(item));
         assert shop.getItemCount(item)<amount;
 
         actions.put("agentA1", new Action("skip"));
@@ -762,9 +758,34 @@ public class CitySimulationTest {
             sim.step(step, actions);
             step++;
         }
-        //System.out.println(shop.getItemCount(item));
         //item is restocked after the corresponding number of steps
         assert shop.getItemCount(item)<=amount;
+
+        actions.put("agentA1", new Action("skip"));
+        for(int i = 0; i < (restock*amount); i++){
+            sim.preStep(step);
+            sim.step(step, actions);
+            step++;
+        }
+        //item is only restocked until the initial amount is available again
+        assert shop.getItemCount(item)<=amount;
+    }
+
+    @Test
+    public void jobsWork(){
+        WorldState world = sim.getWorldState();
+        Set<Job> jobs = new HashSet<>();
+        for(int i=0; i<20; i++){
+            jobs = world.getGenerator().generateJobs(i,world);
+            if(!jobs.isEmpty()){
+                break;
+            }
+        }
+        if(!jobs.isEmpty()){
+            Job job = jobs.iterator().next();
+            assert !job.getRequiredItems().getStoredTypes().isEmpty();
+            assert job.getReward()>0;
+        }
     }
 
     /**

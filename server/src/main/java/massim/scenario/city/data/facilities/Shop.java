@@ -110,6 +110,11 @@ public class Shop extends Facility{
         return restock;
     }
 
+    public int getInitialAmount(Item item){
+        Integer amount = initialAmounts.get(item);
+        return amount == null? 0: amount;
+    }
+
     @Override
     public String toString(){
         return super.toString() + " restock(" + restock + ") \tstock([" +
