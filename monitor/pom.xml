@@ -73,7 +73,7 @@
         <dependency>
             <groupId>massim</groupId>
             <artifactId>protocol</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.webbit</groupId>
