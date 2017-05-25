@@ -36,6 +36,7 @@ public class ActionExecutor {
     private final static String FAILED_WRONG_PARAM = "failed_wrong_param";
     private final static String FAILED = "failed";
     private final static String USELESS = "useless";
+    private final static String FAILED_FACILITY_STATE = "failed_facility_state";
 
     private WorldState world;
 
@@ -462,6 +463,10 @@ public class ActionExecutor {
                 }
                 if(!(facility instanceof ChargingStation)){
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
+                    break;
+                }
+                if(facility.getBlackoutCounter()>0){
+                    entity.setLastActionResult(FAILED_FACILITY_STATE);
                     break;
                 }
                 entity.charge(((ChargingStation)facility).getRate());

@@ -110,6 +110,10 @@ public class Shop extends Facility{
         return restock;
     }
 
+    /**
+     * @param item an item type
+     * @return the initial amount of this item
+     */
     public int getInitialAmount(Item item){
         Integer amount = initialAmounts.get(item);
         return amount == null? 0: amount;

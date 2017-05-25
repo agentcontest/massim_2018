@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 public class Generator {
 
     private double quadSize;
+    private double blackoutProbability;
+    private int blackoutTimeMin;
+    private int blackoutTimeMax;
 
     private double chargingDensity;
     private int rateMin;
@@ -95,6 +98,8 @@ public class Generator {
     private int missionID = 0;
     private int missionEnd = 0;
 
+    private Vector<Facility> affectedFacilities = new Vector<>();
+
     public Generator(JSONObject randomConf){
         //parse random parameters from config
         //parse facilities
@@ -104,6 +109,12 @@ public class Generator {
         }else {
             quadSize = facilities.optDouble("quadSize", 0.4);
             Log.log(Log.Level.NORMAL, "Configuring facilities quadSize: " + quadSize);
+            blackoutProbability = facilities.optDouble("blackoutProbability", 0.1);
+            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutProbability: " + blackoutProbability);
+            blackoutTimeMin = facilities.optInt("blackoutTimeMin", 5);
+            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutTimeMin: " + blackoutTimeMin);
+            blackoutTimeMax = facilities.optInt("blackoutTimeMax", 10);
+            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutTimeMax: " + blackoutTimeMax);
 
             //parse charging stations
             JSONObject chargingStations = facilities.optJSONObject("chargingStations");
@@ -986,6 +997,37 @@ public class Generator {
         }
         return reward;
     }
+
+    public void generateBlackout(WorldState world){
+
+        //manage facilities affected by blackout
+        Vector<Facility> workingFacilities = new Vector<>();
+        for(Facility facility: affectedFacilities){
+            facility.decrementBlackoutCounter();
+            if(facility.getBlackoutCounter()==0){
+                workingFacilities.add(facility);
+            }
+        }
+        affectedFacilities.removeAll(workingFacilities);
+
+        //initiate new blackout
+        if(RNG.nextDouble() <= blackoutProbability){
+            int duration = RNG.nextInt((blackoutTimeMax-blackoutTimeMin) + 1) + blackoutTimeMin;
+            Vector<Facility> facilities = new Vector<>(world.getChargingStations());
+            RNG.shuffle(facilities);
+            Facility targetFacility = facilities.get(0);
+            if(!affectedFacilities.contains(targetFacility)){
+                targetFacility.initiateBlackout(duration);
+                affectedFacilities.add(targetFacility);
+                Log.log(Log.Level.NORMAL, "Configuring facilities: blackout in " + targetFacility.getName() + ", duration " + duration + " steps!");
+            }
+        }
+    }
+
+    /**
+     * Adds a facility to the list of facilities affected by blackout (for testing)
+     */
+    public void addToAffectedFacilities(Facility facility){ affectedFacilities.add(facility);}
 
     /**
      * @return a list containing all resources

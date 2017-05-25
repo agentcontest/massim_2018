@@ -10,10 +10,12 @@ public abstract class Facility {
 
     private String name;
     private Location location;
+    private int blackoutCounter;
 
     public Facility(String name, Location location){
         this.name = name;
         this.location = location;
+        this.blackoutCounter = 0;
     }
 
     /**
@@ -30,8 +32,26 @@ public abstract class Facility {
         return name;
     }
 
+    /**
+     * causes a blackout for this facility
+     * @param duration the duration of the blackout
+     */
+    public void initiateBlackout(int duration) { blackoutCounter = duration; }
+
+    public void decrementBlackoutCounter(){
+        if(blackoutCounter>=0){
+            blackoutCounter--;
+        }
+    }
+
+    /**
+     * @return the value of the blackoutCounter of this facility
+     */
+    public int getBlackoutCounter(){ return blackoutCounter; }
+
     @Override
     public String toString(){
         return name + " loc(" + location.getLon() + "," + location.getLat() + ")";
     }
+
 }
