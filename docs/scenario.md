@@ -67,6 +67,10 @@ Tools are special types of items.
 
 Facilities are placed randomly on the map. Each facility has a unique name and location.
 
+It is possible for blackouts to occur in the city causing some facilities to be out of order for a small number of steps. Agents are not able to recognize facilities that are affected by a blackout and will only be able to perceive that a facility is currently not working when they get the corresponding failure code after executing an action in this facility.
+
+Currently only charging stations are affected by blackouts.
+
 #### Shops
 
 In __shops__, items can be bought at prices specific to the particular shop. Each shop only offers limited quantities of a subset of all items. However, items are restocked after a number of steps.
@@ -428,6 +432,7 @@ Failure Code | Reason
 failed_wrong_param | Parameters have been given.
 failed_location | The agent is not in a facility.
 failed_wrong_facility | The agent is not in a charging station.
+failed_facility_state | The charging station is currently out of order due to a blackout.
 
 #### recharge
 
