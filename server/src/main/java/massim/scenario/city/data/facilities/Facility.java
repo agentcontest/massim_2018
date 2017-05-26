@@ -39,7 +39,7 @@ public abstract class Facility {
     public void initiateBlackout(int duration) { blackoutCounter = duration; }
 
     public void decrementBlackoutCounter(){
-        if(blackoutCounter>=0){
+        if(blackoutCounter>0){
             blackoutCounter--;
         }
     }

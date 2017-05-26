@@ -1011,7 +1011,7 @@ public class Generator {
         affectedFacilities.removeAll(workingFacilities);
 
         //initiate new blackout
-        if(RNG.nextDouble() <= blackoutProbability){
+        if(RNG.nextDouble() < blackoutProbability){
             int duration = RNG.nextInt((blackoutTimeMax-blackoutTimeMin) + 1) + blackoutTimeMin;
             Vector<Facility> facilities = new Vector<>(world.getChargingStations());
             RNG.shuffle(facilities);
