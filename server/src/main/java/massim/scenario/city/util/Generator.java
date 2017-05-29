@@ -887,6 +887,11 @@ public class Generator {
                 int reward = computeReward(jobItems);
                 int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
                 reward = reward + rewardAdd;
+
+                if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
+                    reward = jobItems.keySet().size() * 100;
+                }
+
                 int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
 
                 if(RNG.nextDouble() > auctionProbability){
@@ -948,6 +953,11 @@ public class Generator {
                 int reward = computeReward(jobItems);
                 int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
                 reward = reward + rewardAdd;
+
+                if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
+                    reward = jobItems.keySet().size() * 100;
+                }
+
                 int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
                 missionEnd = stepNo+1+length;
                 int fine;
