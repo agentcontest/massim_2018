@@ -179,7 +179,9 @@ public class EISAdapter extends Environment implements AgentListener {
     private static Parameter termToParameter(Term t) {
         if (t.isNumeric()) {
             try {
-                return new Numeral(((NumberTerm) t).solve());
+                double d = ((NumberTerm) t).solve();
+                if((d == Math.floor(d)) && !Double.isInfinite(d)) return new Numeral((int)d);
+                return new Numeral(d);
             } catch(NoValueException e){
                 e.printStackTrace();
             }
