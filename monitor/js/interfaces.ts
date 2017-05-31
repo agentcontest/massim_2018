@@ -50,6 +50,14 @@ export interface Shop {
   lat: number;
   lon: number;
   name: string;
+  offeredItems: StockData[];
+  restock: number;
+}
+
+export interface StockData {
+  amount: number;
+  name: string;
+  price: number;
 }
 
 export interface ChargingStation {

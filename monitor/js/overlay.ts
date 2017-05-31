@@ -1,4 +1,4 @@
-import { Ctrl, StaticWorld, DynamicWorld, isAgent } from './interfaces';
+import { Ctrl, StaticWorld, DynamicWorld, Shop, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 
@@ -52,9 +52,15 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
   }
   else return h('div', [
     h('div', h('strong', 'Facility:'))
-  ].concat(Object.keys(sel).map(key =>
-    h('div', [key, ': ', h('em', (sel as any)[key].toString())])
-  )));
+  ].concat(Object.keys(sel).map(key => {
+    if (key == 'offeredItems') {
+      return h('div', ['items:', h('ul', (sel as Shop).offeredItems.map(stock =>
+        h('li', n(stock.amount, 'x') + ' ' + stock.name + ' @ ' + n(stock.price, '$'))
+      ))]);
+    } else {
+      return h('div', [key, ': ', h('em', (sel as any)[key].toString())])
+    }
+  })));
 }
 
 function jobs(dynamic: DynamicWorld) {
