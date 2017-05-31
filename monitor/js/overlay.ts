@@ -2,6 +2,8 @@ import { Ctrl, StaticWorld, DynamicWorld, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 
+const MAX_JOBS = 12;
+
 function n(num: number, suffix?: string): string {
   const s = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u200a");
   return suffix ? (s + "\u200a" + suffix) : s;
@@ -58,11 +60,12 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
 function jobs(dynamic: DynamicWorld) {
   return h('div', [
     h('strong', 'Jobs and auctions'),
-    h('ul', dynamic.jobs.map(job => {
+    h('ul', dynamic.jobs.slice(0, MAX_JOBS).map(job => {
       return h('li', [
         h('em', n(job.reward, '$')), ' by ', h('em', job.poster)
       ])
-    }))
+    })),
+    dynamic.jobs.length > MAX_JOBS ? h('div', 'and ' + (dynamic.jobs.length - MAX_JOBS) + ' more') : null
   ]);
 }
 
