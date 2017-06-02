@@ -316,6 +316,10 @@ failed_capacity | The agent does not have enough free space to carry the assembl
 
 Marks the agent as an assistant for assembly.
 
+If multiple agents could provide the same item for assembly, it is preferably taken from the agent that used the _assemble_ action. If that agent cannot provide the item, the assistants are sorted by name (i.e. first by length and then lexicographically, as the last part of the name is traditionally their number) as provided in the server's team config. Then, the item is taken from the assistants in that order.
+
+_Example:_ Imagine _agentA4_, _agentA3_ and _agentA20_ want to assemble an item that requires 5 pieces of _item1_. Further, let all agents carry 2 pieces of _item1_ and _agentA4_ be the "main" assembler (i.e. the one that uses the _assemble_ action). Then, the first 2 pieces of _item1_ are taken from _agentA4_ since it is the initiator. Another 2 pieces are taken from _agentA3_ and the last one is taken from _agentA20_ (since _agentA3_'s name is shorter).
+
 No | Parameter | Meaning
 --- | --- | ---
 0 | Agent | Name of an agent who uses the _assemble_ action and whom this agent should help.
