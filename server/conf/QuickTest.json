@@ -2,7 +2,7 @@
   "server" : {
     "tournamentMode" : "round-robin",
     "teamsPerMatch" : 2,
-    "teamSize" : 6,
+    "teamSize" : 30,
     "launch" : "5s",
     "port" : 12300,
     "backlog" : 10000,
@@ -45,7 +45,7 @@
         }
       },
 
-      "entities" : [{"spaceShip" : 6}],
+      "entities" : [{"spaceShip" : 30}],
 
       "generate" : {
         "facilities" : {

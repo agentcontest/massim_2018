@@ -34,7 +34,7 @@ public class CitySimulationTest {
     private static CitySimulation sim;
 
     private static int seed = 17;
-    private static int agentsPerTeam = 6;
+    private static int agentsPerTeam = 30;
     private static int steps = 10000;
     private static int step = 0;
 
@@ -308,6 +308,8 @@ public class CitySimulationTest {
         WorldState world = sim.getWorldState();
         Entity e1 = world.getEntity("agentA1");
         Entity e2 = world.getEntity("agentA2");
+        Entity e3 = world.getEntity("agentA3");
+        Entity e4 = world.getEntity("agentA20");
         Workshop workshop = world.getWorkshops().iterator().next();
         Optional<Item> optItem = world.getItems().stream() // find item that needs tools and materials
                 .filter(item -> item.getRequiredItems().size() > 1 && item.getRequiredTools().size() > 0)
@@ -316,21 +318,26 @@ public class CitySimulationTest {
         Item item = optItem.get();
 
         e1.clearInventory();
-        e2.clearInventory();
         e1.setLocation(workshop.getLocation());
-        e2.setLocation(workshop.getLocation());
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("assemble", item.getName()));
+        for (int i = 2; i < 30; i++){
+            String agName = "agentA" + i;
+            Entity ent = world.getEntity(agName);
+            ent.clearInventory();
+            ent.setLocation(workshop.getLocation());
+            actions.put(agName, new Action("assist_assemble", "agentA1"));
+        }
 
+        Entity[] assistants = new Entity[]{e2, e3, e4};
         List<Item> requiredItems = new ArrayList<>(item.getRequiredItems().keySet());
         e1.addItem(requiredItems.get(0), item.getRequiredItems().get(requiredItems.get(0)));
         for(int i = 1; i < requiredItems.size(); i++)
-            e2.addItem(requiredItems.get(i), item.getRequiredItems().get(requiredItems.get(i)));
+            assistants[i%assistants.length].addItem(requiredItems.get(i), item.getRequiredItems().get(requiredItems.get(i)));
 
         // check assembly without tools
 
         sim.preStep(step);
-        Map<String, Action> actions = buildActionMap();
-        actions.put("agentA1", new Action("assemble", item.getName()));
-        actions.put("agentA2", new Action("assist_assemble", "agentA1"));
         sim.step(step, actions);
 
         assert e1.getLastActionResult().equals("failed_tools");

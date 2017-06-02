@@ -546,7 +546,7 @@ public class ActionExecutor {
                 }
                 // create job with the parsed details (starting next step)
                 job = new Job(reward, (Storage) fac, stepNo + 1, stepNo + duration, world.getTeamForAgent(agent));
-                requirements.entrySet().forEach(e -> job.addRequiredItem(e.getKey(), e.getValue()));
+                requirements.forEach(job::addRequiredItem);
                 world.addJob(job);
                 break;
 
@@ -629,7 +629,14 @@ public class ActionExecutor {
                     assistants.get(assembler).forEach(a -> a.setLastActionResult(FAILED_TOOLS));
                 }
                 else{ // all tools available, check regular items now
-                    String assemblyResult = canBeAssembled(item, assembler, assistants.get(assembler), true);
+                    // sort assembly helpers by name
+                    List<Entity> assemblyAssistants = new ArrayList<>(assistants.get(assembler));
+                    assemblyAssistants.sort((e1, e2) -> {
+                        String ag1 = world.getAgentForEntity(e1);
+                        String ag2 = world.getAgentForEntity(e2);
+                        return ag1.length() == ag2.length()? ag1.compareTo(ag2) : ag1.length() - ag2.length();
+                    });
+                    String assemblyResult = canBeAssembled(item, assembler, assemblyAssistants, true);
                     if(assemblyResult.equals(SUCCESSFUL)){
                         assembler.setLastActionResult(SUCCESSFUL);
                         assistants.get(assembler).forEach(a -> a.setLastActionResult(SUCCESSFUL));
@@ -649,12 +656,12 @@ public class ActionExecutor {
      * (so it does not need to be called to check that from the outside before)
      * @param item the item type to assemble
      * @param assembler the head assembler
-     * @param assistants the assistant assemblers
+     * @param assistants the assistant assemblers (<b>sorted by connected agent's name</b>)
      * @param applyChanges whether to apply the changes (i.e. remove parts and add product to head assembler)
      * @return the result of the assemble action, i.e. one of {@link #SUCCESSFUL}, {@link #FAILED_ITEM_TYPE},
      * {@link #FAILED_ITEM_AMOUNT}, {@link #FAILED_CAPACITY}
      */
-    private String canBeAssembled(Item item, Entity assembler, Set<Entity> assistants, boolean applyChanges){
+    private String canBeAssembled(Item item, Entity assembler, List<Entity> assistants, boolean applyChanges){
         if(!item.needsAssembly()) return FAILED_ITEM_TYPE;
         if(applyChanges){
             String dryRunResult = canBeAssembled(item, assembler, assistants, false);
