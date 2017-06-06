@@ -1,4 +1,6 @@
 {
+  "comment": "##This config is intended for the unit test and might not work in a normal setting##",
+
   "server" : {
     "tournamentMode" : "round-robin",
     "teamsPerMatch" : 2,
