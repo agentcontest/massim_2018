@@ -30,6 +30,11 @@ public class Log {
         typeStrings.put(Level.ERROR, "[ ERROR  ] ");
         typeStrings.put(Level.NORMAL, "[ NORMAL  ] ");
         typeStrings.put(Level.DEBUG, "[ DEBUG  ] ");
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            e.printStackTrace();
+            logToFile(Arrays.toString(e.getStackTrace()));
+        });
     }
 
     /**
