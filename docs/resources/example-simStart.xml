@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <message timestamp="1492776578245" type="sim-start">
-  <simulation id="2017-QuickTest-Sim" map="london" seedCapital="10" steps="10000" team="A">
+  <simulation id="2017-QuickTest-Sim" map="london" seedCapital="10" steps="10000" team="A" minLat="1.123" maxLat="1.223" minLon="2.355" maxLon="2.555">
     <role battery="8000" load="10000" name="truck" speed="1">
       <tool name="tool0"/>
       <tool name="tool1"/>

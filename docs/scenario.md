@@ -506,7 +506,8 @@ Example:
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <message timestamp="1489763697332" type="sim-start">
   <simulation id="2017-QuickTest-Sim" map="london"
-              seedCapital="10" steps="1000" team="A">
+              seedCapital="10" steps="1000" team="A"
+              minLat="1.1" maxLat="1.2" minLon="2.1" maxLon="2.3">
     <role battery="500" load="1000" name="SampleRole" speed="10">
       <tool name="tool0"/>
       <tool name="tool1"/>
@@ -523,7 +524,7 @@ Example:
 
 #### Simulation details
 
-The `simulation` tag has attributes for the simulation `id`, the name of the `map` that is used, the seed capital, the number of simulation `steps` to be played and the name of the agent's `team`.
+The `simulation` tag has attributes for the simulation `id`, the name of the `map` that is used and its bounds, the seed capital, the number of simulation `steps` to be played and the name of the agent's `team`.
 
 #### Role details
 
