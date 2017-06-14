@@ -85,7 +85,8 @@ public class CitySimulation extends AbstractSimulation {
                         world.getMapName(),
                         world.getSeedCapital(),
                         world.getEntity(agName).getRole().getRoleData(),
-                        itemData
+                        itemData,
+                        world.getMinLat(), world.getMaxLat(), world.getMinLon(), world.getMaxLon()
                         )));
         return initialPercepts;
     }

@@ -21,6 +21,10 @@ public class CityInitialPercept extends SimStart {
     @XmlAttribute private String map;
     @XmlAttribute private long seedCapital;
     @XmlAttribute(name="team") private String teamName;
+    @XmlAttribute private double minLat;
+    @XmlAttribute private double maxLat;
+    @XmlAttribute private double minLon;
+    @XmlAttribute private double maxLon;
     @XmlElement private RoleData role;
     @XmlElement(name="item") public List<ItemData> items;
 
@@ -40,7 +44,8 @@ public class CityInitialPercept extends SimStart {
      * @param items items available in the simulation
      */
     public CityInitialPercept(String simId, int steps, String teamName, String mapName, long seedCapital,
-                              RoleData role, List<ItemData> items) {
+                              RoleData role, List<ItemData> items,
+                              double minLat, double maxLat, double minLon, double maxLon) {
         this.simId = simId;
         this.steps = steps;
         this.teamName = teamName;
@@ -48,6 +53,10 @@ public class CityInitialPercept extends SimStart {
         this.seedCapital = seedCapital;
         this.role = role;
         this.items = items;
+        this.minLat = minLat;
+        this.maxLat = maxLat;
+        this.minLon = minLon;
+        this.maxLon = maxLon;
     }
 
     public String getId(){
@@ -78,4 +87,11 @@ public class CityInitialPercept extends SimStart {
         return seedCapital;
     }
 
+    public double getMinLat(){return minLat;}
+
+    public double getMaxLat(){return maxLat;}
+
+    public double getMinLon(){return minLon;}
+
+    public double getMaxLon(){return maxLon;}
 }
