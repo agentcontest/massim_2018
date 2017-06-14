@@ -33,7 +33,7 @@ public class Log {
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             e.printStackTrace();
-            logToFile(Arrays.toString(e.getStackTrace()));
+            logToFile(typeStrings.get(Level.ERROR) + e + " : " + Arrays.toString(e.getStackTrace()));
         });
     }
 
