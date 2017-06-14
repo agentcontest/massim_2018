@@ -42,6 +42,10 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("seedCapital", new Numeral(simStart.getSeedCapital())));
         ret.add(new Percept("steps", new Numeral(simStart.getSteps())));
         ret.add(new Percept("team", new Identifier(simStart.getTeam())));
+        ret.add(new Percept("minLat", new Numeral(simStart.getMinLat())));
+        ret.add(new Percept("maxLat", new Numeral(simStart.getMaxLat())));
+        ret.add(new Percept("minLon", new Numeral(simStart.getMinLon())));
+        ret.add(new Percept("maxLon", new Numeral(simStart.getMaxLon())));
 
         // prepare list of tools
         RoleData role = simStart.getRoleData();
