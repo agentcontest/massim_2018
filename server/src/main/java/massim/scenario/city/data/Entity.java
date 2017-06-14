@@ -160,7 +160,7 @@ public class Entity {
      * Just removes the current route of the entity
      */
     public void clearRoute() {
-        role = null;
+        route = null;
     }
 
     /**
