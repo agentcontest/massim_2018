@@ -101,7 +101,7 @@ public class CityMap implements Serializable {
      */
     private boolean existsRoute(Location from, Location to) {
         GHResponse rsp = queryGH(from, to);
-        rsp.getErrors().forEach(error -> System.out.println(error.getMessage()));
+        rsp.getErrors().forEach(error -> Log.log(Log.Level.ERROR, error.getMessage()));
         return !rsp.hasErrors() && rsp.getBest().getPoints().size() > 0;
     }
 	
