@@ -772,6 +772,8 @@ Agents are assigned their role according to their position in the team config. I
 
 In the first section of the random generation the parameters for the generation of the facilities can be specified:
 * __quadSize__: cellSize of the grid that is used for positioning
+* __blackoutProbability__: probability of a blackout occurring in a random facility (per step)
+* __blackoutTimeMin/Max__: bounds for the duration of a blackout
 * Parameters for charging stations:
   * __density__: probability of placing a charging station per quad (or number of charging stations to place if >1)
   * __rateMin/Max__: bounds for charging rate
@@ -803,6 +805,21 @@ In the second section of the random generation the parameters for the generation
 * __reqAmountMin/Max__: bounds for the amount per required item for assembly
 * __toolsMin/Max__: bounds for the number of tools
 * __toolProbability__: probability of an item needing a tool for assembly
+
+In the third section of the random generation the parameters for the generation of the jobs can be specified:
+* __rate__: probability of a job appearing in the first step of the simulation (decreases with every following step)
+* __auctionProbability__: probability of a job being an auction
+* __missionProbability__: probability of a job being a mission
+* __productTypesMin/Max__: bounds for the number of different products required for a job
+* __difficultyMin/Max__: bounds for the difficulty of a job
+* __timeMin/Max__: bounds for the number of steps a job is active
+* __rewardAddMin/Max__: bounds for the value that is added to the reward
+* Parameters for auctions:
+  * __auctionTimeMin/Max__: bounds for the duration of the auction part
+  * __fineSub/Add__: how the fine can be modified at most
+  * __maxRewardAdd__: how much to add at most to the maximum reward (the highest value that can be bid)
+* Parameters for missions:
+  * __missionDifficultyMax__: upper bound for the difficulty of a mission 
 
 ## Commands
 
