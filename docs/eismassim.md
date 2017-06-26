@@ -304,9 +304,9 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
     * fine : Numeral - amount to pay if the auction is assigned but not completed
     * bid : Numeral - the current lowest bid; might update each step during auction time
     * time : Numeral - number of steps the auction phase will take
-* `mission(id, storage, reward, start, end, fine, bid, time, mID, [required(name1, qty1), ...])`
-  * same parameters as `auction` plus:
-    * mID : Identifier - the (global) ID of the mission
+* `mission(id, storage, reward, start, end, fine, bid, time, [required(name1, qty1), ...])`
+  * same parameters as `auction`
+    * reward and bid are the same
 
 #### SIM-END percepts
 

@@ -191,9 +191,6 @@ public class CityEntity extends EISEntity {
             jobPercept.addParameter(new Numeral(auction.getFine()));
             jobPercept.addParameter(new Numeral(lowestBid));
             jobPercept.addParameter(new Numeral(auction.getAuctionTime()));
-            if(job instanceof MissionData){
-                jobPercept.addParameter(new Identifier(((MissionData) job).getMissionID()));
-            }
         }
         // add item data
         ParameterList requiredItems = new ParameterList();
