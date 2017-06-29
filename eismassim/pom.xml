@@ -6,7 +6,7 @@
 
     <groupId>massim</groupId>
     <artifactId>eismassim</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
 
     <packaging>jar</packaging>
 
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>massim</groupId>
             <artifactId>protocol</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
         <dependency>
