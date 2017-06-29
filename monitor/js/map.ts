@@ -110,7 +110,9 @@ export default function(target: Element, ctrl: Ctrl): MapView {
 
     if (simId !== ctrl.vm.static.simId) {
       // adjust the map when a new simulation starts
-      map.getView().fit(vectorSource.getExtent(), map.getSize());
+      map.getView().fit(vectorSource.getExtent(), {
+        size: map.getSize()
+      });
       simId = ctrl.vm.static.simId;
     }
   };
