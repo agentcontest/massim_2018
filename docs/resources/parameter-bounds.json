@@ -38,8 +38,8 @@
     }
   },
   "items" : {
-    "baseItemsMin" : 5,
-    "baseItemsMax" : 7,
+    "baseItemsMin" : [5,7],
+    "baseItemsMax" : [5,7],
     "levelDecreaseMin" : 1,
     "levelDecreaseMax" : 2,
     "graphDepthMin" : [2, 3],
