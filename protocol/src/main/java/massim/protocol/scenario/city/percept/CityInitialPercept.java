@@ -16,6 +16,7 @@ import java.util.Vector;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CityInitialPercept extends SimStart {
 
+    @XmlAttribute private String name;
     @XmlAttribute(name="id") private String simId;
     @XmlAttribute private int steps;
     @XmlAttribute private String map;
@@ -35,6 +36,7 @@ public class CityInitialPercept extends SimStart {
 
     /**
      * Constructor.
+     * @param name name of the agent
      * @param simId id of the simulation
      * @param steps max number of steps
      * @param teamName name of the agent's team
@@ -43,9 +45,10 @@ public class CityInitialPercept extends SimStart {
      * @param role role of the entity
      * @param items items available in the simulation
      */
-    public CityInitialPercept(String simId, int steps, String teamName, String mapName, long seedCapital,
+    public CityInitialPercept(String name, String simId, int steps, String teamName, String mapName, long seedCapital,
                               RoleData role, List<ItemData> items,
                               double minLat, double maxLat, double minLon, double maxLon) {
+        this.name = name;
         this.simId = simId;
         this.steps = steps;
         this.teamName = teamName;
@@ -57,6 +60,10 @@ public class CityInitialPercept extends SimStart {
         this.maxLat = maxLat;
         this.minLon = minLon;
         this.maxLon = maxLon;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public String getId(){

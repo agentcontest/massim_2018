@@ -79,6 +79,7 @@ public class CitySimulation extends AbstractSimulation {
         Map<String, SimStart> initialPercepts = new HashMap<>();
         world.getAgents().forEach(agName -> initialPercepts.put(agName,
                 new CityInitialPercept(
+                        agName,
                         world.getSimID(),
                         steps,
                         world.getTeamForAgent(agName),
