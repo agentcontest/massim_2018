@@ -37,6 +37,7 @@ public class CityEntity extends EISEntity {
         CityInitialPercept simStart = (CityInitialPercept) startPercept;
 
         // add global info
+        ret.add(new Percept("name", new Identifier(simStart.getName())));
         ret.add(new Percept("id", new Identifier(simStart.getId())));
         ret.add(new Percept("map", new Identifier(simStart.getMapName())));
         ret.add(new Percept("seedCapital", new Numeral(simStart.getSeedCapital())));
