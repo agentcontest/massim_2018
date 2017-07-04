@@ -62,21 +62,19 @@ export default function(target: Element, ctrl: Ctrl): MapView {
   });
 
   map.getViewport().addEventListener('click', e => {
-    const all = ctrl.entities();
+    // Find entities under the cursor.
     const underCursor: string[] = [];
     map.forEachFeatureAtPixel(map.getEventPixel(e), feature => {
       const userData = (feature as any).userData;
       if (userData && userData.name) underCursor.push(userData.name);
     });
+    if (!underCursor.length) return ctrl.setSelection(null);
 
-    for (var i = 0; i < all.length; i++) {
-      const name = all[ctrl.vm.selectionIndex++ % all.length].name;
-      if (underCursor.indexOf(name) !== -1) {
-        ctrl.setSelection(name);
-        return;
-      }
-    }
-    ctrl.setSelection(null);
+    // Cycle selection.
+    ctrl.vm.selectionIndex =
+      ctrl.vm.selected && underCursor.indexOf(ctrl.vm.selected) !== -1 ?
+      (ctrl.vm.selectionIndex + 1) % underCursor.length : 0;
+    ctrl.setSelection(underCursor[ctrl.vm.selectionIndex]);
   });
 
   const redraw = function() {

@@ -37,7 +37,7 @@ export default function(redraw: Redraw): Ctrl {
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
     if (!d) return [];
-    const list = ([] as Array<Agent | Facility>).concat(
+    return ([] as Array<Agent | Facility>).concat(
       d.entities,
       d.workshops,
       d.dumps,
@@ -46,8 +46,6 @@ export default function(redraw: Redraw): Ctrl {
       d.chargingStations,
       d.storages
     );
-    list.sort((a, b) => a.name.localeCompare(b.name));
-    return list;
   };
 
   return {
