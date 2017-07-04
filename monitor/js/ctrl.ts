@@ -5,7 +5,8 @@ const TEAMS = ['a', 'b'];
 export default function(redraw: Redraw): Ctrl {
   const vm: ViewModel = {
     state: 'connecting',
-    selected: null
+    selected: null,
+    selectionIndex: 0,
   };
 
   const connect = function() {
@@ -36,7 +37,7 @@ export default function(redraw: Redraw): Ctrl {
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
     if (!d) return [];
-    return ([] as Array<Agent | Facility>).concat(
+    const list = ([] as Array<Agent | Facility>).concat(
       d.entities,
       d.workshops,
       d.dumps,
@@ -45,11 +46,14 @@ export default function(redraw: Redraw): Ctrl {
       d.chargingStations,
       d.storages
     );
+    list.sort((a, b) => a.name.localeCompare(b.name));
+    return list;
   };
 
   return {
     connect: connect,
     vm: vm,
+    entities: entities,
     setSelection(name: string | null) {
       vm.selected = name;
       redraw();
