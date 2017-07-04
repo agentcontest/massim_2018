@@ -108,10 +108,17 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     ctrl.vm.dynamic.resourceNodes.forEach(renderFacility('resourceNode'));
     ctrl.vm.dynamic.storages.forEach(renderFacility('storage'));
 
-    ctrl.vm.dynamic.entities.forEach(agent => {
+    const renderAgent = function(agent: Agent) {
       const active = agent.lastAction && agent.lastAction.type !== 'noAction' &&
                      agent.lastAction.result.indexOf('successful') === 0;
       addFeature(agent, agentIconStyle(agent, agent.name === ctrl.vm.selected, active));
+    };
+
+    ctrl.vm.dynamic.entities.forEach(agent => {
+      if (agent.name !== ctrl.vm.selected) renderAgent(agent);
+    });
+    ctrl.vm.dynamic.entities.forEach(agent => {
+      if (agent.name === ctrl.vm.selected) renderAgent(agent);
     });
 
     if (simId !== ctrl.vm.static.simId) {
