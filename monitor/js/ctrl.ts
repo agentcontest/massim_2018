@@ -5,7 +5,7 @@ const TEAMS = ['a', 'b'];
 export default function(redraw: Redraw): Ctrl {
   const vm: ViewModel = {
     state: 'connecting',
-    selected: null,
+    selected: [],
     selectionIndex: 0,
   };
 
@@ -48,17 +48,31 @@ export default function(redraw: Redraw): Ctrl {
     );
   };
 
+  const selectionChanged = function(names: string[]): boolean {
+    if (vm.selected.length !== names.length) return true;
+    for (var i = 0; i < names.length; i++) {
+      if (vm.selected.indexOf(names[i]) === -1) return true;
+    }
+    return false;
+  };
+
   return {
     connect: connect,
     vm: vm,
     entities: entities,
-    setSelection(name: string | null) {
-      vm.selected = name;
+    setSelection(names: string[]) {
+      if (selectionChanged(names)) {
+        vm.selected = names;
+        vm.selectionIndex = 0;
+      } else {
+        // cycle selection
+        vm.selectionIndex = (vm.selectionIndex + 1) % vm.selected.length;
+      }
       redraw();
     },
     selection: () => {
-      if (!vm.selected) return null;
-      return entities().filter(entity => entity.name === vm.selected)[0];
+      if (!vm.selected.length) return null;
+      return entities().filter(entity => entity.name === vm.selected[vm.selectionIndex])[0];
     },
     normalizeTeam(team: string) {
       if (vm.static) return TEAMS[vm.static.teams.indexOf(team)] || 'a';

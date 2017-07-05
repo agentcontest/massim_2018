@@ -2,7 +2,7 @@ type ConnectionState = 'offline' | 'online' | 'connecting' | 'error';
 
 export interface Ctrl {
   entities(): Array<Agent | Facility>;
-  setSelection(name: string | null): void;
+  setSelection(names: string[]): void;
   selection(): Agent | Facility | null;
   normalizeTeam(team: string): string;
   connect(): void;
@@ -15,7 +15,7 @@ export interface MapView {
 
 export interface ViewModel {
   state: ConnectionState;
-  selected: string | null;
+  selected: string[];
   selectionIndex: number;
   dynamic?: DynamicWorld;
   static?: StaticWorld;

@@ -68,13 +68,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       const userData = (feature as any).userData;
       if (userData && userData.name) underCursor.push(userData.name);
     });
-    if (!underCursor.length) return ctrl.setSelection(null);
-
-    // Cycle selection.
-    ctrl.vm.selectionIndex =
-      ctrl.vm.selected && underCursor.indexOf(ctrl.vm.selected) !== -1 ?
-      (ctrl.vm.selectionIndex + 1) % underCursor.length : 0;
-    ctrl.setSelection(underCursor[ctrl.vm.selectionIndex]);
+    ctrl.setSelection(underCursor);
   });
 
   const redraw = function() {
@@ -95,7 +89,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
 
     const renderFacility = function(type: FacilityType) {
       return function(facility: Facility) {
-        addFeature(facility, facilityStyle(type, facility.name === ctrl.vm.selected));
+        addFeature(facility, facilityStyle(type, facility === ctrl.selection()));
       };
     };
 
@@ -109,14 +103,14 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     const renderAgent = function(agent: Agent) {
       const active = agent.lastAction && agent.lastAction.type !== 'noAction' &&
                      agent.lastAction.result.indexOf('successful') === 0;
-      addFeature(agent, agentIconStyle(agent, agent.name === ctrl.vm.selected, active));
+      addFeature(agent, agentIconStyle(agent, agent === ctrl.selection(), active));
     };
 
     ctrl.vm.dynamic.entities.forEach(agent => {
-      if (agent.name !== ctrl.vm.selected) renderAgent(agent);
+      if (agent !== ctrl.selection()) renderAgent(agent);
     });
     ctrl.vm.dynamic.entities.forEach(agent => {
-      if (agent.name === ctrl.vm.selected) renderAgent(agent);
+      if (agent === ctrl.selection()) renderAgent(agent);
     });
 
     if (simId !== ctrl.vm.static.simId) {
