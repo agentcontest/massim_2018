@@ -103,7 +103,7 @@ The storage has a limited __capacity__ which counts for all teams, i.e. one team
 
 Each team has a separate (unlimited) compartment in each storage. This compartment cannot be filled directly but only as a consequence of other actions:
 
-* If a team delivers items towards job completion, but another team is faster, the partial delivery is moved to this compartment.
+* If a team delivers items towards job completion, but a) another team is faster or b) the job ends (due to its time limit), the partial delivery is moved to this compartment.
 * If a team posted a job which another team completed, the items which were required for this job are moved to the posting team's compartment.
 
 #### Resouce nodes

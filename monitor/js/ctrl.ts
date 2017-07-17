@@ -10,7 +10,8 @@ export default function(redraw: Redraw): Ctrl {
   };
 
   const connect = function() {
-    const ws = new WebSocket('ws://' + document.location.host + '/socket');
+    const protocol = document.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(protocol + '//' + document.location.host + '/socket');
 
     ws.onmessage = function(msg) {
       const data = JSON.parse(msg.data);
@@ -70,7 +71,7 @@ export default function(redraw: Redraw): Ctrl {
       }
       redraw();
     },
-    selection: () => {
+    selection() {
       if (!vm.selected.length) return null;
       return entities().filter(entity => entity.name === vm.selected[vm.selectionIndex])[0];
     },
