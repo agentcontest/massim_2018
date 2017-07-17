@@ -37,5 +37,5 @@ public abstract class Actions {
      */
     public final static List<String> ALL_ACTIONS = Collections.unmodifiableList(Arrays.asList(GO_TO, RECEIVE, GIVE,
             STORE, RETRIEVE, ASSEMBLE, ASSIST_ASSEMBLE, BUY, DELIVER_JOB, RETRIEVE_DELIVERED, BID_FOR_JOB, DUMP, CHARGE,
-            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE));
+            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE, ABORT));
 }
