@@ -1,0 +1,95 @@
+{
+  "server" : "$(server/server.json)",
+
+  "manual-mode" : [
+    ["A", "B", "C"],
+    ["B", "C", "D"],
+    ["C", "D", "E"]
+  ],
+
+  "match" : [
+    {
+      "id" : "2017-SampleSimulation-1of3",
+      "scenarioClass" : "city.CitySimulation",
+      "steps" : 2,
+      "map" : "paris",
+      "seedCapital" : 50000,
+      "minLon" : 2.26,
+      "maxLon" : 2.41,
+      "minLat" : 48.82,
+      "maxLat" : 48.90,
+      "centerLat" : 48.8424,
+      "centerLon" : 2.3209,
+      "proximity" : 5,
+      "cellSize" : 200,
+      "randomSeed" : 17,
+      "randomFail" : 1,
+      "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
+
+      "roles" : "$(roles/roles.json)",
+      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
+      "generate" : "$(generate/generate.json)"
+    },
+    {
+      "id" : "2017-SampleSimulation-2of3",
+      "scenarioClass" : "city.CitySimulation",
+      "steps" : 2,
+      "map" : "london",
+      "seedCapital" : 10,
+      "minLon" : -0.1978,
+      "maxLon" : -0.0354,
+      "minLat" : 51.4647,
+      "maxLat" : 51.5223,
+      "centerLat" : 51.4885438,
+      "centerLon" : -0.1112036,
+      "proximity" : 5,
+      "cellSize" : 200,
+      "randomSeed" : 17,
+      "randomFail" : 1,
+      "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
+
+      "roles" : "$(roles/roles.json)",
+      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
+      "generate" : "$(generate/generate.json)"
+    },
+    {
+      "id" : "2017-SampleSimulation-3of3",
+      "scenarioClass" : "city.CitySimulation",
+      "steps" : 1000,
+      "map" : "hannover",
+      "seedCapital" : 50000,
+      "minLon" : 9.68,
+      "maxLon" : 9.81,
+      "minLat" : 52.33,
+      "maxLat" : 52.39,
+      "centerLat" : 52.362967,
+      "centerLon" : 9.712156,
+      "proximity" : 5,
+      "cellSize" : 200,
+      "randomSeed" : 17,
+      "randomFail" : 1,
+      "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
+
+      "roles" : "$(roles/roles.json)",
+      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
+      "generate" : "$(generate/generate.json)"
+    }
+  ],
+
+  "teams" : {
+    "A" : "$(teams/A.json)",
+    "B" : "$(teams/B.json)",
+    "C" : "$(teams/C.json)",
+    "D" : "$(teams/D.json)",
+    "E" : "$(teams/E.json)"
+  }
+}

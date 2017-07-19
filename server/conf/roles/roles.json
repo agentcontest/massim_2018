@@ -1,0 +1,26 @@
+{
+  "car" : {
+    "speed" : 3,
+    "load" : 550,
+    "battery" : 500,
+    "roads" : ["road"]
+  },
+  "drone" : {
+    "speed" : 5,
+    "load" : 100,
+    "battery" : 250,
+    "roads" : ["air"]
+  },
+  "motorcycle" : {
+    "speed" : 4,
+    "load" : 300,
+    "battery" : 350,
+    "roads" : ["road"]
+  },
+  "truck" : {
+    "speed" : 2,
+    "load" : 3000,
+    "battery" : 2000,
+    "roads" : ["road"]
+  }
+}
