@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,9 +69,16 @@ public abstract class IOUtil {
         String text = readString(path);
         Matcher m = pattern.matcher(text);
         StringBuffer result = new StringBuffer();
-        Path p = Paths.get(path);
+        File file = new File(path).getAbsoluteFile();
+        String subPath = "";
         while(m.find()){
-            m.appendReplacement(result, readWithReplace(p.getParent().toString() + "/" + m.group(1)));
+            try {
+                subPath = file.getParent() + "/" + m.group(1);
+                m.appendReplacement(result, readWithReplace(subPath));
+            } catch(NullPointerException e){
+                e.printStackTrace();
+                Log.log(Log.Level.ERROR, "Could not insert file " + subPath + " into " + path);
+            }
         }
         m.appendTail(result);
         return result.toString();
