@@ -33,6 +33,18 @@ public class StaticCityData extends StaticWorldData {
     @XmlElement(name="item")
     public List<ItemData> items;
 
+    @XmlAttribute
+    public double minLat;
+
+    @XmlAttribute
+    public double maxLat;
+
+    @XmlAttribute
+    public double minLon;
+
+    @XmlAttribute
+    public double maxLon;
+
     /**
      * For jaxb.
      */
@@ -41,7 +53,8 @@ public class StaticCityData extends StaticWorldData {
     }
 
     public StaticCityData(String simID, int steps, String map, long seedCapital, List<String> teams,
-                          List<RoleData> roles, List<ItemData> items){
+                          List<RoleData> roles, List<ItemData> items,
+                          double minLat, double maxLat, double minLon, double maxLon){
         this.simId = simID;
         this.steps = steps;
         this.map = map;
@@ -49,5 +62,9 @@ public class StaticCityData extends StaticWorldData {
         this.teams = teams;
         this.roles = roles;
         this.items = items;
+        this.minLat = minLat;
+        this.maxLat = maxLat;
+        this.minLon = minLon;
+        this.maxLon = maxLon;
     }
 }

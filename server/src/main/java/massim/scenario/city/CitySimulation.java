@@ -73,7 +73,9 @@ public class CitySimulation extends AbstractSimulation {
                                         world.getRoles().stream()
                                                         .map(Role::getRoleData)
                                                         .collect(Collectors.toList()),
-                                        itemData);
+                                        itemData,
+                                        world.getMinLat(), world.getMaxLat(),
+                                        world.getMinLon(), world.getMaxLon());
 
         // determine initial percepts
         Map<String, SimStart> initialPercepts = new HashMap<>();
