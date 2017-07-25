@@ -142,14 +142,15 @@ The teams block describes the teams and their credentials. The teams listed here
 
 ```JSON
 "teams" : {
-    [
-      ["agentA1", "1"],
-      ["agentA2", "1"],
-      ["agentA3", "1"],
-      ["agentA4", "1"],
-      ["agentA5", "1"],
-      ["agentA6", "1"]
-    ],
+    "A" : 
+      [
+        ["agentA1", "1"],
+        ["agentA2", "1"],
+        ["agentA3", "1"],
+        ["agentA4", "1"],
+        ["agentA5", "1"],
+        ["agentA6", "1"]
+      ],
     "B" : "$(teams/B.json)",
     "C" : "$(teams/C.json)",
     "D" : "$(teams/D.json)",
