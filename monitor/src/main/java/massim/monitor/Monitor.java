@@ -94,6 +94,10 @@ public class Monitor {
         d.put("teams", data.teams);
         d.put("roles", data.roles);
         d.put("items", data.items);
+        d.put("minLon", data.minLon);
+        d.put("minLat", data.minLat);
+        d.put("maxLon", data.maxLon);
+        d.put("maxLat", data.maxLat);
         return d.toString();
     }
 

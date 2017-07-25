@@ -158,6 +158,11 @@ export interface StaticWorld {
   teams: string[];
   roles: Role[];
   steps: number;
+  map: string;
+  minLat: number;
+  maxLat: number;
+  minLon: number;
+  maxLon: number;
 }
 
 export type Redraw = () => void;

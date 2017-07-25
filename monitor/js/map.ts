@@ -22,7 +22,7 @@ function facilityStyle(type: FacilityType, selected: boolean): ol.style.Style {
 }
 
 export default function(target: Element, ctrl: Ctrl): MapView {
-  let simId: string | undefined;
+  let currentMap: string | undefined;
 
   const vectorSource = new ol.source.Vector();
 
@@ -75,7 +75,6 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     vectorSource.clear();
     if (!ctrl.vm.static || !ctrl.vm.dynamic) return;
 
-
     const addFeature = function(loc: Located, style: ol.style.Style) {
       const feature = new ol.Feature({
         geometry: new ol.geom.Point(xy(loc))
@@ -113,12 +112,24 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       if (agent === ctrl.selection()) renderAgent(agent);
     });
 
-    if (simId !== ctrl.vm.static.simId) {
+    // draw rectangle with the extents of the map
+    const extent = new ol.geom.LineString([
+      ol.proj.fromLonLat([ctrl.vm.static.minLon, ctrl.vm.static.minLat]),
+      ol.proj.fromLonLat([ctrl.vm.static.minLon, ctrl.vm.static.maxLat]),
+      ol.proj.fromLonLat([ctrl.vm.static.maxLon, ctrl.vm.static.maxLat]),
+      ol.proj.fromLonLat([ctrl.vm.static.maxLon, ctrl.vm.static.minLat]),
+      ol.proj.fromLonLat([ctrl.vm.static.minLon, ctrl.vm.static.minLat])
+    ]);
+    vectorSource.addFeature(new ol.Feature({ geometry: extent }));
+
+    if (currentMap !== ctrl.vm.static.map) {
       // adjust the map when a new simulation starts
-      map.getView().fit(vectorSource.getExtent(), {
-        size: map.getSize()
+      map.getView().fit(extent, {
+        size: map.getSize(),
+        padding: [50, 50, 50, 50],
+        constrainResolution: false
       });
-      simId = ctrl.vm.static.simId;
+      currentMap = ctrl.vm.static.map;
     }
   };
 
