@@ -38,7 +38,7 @@ public class StorageData extends FacilityData {
      * @param capacity max capacity of the storage
      * @param freeSpace unused capacity
      * @param stored items stored for the team receiving this data (may be null)
-     * @param teamStored item stored for all teams (may be null)
+     * @param teamStored items stored for all teams (may be null)
      */
     public StorageData(String name, double lat, double lon, int capacity, int freeSpace, List<StoredData> stored,
                        List<TeamStoredData> teamStored) {
