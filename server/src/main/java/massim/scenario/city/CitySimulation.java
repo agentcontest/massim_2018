@@ -268,7 +268,7 @@ public class CitySimulation extends AbstractSimulation {
                         new ShopData(
                                 shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon(),
                                 shop.getRestock(),
-                                shop.getOfferedItems().stream()
+                                shop.getOfferedItemsSorted().stream()
                                         .map(item -> new StockData(item.getName(), shop.getPrice(item), shop.getItemCount(item)))
                                         .collect(Collectors.toList())))
                 .collect(Collectors.toList());

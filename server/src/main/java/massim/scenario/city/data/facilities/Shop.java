@@ -4,9 +4,7 @@ import massim.scenario.city.data.Item;
 import massim.scenario.city.data.ItemBox;
 import massim.scenario.city.data.Location;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +17,7 @@ public class Shop extends Facility{
     private Map<Item, Integer> initialAmounts = new HashMap<>();
     private int restock;
     private int nextRestock;
+    private List<Item> offeredItemsSorted = new ArrayList<>();
 
     /**
      * Creates a new shop.
@@ -85,6 +84,17 @@ public class Shop extends Facility{
      */
     public Set<Item> getOfferedItems(){
         return stock.getStoredTypes();
+    }
+
+    /**
+     * @return an ordered list of the items offered by this shop, which is determined once and cached for later use.
+     */
+    public List<Item> getOfferedItemsSorted(){
+        if(offeredItemsSorted.size() == 0){
+            offeredItemsSorted.addAll(stock.getStoredTypes());
+            offeredItemsSorted.sort(Comparator.comparing(Item::getName));
+        }
+        return offeredItemsSorted;
     }
 
     /**
