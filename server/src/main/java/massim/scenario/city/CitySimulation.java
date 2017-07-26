@@ -51,8 +51,7 @@ public class CitySimulation extends AbstractSimulation {
         actionExecutor = new ActionExecutor(world);
 
         // create data objects for all items
-        List<Item> allItems = world.getItems();
-        allItems.addAll(world.getTools());
+        List<Item> allItems = world.getItemsAndTools();
         List<ItemData> itemData = allItems.stream()
                 .map(item -> new ItemData(
                         item.getName(),
@@ -142,7 +141,7 @@ public class CitySimulation extends AbstractSimulation {
             List<StorageData> storageData = new Vector<>();
             for (Storage storage: world.getStorages()){
                 List<StoredData> items = new Vector<>();
-                for(Item item: world.getItems()){
+                for(Item item: world.getItemsAndTools()){
                     // add an entry if item is either stored or delivered for the team
                     int stored = storage.getStored(item, team.getName());
                     int delivered = storage.getDelivered(item, team.getName());

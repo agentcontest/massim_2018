@@ -230,10 +230,20 @@ public class WorldState {
     }
 
     /**
-     * @return a new list containing all items of this simulation
+     * @return a new list containing all items of this simulation (excl. tools)
      */
     public List<Item> getItems() {
         return new ArrayList<>(items.values());
+    }
+
+    /**
+     * @return a new list containing all items and tools of this simulation
+     */
+    public List<Item> getItemsAndTools(){
+        ArrayList<Item> items = new ArrayList<>();
+        items.addAll(this.items.values());
+        items.addAll(this.tools.values());
+        return items;
     }
 
     /**
