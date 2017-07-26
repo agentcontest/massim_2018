@@ -188,6 +188,12 @@ public class CitySimulation extends AbstractSimulation {
             }
         }
 
+        // sort jobs and posted jobs
+        world.getTeams().forEach(t -> {
+            Collections.sort(postedJobsPerTeam.get(t.getName()));
+            Collections.sort(jobsPerTeam.get(t.getName()));
+        });
+
         // list of auction jobs in auctioning state (visible to all)
         List<AuctionJobData> auctioningJobs = world.getJobs().stream()
                 .filter(job -> (job instanceof AuctionJob && job.getStatus() == Job.JobStatus.AUCTION ))
@@ -207,6 +213,8 @@ public class CitySimulation extends AbstractSimulation {
                     else teamJobs.add((AuctionJobData) job.toJobData(false, false));
                 }
             }
+            Collections.sort(teamJobs);
+            Collections.sort(teamMissions);
             auctionsPerTeam.put(team.getName(), teamJobs);
             missionsPerTeam.put(team.getName(), teamMissions);
         });

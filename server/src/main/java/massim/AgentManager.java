@@ -4,7 +4,6 @@ import massim.config.TeamConfig;
 import massim.protocol.Message;
 import massim.protocol.MessageContent;
 import massim.protocol.messagecontent.*;
-import massim.util.Conversions;
 import massim.util.Log;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

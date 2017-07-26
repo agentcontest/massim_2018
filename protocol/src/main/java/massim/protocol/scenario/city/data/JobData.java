@@ -9,7 +9,7 @@ import java.util.Vector;
  */
 @XmlRootElement(name = "job")
 @XmlAccessorType(XmlAccessType.NONE)
-public class JobData {
+public class JobData implements Comparable<JobData>{
 
     public static final String POSTER_SYSTEM = "system";
 
@@ -151,5 +151,10 @@ public class JobData {
             this.team = team;
             delivered = deliveredItems;
         }
+    }
+
+    @Override
+    public int compareTo(JobData o) {
+        return start - o.start;
     }
 }
