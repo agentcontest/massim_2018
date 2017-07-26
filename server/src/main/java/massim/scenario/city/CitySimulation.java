@@ -116,13 +116,15 @@ public class CitySimulation extends AbstractSimulation {
 
         // create entity data as visible to other entities (containing name, team, role and location)
         List<EntityData> entities = new Vector<>();
-        world.getAgents().forEach(agent -> {
-            Entity entity = world.getEntity(agent);
-            entities.add(new EntityData(null, null, null, null, null, null,
-                    agent, world.getTeamForAgent(agent),
-                    entity.getRole().getName(),
-                    entity.getLocation().getLat(),
-                    entity.getLocation().getLon()));
+        world.getAgents().stream()
+                         .sorted()
+                         .forEach(agent -> {
+                            Entity entity = world.getEntity(agent);
+                            entities.add(new EntityData(null, null, null, null, null, null,
+                                agent, world.getTeamForAgent(agent),
+                                entity.getRole().getName(),
+                                entity.getLocation().getLat(),
+                                entity.getLocation().getLon()));
         });
 
         // create complete snapshots of entities
@@ -139,7 +141,9 @@ public class CitySimulation extends AbstractSimulation {
         Map<String, List<StorageData>> storageMap = new HashMap<>();
         for (TeamState team : world.getTeams()) {
             List<StorageData> storageData = new Vector<>();
-            for (Storage storage: world.getStorages()){
+            List<Storage> sortedStorage = new ArrayList<>(world.getStorages());
+            sortedStorage.sort(Facility::compareTo);
+            for (Storage storage: sortedStorage){
                 List<StoredData> items = new Vector<>();
                 for(Item item: world.getItemsAndTools()){
                     // add an entry if item is either stored or delivered for the team
@@ -233,6 +237,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<DumpData> buildDumpData() {
         return world.getDumps().stream()
+                .sorted()
                 .map(dump -> new DumpData(dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon()))
                 .collect(Collectors.toList());
     }
@@ -243,6 +248,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<ChargingStationData> buildChargingStationData() {
         return world.getChargingStations().stream()
+                .sorted()
                 .map(cs -> new ChargingStationData(cs.getName(), cs.getLocation().getLat(),
                         cs.getLocation().getLon(), cs.getRate()))
                 .collect(Collectors.toList());
@@ -254,6 +260,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<WorkshopData> buildWorkshopData() {
         return world.getWorkshops().stream()
+                .sorted()
                 .map(ws -> new WorkshopData(ws.getName(), ws.getLocation().getLat(), ws.getLocation().getLon()))
                 .collect(Collectors.toList());
     }
@@ -264,6 +271,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<ShopData> buildShopData() {
         return world.getShops().stream()
+                .sorted()
                 .map(shop ->
                         new ShopData(
                                 shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon(),
@@ -280,6 +288,7 @@ public class CitySimulation extends AbstractSimulation {
      */
     private List<ResourceNodeData> buildResourceNodeData() {
         return world.getResourceNodes().stream()
+                .sorted()
                 .map(node -> new ResourceNodeData(node.getName(), node.getLocation().getLat(), node.getLocation().getLon(), node.getResource().getName()))
                 .collect(Collectors.toList());
     }
