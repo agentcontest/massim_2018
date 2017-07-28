@@ -104,12 +104,9 @@ public class Shop extends Facility{
         nextRestock = Math.max(0, nextRestock - 1);
         if(nextRestock == 0){
             nextRestock = restock;
-            //stock.getStoredTypes().forEach(item -> restock(item, 1));
-            for(Item item: stock.getStoredTypes()){
-                if(getItemCount(item) < initialAmounts.get(item)){
-                    restock(item, 1);
-                }
-            }
+            stock.getStoredTypes().stream()
+                    .filter(item -> getItemCount(item) < initialAmounts.get(item))
+                    .forEach(item -> restock(item, 1));
         }
     }
 
