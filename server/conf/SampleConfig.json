@@ -28,6 +28,8 @@
       "gotoCost" : 10,
       "rechargeRate" : 5,
       "visibilityRange" : 500,
+      "restock" : 1.0,
+      "restockResource" : 0.9,
 
       "roles" : {
         "car" : {

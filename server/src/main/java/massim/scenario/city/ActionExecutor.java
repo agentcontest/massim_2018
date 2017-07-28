@@ -379,6 +379,10 @@ public class ActionExecutor {
                         if (!job.getPoster().equals(JobData.POSTER_SYSTEM))
                             world.getTeam(job.getPoster()).subMoney(reward);
                         entity.setLastActionResult(SUCCESSFUL);
+
+                        // restock some of the items
+                        world.jobRestock(job, 1);
+
                         break;
                     } else {
                         entity.setLastActionResult(PARTIAL_SUCCESS);

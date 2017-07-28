@@ -31,16 +31,20 @@ public class WorldState {
     private double maxLon;
     private double minLat;
     private double maxLat;
+    private double restock;
+    private double restockResource;
 
     private Map<String, Tool> tools = new HashMap<>();
     private Map<String, Item> items = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
+    private Set<Item> resourceSet = new HashSet<>();
 
     private Map<String, Facility> facilities = new HashMap<>();
     private Set<Workshop> workshops = new HashSet<>();
     private Set<Dump> dumps = new HashSet<>();
     private Set<ChargingStation> chargingStations = new HashSet<>();
     private Set<Shop> shops = new HashSet<>();
+    private Map<Item, List<Shop>> shopsByItem = new HashMap<>();
     private Set<Storage> storages = new HashSet<>();
     private Set<ResourceNode> resourceNodes = new HashSet<>();
 
@@ -95,6 +99,10 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
         rechargeRate = config.optInt("rechargeRate", 5);
         Log.log(Log.Level.NORMAL, "Configuring recharge rate: " + rechargeRate);
+        restock = config.optDouble("restock", 1.2);
+        Log.log(Log.Level.NORMAL, "Configuring restock: " + restock);
+        restockResource = config.optDouble("restockResource", .8);
+        Log.log(Log.Level.NORMAL, "Configuring restockResource: " + restock);
 
         parseRoles(config.optJSONObject("roles"));
 
@@ -138,6 +146,14 @@ public class WorldState {
             else if(f instanceof Dump) dumps.add((Dump) f);
             else if(f instanceof ResourceNode) resourceNodes.add((ResourceNode) f);
         });
+
+        // store shops by items they sell
+        items.values().stream().filter(i -> !i.needsAssembly()).forEach(item -> shopsByItem.put(item, new ArrayList<>()));
+        shops.forEach(shop -> shop.getOfferedItems().stream()
+                .filter(item -> !(item instanceof Tool) && !item.needsAssembly())
+                .forEach(item -> shopsByItem.get(item).add(shop)));
+
+        resourceSet.addAll(gen.getResources());
 
         // draw initial locations
         Location[] initialLocations = new Location[matchTeams.iterator().next().getSize()];
@@ -460,5 +476,45 @@ public class WorldState {
      */
     public Generator getGenerator(){ return gen;}
 
+    /**
+     * @param item an item
+     * @return a list of all shops where an item can be bought (if it is in stock)
+     */
+    private List<Shop> getShopsByItem(Item item){
+        return shopsByItem.get(item);
+    }
+
+    /**
+     * @param item any item
+     * @return a random shop where that item is sold or null if there is no such shop
+     */
+    private Shop getRandomShop(Item item){
+        List<Shop> suitableShops = getShopsByItem(item);
+        if(suitableShops.isEmpty()) return null;
+        return suitableShops.get(RNG.nextInt(suitableShops.size()));
+    }
+
+    /**
+     * Put the required baseitems of the job in some suitable shops.
+     * @param j the job to restock for
+     * @param multiplier the factor to multiply the restock chance with
+     */
+    public void jobRestock(Job j, double multiplier){
+        j.getRequiredItems().forEach((item, number) -> item.getRequiredBaseItems().forEach((baseItem, baseNumber) -> {
+            double chance = resourceSet.contains(baseItem)? restockResource : restock;
+            chance *= multiplier;
+            while(chance >= 1){
+                Shop shop = getRandomShop(baseItem);
+                if(shop != null) shop.restock(baseItem, number * baseNumber);
+                chance--;
+            }
+            if(chance > 0.001){
+                if(RNG.nextDouble() < chance){
+                    Shop shop = getRandomShop(baseItem);
+                    if(shop != null) shop.restock(baseItem, number * baseNumber);
+                }
+            }
+        }));
+    }
 }
 
