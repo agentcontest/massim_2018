@@ -436,9 +436,7 @@ public class Generator {
                 }
                 ArrayList<Item> possibleItems = new ArrayList<>();
                 for (Vector<Item> level : possibleLevels) {
-                    for (Item possibleItem : level) {
-                        possibleItems.add(possibleItem);
-                    }
+                    possibleItems.addAll(level);
                 }
                 possibleItems.remove(tmpItems.get(0)); //remove the item that was already added in the first step
                 RNG.shuffle(possibleItems);
@@ -600,12 +598,8 @@ public class Generator {
         }
         //add base items, resources and tools to shops
         Vector<Item> shopItems = new Vector<>();
-        for(Item item: itemGraph.get(0)){
-            shopItems.add(item);
-        }
-        for(Tool tool: allTools){
-            shopItems.add(tool);
-        }
+        shopItems.addAll(itemGraph.get(0));
+        shopItems.addAll(allTools);
         Vector<Item> usedItems = new Vector<>();
         for(Shop shop: shops){
             int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
@@ -860,13 +854,13 @@ public class Generator {
                 //choose items for job
                 RNG.shuffle(tmpJobItems);
                 int currentNumberOfProducts = 0;
-                for(int i=0; i<tmpJobItems.size(); i++){
-                    if((currentDifficulty + tmpJobItems.get(i).getAssembleValue() ) <= difficulty){
-                        currentDifficulty = currentDifficulty + tmpJobItems.get(i).getAssembleValue();
-                        jobItems.put(tmpJobItems.get(i),1);
+                for (Item tmpJobItem : tmpJobItems) {
+                    if ((currentDifficulty + tmpJobItem.getAssembleValue()) <= difficulty) {
+                        currentDifficulty = currentDifficulty + tmpJobItem.getAssembleValue();
+                        jobItems.put(tmpJobItem, 1);
                         currentNumberOfProducts++;
                     }
-                    if(currentNumberOfProducts>=numberOfProducts){
+                    if (currentNumberOfProducts >= numberOfProducts) {
                         break;
                     }
                 }
@@ -926,13 +920,13 @@ public class Generator {
                 //choose items for job
                 RNG.shuffle(tmpJobItems);
                 int currentNumberOfProducts = 0;
-                for(int i=0; i<tmpJobItems.size(); i++){
-                    if((currentDifficulty + tmpJobItems.get(i).getAssembleValue() ) <= difficulty){
-                        currentDifficulty = currentDifficulty + tmpJobItems.get(i).getAssembleValue();
-                        jobItems.put(tmpJobItems.get(i),1);
+                for (Item tmpJobItem : tmpJobItems) {
+                    if ((currentDifficulty + tmpJobItem.getAssembleValue()) <= difficulty) {
+                        currentDifficulty = currentDifficulty + tmpJobItem.getAssembleValue();
+                        jobItems.put(tmpJobItem, 1);
                         currentNumberOfProducts++;
                     }
-                    if(currentNumberOfProducts>=numberOfProducts){
+                    if (currentNumberOfProducts >= numberOfProducts) {
                         break;
                     }
                 }
