@@ -220,4 +220,14 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
             }
         }
     }
+
+    /**
+     * Checks if an entity has a connection to a MASSim server.
+     * @param entityName name of an entity
+     * @return true if the entity exists and is connected to a MASSim server
+     */
+    public boolean isConnected(String entityName){
+        EISEntity entity = entities.get(entityName);
+        return entity != null && entity.isConnected();
+    }
 }
