@@ -1,6 +1,5 @@
 package massim.javaagents;
 
-import eis.EnvironmentInterfaceStandard;
 import eis.exceptions.ManagementException;
 import eis.iilang.EnvironmentState;
 import massim.eismassim.EnvironmentInterface;
@@ -52,7 +51,7 @@ public class Main {
         Scheduler scheduler = new Scheduler(configDir);
 
         System.out.println("PHASE 2: INSTANTIATING ENVIRONMENT");
-        EnvironmentInterfaceStandard ei = new EnvironmentInterface(configDir + File.separator + "eismassimconfig.json");
+        EnvironmentInterface ei = new EnvironmentInterface(configDir + File.separator + "eismassimconfig.json");
 
         try {
             ei.start();

@@ -1,7 +1,6 @@
 package massim.javaagents;
 
 import eis.AgentListener;
-import eis.EnvironmentInterfaceStandard;
 import eis.EnvironmentListener;
 import eis.exceptions.ActException;
 import eis.exceptions.AgentException;
@@ -9,6 +8,7 @@ import eis.exceptions.PerceiveException;
 import eis.exceptions.RelationException;
 import eis.iilang.EnvironmentState;
 import eis.iilang.Percept;
+import massim.eismassim.EnvironmentInterface;
 import massim.javaagents.agents.Agent;
 import massim.javaagents.agents.BasicAgent;
 import massim.javaagents.agents.JobPostingAgent;
@@ -45,7 +45,7 @@ public class Scheduler implements AgentListener, EnvironmentListener{
         }
     }
 
-    private EnvironmentInterfaceStandard eis;
+    private EnvironmentInterface eis;
     private List<AgentConf> agentConfigurations = new Vector<>();
     private Map<String, Agent> agents = new HashMap<>();
 
@@ -81,7 +81,7 @@ public class Scheduler implements AgentListener, EnvironmentListener{
      * Connects to an Environment Interface
      * @param ei the interface to connect to
      */
-    void setEnvironment(EnvironmentInterfaceStandard ei) {
+    void setEnvironment(EnvironmentInterface ei) {
         this.eis = ei;
         MailService mailService = new MailService();
         for (AgentConf agentConf: agentConfigurations) {
@@ -136,7 +136,7 @@ public class Scheduler implements AgentListener, EnvironmentListener{
                 eis.getAllPercepts(ag.getName()).values().forEach(percepts::addAll);
                 newPerceptAgents.add(ag);
             } catch (PerceiveException e) {
-                System.out.println("No percepts for " + ag.getName());
+//                System.out.println("No percepts for " + ag.getName());
             }
             ag.setPercepts(percepts);
         });

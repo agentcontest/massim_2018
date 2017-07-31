@@ -73,6 +73,12 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
     }
 
     @Override
+    public void start() throws ManagementException{
+        super.start();
+        new Thread(this).start();
+    }
+
+    @Override
     protected LinkedList<Percept> getAllPerceptsFromEntity(String name) throws PerceiveException, NoEnvironmentException {
         EISEntity e = entities.get(name);
         if (e == null) throw new PerceiveException("unknown entity");
@@ -186,12 +192,14 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
     public void run() {
         while (this.getState() != EnvironmentState.KILLED) {
 
-            try { Thread.sleep(10000); } catch (InterruptedException ignored) {}
+            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
 
             // check connections and attempt to reconnect if necessary
             for ( EISEntity e : entities.values() ) {
-                Log.log("entity \"" + e.getName() + "\" is not connected. trying to connect.");
-                if (!e.isConnected()) e.establishConnection();
+                if (!e.isConnected()) {
+                    Log.log("entity \"" + e.getName() + "\" is not connected. trying to connect.");
+                    e.establishConnection();
+                }
             }
 
         }
@@ -226,7 +234,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
      * @param entityName name of an entity
      * @return true if the entity exists and is connected to a MASSim server
      */
-    public boolean isConnected(String entityName){
+    public boolean isEntityConnected(String entityName){
         EISEntity entity = entities.get(entityName);
         return entity != null && entity.isConnected();
     }
