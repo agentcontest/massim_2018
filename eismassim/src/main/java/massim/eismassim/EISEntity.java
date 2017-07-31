@@ -199,11 +199,7 @@ public abstract class EISEntity implements Runnable{
      */
     public void terminate(){
         terminated = true;
-        if(socket != null){
-            try {
-                socket.close();
-            } catch (IOException ignored) {}
-        }
+        releaseConnection();
     }
 
     @Override
@@ -212,7 +208,7 @@ public abstract class EISEntity implements Runnable{
             // connect if not connected
             if (!connected) {
                 establishConnection();
-                continue;
+                break; // establishConnection() starts a new thread
             }
 
             // receive a message
@@ -452,6 +448,7 @@ public abstract class EISEntity implements Runnable{
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ignored) {}
+        connected = false;
         log("connection released");
     }
 

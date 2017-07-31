@@ -177,7 +177,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
 
             if(entities.put(entity.getName(), entity) != null){
                 // entity by that name already existed
-                Log.log("Entity by name " + entity.getName() + " configured multiple time. Previous one replaced.");
+                Log.log("Entity by name " + entity.getName() + " configured multiple times. Previous one replaced.");
             }
         }
     }
