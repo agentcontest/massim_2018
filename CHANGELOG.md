@@ -1,5 +1,26 @@
 # MASSim CHANGELOG
 
+## Package release 1.4
+
+* protocol
+  * added the agent's name to sim-start
+  * fixed sim-end message not being deserialized
+  * XML request-action messages now organized for better readability
+* eismassim
+  * added percept for agent's
+  * fixed abort action deemed not being supported
+  * fixed a bug where an EISEntity could create multiple listening threads
+  * added method for checking an entity's connection to a server to the environment interface
+  * starting the environment now also starts its main thread, which will cause it to try to connect its entities with a massim server if they are not connected
+* monitor
+  * selection of multiple agents in the same location now cycles through all of them
+  * zoom to new location on map change#
+* scenario
+  * fixed tools not being listed in storages after being stored
+  * items of completed jobs are now mostly fed back into random shops
+* server
+  * will now only parse as many agents from team config as required and make up its own names if too few agents are configured
+
 ## Package release 1.3
 
 * scenario:
