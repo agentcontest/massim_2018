@@ -433,7 +433,7 @@ public class Server {
                 config.teams.add(team);
                 JSONArray accounts = teamJSON.optJSONArray(name);
                 if (accounts != null){
-                    for (int i = 0; i < accounts.length(); i++) {
+                    for (int i = 0; i < Math.min(accounts.length(), config.teamSize); i++) {
                         JSONArray account = accounts.optJSONArray(i);
                         if(account != null){
                             String accName = account.optString(0);
