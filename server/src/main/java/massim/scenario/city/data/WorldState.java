@@ -164,10 +164,16 @@ public class WorldState {
 
         // create entities and map to agents
         matchTeams.forEach(team -> {
-            for (int i = 0; i < team.getAgentNames().size(); i++) {
+            for (int i = 0; i < roleSequence.size(); i++) {
                 Entity e = new Entity(roles.get(roleSequence.get(i)), initialLocations[i]);
-                agentToEntity.put(team.getAgentNames().get(i), e);
-                entityToAgent.put(e, team.getAgentNames().get(i));
+                String agentName = team.getAgentNames().get(i);
+                if(agentName == null) {
+                    agentName = team.getName() + "-unconfigured-" + i;
+                    Log.log(Log.Level.ERROR, "Too few agents configured for team " + team.getName()
+                                              + ", using agent name " + agentName + ".");
+                }
+                agentToEntity.put(agentName, e);
+                entityToAgent.put(e, agentName);
             }
         });
     }
