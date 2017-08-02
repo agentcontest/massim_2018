@@ -156,7 +156,7 @@ public class WorldState {
         resourceSet.addAll(gen.getResources());
 
         // draw initial locations
-        Location[] initialLocations = new Location[matchTeams.iterator().next().getSize()];
+        Location[] initialLocations = new Location[roleSequence.size()];
         Set<String> roads = new HashSet<>(Collections.singletonList("roads"));
         for (int i = 0; i < initialLocations.length; i++) {
             initialLocations[i] = cityMap.getRandomLocation(roads, 1000);
@@ -166,8 +166,11 @@ public class WorldState {
         matchTeams.forEach(team -> {
             for (int i = 0; i < roleSequence.size(); i++) {
                 Entity e = new Entity(roles.get(roleSequence.get(i)), initialLocations[i]);
-                String agentName = team.getAgentNames().get(i);
-                if(agentName == null) {
+                String agentName = "";
+                if(team.getAgentNames().size() > i) {
+                    agentName = team.getAgentNames().get(i);
+                }
+                else {
                     agentName = team.getName() + "-unconfigured-" + i;
                     Log.log(Log.Level.ERROR, "Too few agents configured for team " + team.getName()
                                               + ", using agent name " + agentName + ".");
