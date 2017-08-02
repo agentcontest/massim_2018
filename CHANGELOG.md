@@ -7,7 +7,7 @@
   * fixed sim-end message not being deserialized
   * XML request-action messages now organized for better readability
 * eismassim
-  * added percept for agent's
+  * added percept for agent's name
   * fixed abort action deemed not being supported
   * fixed a bug where an EISEntity could create multiple listening threads
   * added method for checking an entity's connection to a server to the environment interface
