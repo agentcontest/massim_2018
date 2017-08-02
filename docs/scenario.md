@@ -730,6 +730,8 @@ Example:
   "gotoCost" : 10,
   "rechargeRate" : 5,
   "visibilityRange" : 500,
+  "restock" : 1.0,
+  "restockResource" : 0.9,
 
   "roles" : {},
 
@@ -763,6 +765,8 @@ For each simulation, the following parameters may be specified:
 * __gotoCost__: the energy cost for 1 goto action
 * __rechargeRate__: the energy that is restored between 1 and 2 times with 1 recharge action
 * __visibilityRange__: the maximum distance in meters between an agent and a resource node for the agent to perceive that resource node
+* __restock__: the probability for a base item (batch) of a completed job to be restocked in a random shop
+* __restockResource__: same as __restock__, but for resources
 
 The number of agents per role is defined in the `entities` array. Each object may have only one key (the name of the role). The value for the key is the number of agents for that role.
 
@@ -819,7 +823,7 @@ In the third section of the random generation the parameters for the generation 
   * __fineSub/Add__: how the fine can be modified at most
   * __maxRewardAdd__: how much to add at most to the maximum reward (the highest value that can be bid)
 * Parameters for missions:
-  * __missionDifficultyMax__: upper bound for the difficulty of a mission 
+  * __missionDifficultyMax__: upper bound for the difficulty of a mission
 
 ## Commands
 
