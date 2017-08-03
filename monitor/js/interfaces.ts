@@ -40,6 +40,20 @@ export interface Storage {
   lat: number;
   lon: number;
   name: string;
+  usedCapacity: number;
+  totalCapacity: number;
+  allStoredItems: StorageData[];
+}
+
+export interface StorageData {
+  teamName: string;
+  stored: StorageItem[];
+}
+
+export interface StorageItem {
+  name: string;
+  delivered: number;
+  stored: number;
 }
 
 export interface ResourceNode {

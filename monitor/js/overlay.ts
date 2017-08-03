@@ -1,6 +1,7 @@
-import { Ctrl, StaticWorld, DynamicWorld, Shop, isAgent } from './interfaces';
+import { Ctrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
+import { VNode } from 'snabbdom/vnode';
 
 const MAX_JOBS = 12;
 
@@ -53,14 +54,37 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
   else return h('div', [
     h('div', h('strong', 'Facility:'))
   ].concat(Object.keys(sel).map(key => {
-    if (key == 'offeredItems') {
+    if (key == 'storedItems') return h('span');
+    else if (key == 'offeredItems') {
       return h('div', ['items:', h('ul', (sel as Shop).offeredItems.map(stock =>
         h('li', n(stock.amount, 'x') + ' ' + stock.name + ' @ ' + n(stock.price, '$'))
       ))]);
-    } else {
+    }
+    else if (key == 'allStoredItems') {
+      return h('div', ['items:', h('ul', storageItems(ctrl, sel as Storage))]);
+    }
+    else {
       return h('div', [key, ': ', h('em', (sel as any)[key].toString())])
     }
   })));
+}
+
+function storageItems(ctrl: Ctrl, storage: Storage): VNode {
+  const ul = [];
+  for (let data of storage.allStoredItems) {
+    for (let item of data.stored) {
+       if (item.stored > 0) ul.push(h('li', [
+         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ':',
+         n(item.delivered, 'x') + ' ' + item.name + ' stored'
+       ]));
+
+       if (item.delivered > 0) ul.push(h('li', [
+         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ':',
+         n(item.delivered, 'x') + ' ' + item.name + ' delivered'
+       ]));
+    }
+  }
+  return h('ul', ul);
 }
 
 function jobs(dynamic: DynamicWorld) {

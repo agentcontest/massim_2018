@@ -104,5 +104,13 @@ public class StorageData extends FacilityData {
             teamName = team;
             stored = teamStored;
         }
+
+        public String getTeamName() {
+            return teamName;
+        }
+
+        public List<StoredData> getStored() {
+            return stored;
+        }
     }
 }
