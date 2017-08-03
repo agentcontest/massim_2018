@@ -204,12 +204,7 @@ public abstract class EISEntity implements Runnable{
 
     @Override
     public void run() {
-        while (!terminated){
-            // connect if not connected
-            if (!connected) {
-                establishConnection();
-                break; // establishConnection() starts a new thread
-            }
+        while (!terminated && connected){
 
             // receive a message
             Document doc;
@@ -217,7 +212,7 @@ public abstract class EISEntity implements Runnable{
                 doc = receiveDocument();
             } catch (IOException | SAXException | ParserConfigurationException e) {
                 releaseConnection();
-                continue;
+                break;
             }
 
             // process message
@@ -325,14 +320,8 @@ public abstract class EISEntity implements Runnable{
      * @throws ActException if the action could not be sent
      */
     void performAction(Action action) throws ActException{
-        // connect if not connected, release if connection not possible
-        if (!connected) {
-            establishConnection();
-            if (!connected) {
-                releaseConnection();
-                throw new ActException(ActException.FAILURE, "no valid connection");
-            }
-        }
+
+        if (!connected) throw new ActException(ActException.FAILURE, "no valid connection");
 
         // wait for a valid action id
         long startTime = System.currentTimeMillis();
