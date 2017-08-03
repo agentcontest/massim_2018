@@ -56,12 +56,12 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
   ].concat(Object.keys(sel).map(key => {
     if (key == 'storedItems') return h('span');
     else if (key == 'offeredItems') {
-      return h('div', ['items:', h('ul', (sel as Shop).offeredItems.map(stock =>
+      return h('div', ['items: ', h('ul', (sel as Shop).offeredItems.map(stock =>
         h('li', n(stock.amount, 'x') + ' ' + stock.name + ' @ ' + n(stock.price, '$'))
       ))]);
     }
     else if (key == 'allStoredItems') {
-      return h('div', ['items:', h('ul', storageItems(ctrl, sel as Storage))]);
+      return h('div', ['items: ', storageItems(ctrl, sel as Storage)]);
     }
     else {
       return h('div', [key, ': ', h('em', (sel as any)[key].toString())])
@@ -74,17 +74,17 @@ function storageItems(ctrl: Ctrl, storage: Storage): VNode {
   for (let data of storage.allStoredItems) {
     for (let item of data.stored) {
        if (item.stored > 0) ul.push(h('li', [
-         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ':',
-         n(item.delivered, 'x') + ' ' + item.name + ' stored'
+         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ': ',
+         n(item.delivered, 'x') + ' ' + item.name
        ]));
 
        if (item.delivered > 0) ul.push(h('li', [
-         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ':',
-         n(item.delivered, 'x') + ' ' + item.name + ' delivered'
+         'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ': ',
+         n(item.delivered, 'x') + ' ' + item.name + ' (delivered)'
        ]));
     }
   }
-  return h('ul', ul);
+  return ul.length ? h('ul', ul) : h('em', 'none');
 }
 
 function jobs(dynamic: DynamicWorld) {

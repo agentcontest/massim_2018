@@ -57,6 +57,7 @@ body {
   vertical-align: middle;
   height: 1.8em;
   border: 2px solid white;
+  margin-right: 0.2em;
 }
 .team.a {
   background: #0072b2;
