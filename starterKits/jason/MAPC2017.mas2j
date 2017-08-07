@@ -14,5 +14,6 @@ MAS mAPC2017 {
 
     agents:
 		connectionA #6;
+		connectionB #6;
 }
 
