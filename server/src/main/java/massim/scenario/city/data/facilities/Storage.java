@@ -133,22 +133,14 @@ public class Storage extends Facility{
      */
     public StorageData toStorageData(List<String> teams){
 
-        List<StoredData> stored = null;
-        List<StorageData.TeamStoredData> teamStored = null;
-
-        if(teams.size() > 1){
-            teamStored = new Vector<>();
-            for(String team: teams){
-                List<StoredData> tempStored = getStoredForTeam(team);
-                if(tempStored.size() > 0) teamStored.add(new StorageData.TeamStoredData(team, tempStored));
-            }
-        }
-        else if (teams.size() == 1){
-            stored = getStoredForTeam(teams.get(0));
+        List<StorageData.TeamStoredData> teamStored = new Vector<>();
+        for(String team: teams){
+            List<StoredData> tempStored = getStoredForTeam(team);
+            if(tempStored.size() > 0) teamStored.add(new StorageData.TeamStoredData(team, tempStored));
         }
 
         return new StorageData(getName(), getLocation().getLat(), getLocation().getLon(), capacity, getFreeSpace(),
-                stored, teamStored);
+                null, teamStored);
     }
 
     /**
