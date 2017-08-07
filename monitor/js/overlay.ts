@@ -75,7 +75,7 @@ function storageItems(ctrl: Ctrl, storage: Storage): VNode {
     for (let item of data.stored) {
        if (item.stored > 0) ul.push(h('li', [
          'Team ', h('span.team.' + ctrl.normalizeTeam(data.teamName), data.teamName), ': ',
-         n(item.delivered, 'x') + ' ' + item.name
+         n(item.stored, 'x') + ' ' + item.name
        ]));
 
        if (item.delivered > 0) ul.push(h('li', [
