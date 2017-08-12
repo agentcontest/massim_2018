@@ -49,6 +49,7 @@ public abstract class EISEntity implements Runnable{
     private boolean useIILang = false;
 
     private boolean connected = false;
+    private boolean connecting = false;
     private Socket socket;
     private InputStream in;
     private OutputStream out;
@@ -211,6 +212,7 @@ public abstract class EISEntity implements Runnable{
             try {
                 doc = receiveDocument();
             } catch (IOException | SAXException | ParserConfigurationException e) {
+                e.printStackTrace();
                 releaseConnection();
                 break;
             }
@@ -349,37 +351,38 @@ public abstract class EISEntity implements Runnable{
      * Tries to connect to a MASSim server. Including authentication and all.
      */
     void establishConnection() {
+        if(connecting) return;
+        connecting = true;
         try {
             socket = new Socket(host, port);
             in = socket.getInputStream();
             out = socket.getOutputStream();
+
+            log("socket successfully created");
+
+            boolean result = authenticate();
+            if (result) {
+                log("authentication acknowledged");
+
+                lastUsedActionId = -1;
+                currentActionId = -1;
+                lastUsedActionIdPercept = -1;
+                connected = true;
+                log("connection successfully authenticated");
+
+                // start a listening thread
+                new Thread(this).start();
+                log("listening for incoming messages");
+            }
+            else {
+                log("authentication denied");
+            }
         } catch (UnknownHostException e) {
             log("unknown host " + e.getMessage());
-            return;
         } catch (IOException e) {
             log(e.getMessage());
-            return;
         }
-        log("socket successfully created");
-
-        boolean result = authenticate();
-        if (result) {
-            log("authentication acknowledged");
-        }
-        else {
-            log("authentication denied");
-            return;
-        }
-
-        lastUsedActionId = -1;
-        currentActionId = -1;
-        lastUsedActionIdPercept = -1;
-        connected = true;
-        log("connection successfully authenticated");
-
-        // start a listening thread
-        new Thread(this).start();
-        log("listening for incoming messages");
+        connecting = false;
     }
 
     /**

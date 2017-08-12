@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.Executors;
 
 /**
  * Environment interface to the MASSim server following the Environment Interface Standard (EIS).
@@ -192,25 +193,16 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
     public void run() {
         while (this.getState() != EnvironmentState.KILLED) {
 
-            try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
-
             // check connections and attempt to reconnect if necessary
             for ( EISEntity e : entities.values() ) {
                 if (!e.isConnected()) {
                     Log.log("entity \"" + e.getName() + "\" is not connected. trying to connect.");
-                    e.establishConnection();
+                    Executors.newSingleThreadExecutor().execute(e::establishConnection);
                 }
             }
 
+            try { Thread.sleep(1000); } catch (InterruptedException ignored) {} // be nice to the server and our CPU
         }
-    }
-
-    @Override
-    public void associateEntity(String agent, String entity) throws RelationException {
-        super.associateEntity(agent, entity);
-        // connect entity if it's not connected
-        EISEntity e = entities.get(entity);
-        if (!e.isConnected()) e.establishConnection();
     }
 
     /**
