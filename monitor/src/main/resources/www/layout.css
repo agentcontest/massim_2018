@@ -65,6 +65,9 @@ body {
 .team.b {
   background: #009e73;
 }
+.team.c {
+  background: #626262;
+}
 
 ul {
   margin: 0;

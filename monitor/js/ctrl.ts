@@ -1,6 +1,6 @@
 import { Redraw, Ctrl, ViewModel, Agent, Facility } from './interfaces';
 
-const TEAMS = ['a', 'b'];
+const TEAMS = ['a', 'b', 'c'];
 
 export default function(redraw: Redraw): Ctrl {
   const vm: ViewModel = {
@@ -76,7 +76,7 @@ export default function(redraw: Redraw): Ctrl {
       return entities().filter(entity => entity.name === vm.selected[vm.selectionIndex])[0];
     },
     normalizeTeam(team: string) {
-      if (vm.static) return TEAMS[vm.static.teams.indexOf(team)] || 'a';
+      if (vm.static) return TEAMS[vm.static.teams.indexOf(team) % TEAMS.length] || 'a';
       else return 'a';
     }
   };
