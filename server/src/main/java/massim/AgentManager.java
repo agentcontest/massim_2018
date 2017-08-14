@@ -108,8 +108,8 @@ class AgentManager {
             // start a new thread to get each action
             new Thread(() -> {
                 Action action = agents.get(agName).requestAction(percept);
-                latch.countDown();
                 resultMap.put(agName, action);
+                latch.countDown();
             }).start();
         });
         try {

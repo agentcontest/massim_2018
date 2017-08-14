@@ -88,7 +88,7 @@ public class ActionExecutor {
 
         Action action = actions.get(agent);
         if(action == null){
-            Log.log(Log.Level.CRITICAL, "No action for agent " + agent + " provided.");
+            Log.log(Log.Level.CRITICAL, "Step " + stepNo + ": No action for agent " + agent + " provided.");
             action = Action.STD_NO_ACTION;
         }
         entity.setLastAction(action);
