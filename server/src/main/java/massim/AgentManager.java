@@ -113,7 +113,7 @@ class AgentManager {
             }).start();
         });
         try {
-            latch.await(2 * agentTimeout, TimeUnit.MILLISECONDS); // timeout ensured by threads; use this one for safety reasons
+            latch.await();
         } catch (InterruptedException e) {
             Log.log(Log.Level.ERROR, "Latch interrupted. Actions probably incomplete.");
         }
