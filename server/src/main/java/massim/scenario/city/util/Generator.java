@@ -838,7 +838,6 @@ public class Generator {
         Set<Job> jobs = new HashSet<>();
 
         double jobProb = Math.exp((-1)*(double) (float) stepNo/world.getSteps()) * rate;
-        Log.log(Log.Level.NORMAL, "job probability=" + jobProb);
         if(RNG.nextDouble() <= jobProb){
             ArrayList<Storage> tmpStorage = new ArrayList<>(world.getStorages());
             int storageNumber = RNG.nextInt(tmpStorage.size());
@@ -977,8 +976,8 @@ public class Generator {
             for(Item item: job.getRequiredItems().getStoredTypes()){
                 reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
             }
-            Log.log(Log.Level.NORMAL, "Configuring jobs: " + job.getName() + ": " + String.join(",", reqItems) + " " + job.getReward() +
-                    " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass());
+            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(",", reqItems) + " " + job.getReward() +
+                    " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass().getName());
         }
 
         return jobs;
