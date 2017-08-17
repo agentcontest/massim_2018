@@ -23,4 +23,9 @@ public class Tool extends Item{
     public Set<String> getRoles(){
         return new HashSet<>(roles);
     }
+
+    @Override
+    public String toString(){
+        return getName() + ": volume=" + getVolume() + " value=" + getValue() + " roles=" + getRoles();
+    }
 }

@@ -101,12 +101,11 @@ public class Generator {
     private Vector<Facility> affectedFacilities = new Vector<>();
 
     public Generator(JSONObject randomConf){
-        //parse random parameters from config
         //parse facilities
         JSONObject facilities = randomConf.optJSONObject("facilities");
-        if(facilities == null){
+        if(facilities == null) {
             Log.log(Log.Level.ERROR, "No facilities in configuration.");
-        }else {
+        } else {
             quadSize = facilities.optDouble("quadSize", 0.4);
             Log.log(Log.Level.NORMAL, "Configuring facilities quadSize: " + quadSize);
             blackoutProbability = facilities.optDouble("blackoutProbability", 0.1);
@@ -201,9 +200,9 @@ public class Generator {
 
         //parse items
         JSONObject items = randomConf.optJSONObject("items");
-        if(items == null){
+        if(items == null) {
             Log.log(Log.Level.ERROR, "No items in configuration.");
-        }else{
+        } else {
             baseItemsMin = items.optInt("baseItemsMin",5);
             Log.log(Log.Level.NORMAL, "Configuring items baseItemsMin: " + baseItemsMin);
             baseItemsMax = items.optInt("baseItemsMax",7);
@@ -248,9 +247,9 @@ public class Generator {
 
         //parse jobs
         JSONObject jobs = randomConf.optJSONObject("jobs");
-        if(jobs == null){
+        if(jobs == null) {
             Log.log(Log.Level.ERROR, "No jobs in configuration.");
-        }else{
+        } else {
             rate = jobs.optDouble("rate", 0.2);
             Log.log(Log.Level.NORMAL, "Configuring jobs rate: " + rate);
             auctionProbability = jobs.optDouble("auctionProbability", 0.4);
@@ -305,71 +304,47 @@ public class Generator {
 
     /**
      * Generates a number of tools dependent on config parameters
+     * @param roleMap map from role names to roles
      * @return a list of tools
      */
-    public List<Tool> generateTools(List<Role> roles){
-        int toolAmount = RNG.nextInt((toolsMax-toolsMin)+1) + toolsMin;
+    public List<Tool> generateTools(Map<String, Role> roleMap){
+        int toolAmount = RNG.nextInt(toolsMax - toolsMin + 1) + toolsMin;
+        List<Role> roles = new ArrayList<>(roleMap.values());
 
         //find role with maximum capacity
-        maxCapacity = 0;
-        Role maxRole = roles.get(0);
-        for(Role role: roles){
-            if(role.getMaxLoad()>maxCapacity){
-                maxCapacity = role.getMaxLoad();
-                maxRole = role;
-            }
-        }
-        Log.log(Log.Level.NORMAL, "maxCapacity= " + maxCapacity);
+        Role maxRole = roles.stream().max(Comparator.comparingInt(Role::getMaxLoad)).orElse(roles.get(0));
+        maxCapacity = maxRole.getMaxLoad();
 
-        List<Tool> tools = new Vector<>();
-        for(int i=0; i<toolAmount; i++){
-            String name = "tool"+i;
-            int volume = RNG.nextInt((maxVol-minVol)+1) + minVol;
-            int value = RNG.nextInt((valueMax-valueMin) + 1) + valueMin;
-            String role1;
-            String role2;
+        for(int i = 0; i < toolAmount; i++){
+            String name = "tool" + i;
+            int volume = RNG.nextInt(maxVol - minVol + 1) + minVol;
+            int value = RNG.nextInt(valueMax - valueMin + 1) + valueMin;
+            Set<String> toolRoles = new HashSet<>();
+
+            // add one role at random
             int randomRole = RNG.nextInt(roles.size());
-            if(roles.get(randomRole).getMaxLoad()>volume) {
-                role1=roles.get(randomRole).getName();
-            }
+            if(roles.get(randomRole).getMaxLoad() > volume) toolRoles.add(roles.get(randomRole).getName());
             else{
-                if(volume>maxCapacity){
-                    volume = (int) (maxCapacity * 0.9);
-                }
-                role1=maxRole.getName();
+                // if volume too high, set it low enough and give to role with max capacity
+                if(volume > maxCapacity) volume = (int) (maxCapacity * 0.9);
+                toolRoles.add(maxRole.getName());
             }
-            if(RNG.nextInt(100)<50){
+            if(RNG.nextInt(2) < 1){
+                // add a second role at 50% chance (and if it's not already added and if the tool fits the role)
                 randomRole = RNG.nextInt(roles.size());
-                if(roles.get(randomRole).getMaxLoad()>volume) {
-                    role2=roles.get(randomRole).getName();
-                    tools.add(new Tool(name, volume, value, role1, role2));
-                    Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() +
-                            ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() +
-                            " roles=" + tools.get(i).getRoles());
-                    continue;
-                }
+                if(roles.get(randomRole).getMaxLoad() > volume) toolRoles.add(roles.get(randomRole).getName());
             }
-            tools.add(new Tool(name, volume, value, role1));
-            Log.log(Log.Level.NORMAL, "Configuring items tools: " + tools.get(i).getName() +
-                    ": volume=" + tools.get(i).getVolume() + " value=" + tools.get(i).getValue() +
-                    " roles=" + tools.get(i).getRoles());
+            Tool tool = new Tool(name, volume, value, toolRoles.toArray(new String[toolRoles.size()]));
+            allTools.add(tool);
+            Log.log(Log.Level.NORMAL, "Adding tool: " + tool);
         }
 
         //add tools to roles
-        for(Tool tool: tools){
-            for(String roleName: tool.getRoles()){
-                for(Role role: roles){
-                    if(role.getName().equals(roleName)){
-                        List<Tool> toolList = new Vector<>();
-                        toolList.add(tool);
-                        role.addTools(toolList);
-                    }
-                }
-            }
-        }
+        allTools.forEach(tool -> tool.getRoles().forEach(role -> {
+            roleMap.get(role).addTool(tool);
+        }));
 
-        allTools = tools;
-        return tools;
+        return allTools;
     }
 
     /**

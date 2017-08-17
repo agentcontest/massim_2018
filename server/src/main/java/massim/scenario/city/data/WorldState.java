@@ -133,7 +133,7 @@ public class WorldState {
         }
 
         // generate the things
-        List<Tool> genTools = generator.generateTools(new ArrayList<>(roles.values()));
+        List<Tool> genTools = generator.generateTools(roles);
         genTools.forEach(t -> tools.put(t.getName(), t));
         generator.generateItems(genTools).forEach(i -> items.put(i.getName(), i));
         generator.generateFacilities(new ArrayList<>(items.values()), this).forEach(f -> facilities.put(f.getName(), f));

@@ -26,7 +26,7 @@ public class Role {
      * @param load the maximum load capacity
      * @param permissions the roads usable by this role (e.g. "air", "road", ...)
      */
-    public Role(String name, int speed, int battery, int load, Set<String> permissions){
+    Role(String name, int speed, int battery, int load, Set<String> permissions){
         this.permissions = permissions;
         roleData = new RoleData(name, speed, battery, load, new Vector<>());
     }
@@ -87,5 +87,14 @@ public class Role {
      */
     public RoleData getRoleData(){
         return roleData;
+    }
+
+    /**
+     * Adds one tool to this role
+     * @param tool the tool to add
+     */
+    public void addTool(Tool tool) {
+        tools.add(tool);
+        roleData.addTool(tool.getName());
     }
 }
