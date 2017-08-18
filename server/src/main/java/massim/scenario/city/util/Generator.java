@@ -453,48 +453,46 @@ public class Generator {
         double minLon = world.getMinLon();
         double maxLon = world.getMaxLon();
 
-        List<Facility> facilities = new Vector<>();
-        List<Shop> shops = new Vector<>();
-        List<ResourceNode> resourceNodes = new Vector<>();
+        List<Facility> facilities = new ArrayList<>();
+        List<Shop> shops = new ArrayList<>();
+        List<ResourceNode> resourceNodes = new ArrayList<>();
         Set<Location> locations = new HashSet<>();
 
-        //generate charging stations
+        // generate charging stations
         int chargingCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
+
                 int numberOfFacilities = 0;
                 if(chargingDensity < 1){
-                    if(RNG.nextDouble() < chargingDensity){
-                        numberOfFacilities = 1;
-                    }
+                    if(RNG.nextDouble() < shopDensity) numberOfFacilities = 1;
                 }
-                else{
-                    numberOfFacilities = new Float(chargingDensity).intValue();
-                }
+                else numberOfFacilities = new Float(chargingDensity).intValue();
+
                 for(int i = 0; i < numberOfFacilities; i++){
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, loc,
-                            RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
-                    facilities.add(charging1);
-                    locations.add(charging1.getLocation());
+                    ChargingStation charging = new ChargingStation("chargingStation" + chargingCounter,
+                            getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize),
+                            RNG.nextInt(rateMax - rateMin + 1) + rateMin);
+                    facilities.add(charging);
+                    locations.add(charging.getLocation());
                     chargingCounter++;
                 }
             }
         }
-        if(chargingCounter==0){
-            ChargingStation charging1 = new ChargingStation("chargingStation" + chargingCounter, getUniqueLocation(locations, world),
+
+        if(chargingCounter == 0){ // create at least 1 charging station
+            ChargingStation charging = new ChargingStation("chargingStation" + chargingCounter,
+                    getUniqueLocation(locations, world),
                     RNG.nextInt((rateMax-rateMin) + 1) + rateMin);
-            facilities.add(charging1);
-            locations.add(charging1.getLocation());
-            //chargingCounter++;
+            facilities.add(charging);
+            locations.add(charging.getLocation());
         }
 
-        //generate shops
+        // generate empty shops
         int shopCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
+
                 int numberOfFacilities = 0;
                 if(shopDensity < 1){
                     if(RNG.nextDouble() < shopDensity){
@@ -505,41 +503,39 @@ public class Generator {
                     numberOfFacilities = new Float(shopDensity).intValue();
                 }
                 for(int i = 0; i < numberOfFacilities; i++){
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    Shop shop1 = new Shop("shop" + shopCounter, loc,RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-                    facilities.add(shop1);
-                    locations.add(shop1.getLocation());
-                    shops.add(shop1);
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
+                    Shop shop = new Shop("shop" + shopCounter, loc,RNG.nextInt(restockMax - restockMin + 1) + restockMin);
+                    facilities.add(shop);
+                    locations.add(shop.getLocation());
+                    shops.add(shop);
                     shopCounter++;
                 }
             }
         }
-        if(shopCounter==0){
-            Shop shop1 = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),
-                    RNG.nextInt((restockMax-restockMin) + 1) + restockMin);
-            facilities.add(shop1);
-            locations.add(shop1.getLocation());
-            shops.add(shop1);
-            //shopCounter++;
+        if(shopCounter == 0){
+            Shop shop = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),
+                    RNG.nextInt(restockMax - restockMin + 1) + restockMin);
+            facilities.add(shop);
+            locations.add(shop.getLocation());
+            shops.add(shop);
         }
-        //add base items, resources and tools to shops
-        Vector<Item> shopItems = new Vector<>();
+        // add base items, resources and tools to shops
+        List<Item> shopItems = new ArrayList<>();
         shopItems.addAll(itemGraph.get(0));
         shopItems.addAll(allTools);
-        Vector<Item> usedItems = new Vector<>();
+        List<Item> usedItems = new ArrayList<>();
         for(Shop shop: shops){
-            int numberOfProducts = RNG.nextInt((maxProd-minProd) + 1) + minProd;
-            numberOfProducts = Math.min(numberOfProducts, shopItems.size());
+            int numberOfProducts = Math.min(RNG.nextInt(maxProd - minProd + 1) + minProd, shopItems.size());
 
-            Vector<Item> unusedItems = new Vector<>(shopItems);
-            for(int j=0; j<numberOfProducts; j++){
+            List<Item> unusedItems = new ArrayList<>(shopItems); // items not used for this shop
+            for(int j = 0; j < numberOfProducts; j++){
                 int productNumber = RNG.nextInt(unusedItems.size());
-                float priceAdd = (RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin) / 100.0f;
-                int price = (int) (unusedItems.get(productNumber).getValue() * priceAdd);
-                shop.addItem(unusedItems.get(productNumber), RNG.nextInt((amountMax-amountMin) + 1) + amountMin, price);
-                Item tmpItem = unusedItems.get(productNumber);
+                Item item = unusedItems.get(productNumber);
+                float priceAdd = (RNG.nextInt(priceAddMax - priceAddMin + 1) + priceAddMin) / 100.0f;
+                int price = (int) (item.getValue() * priceAdd);
+                shop.addItem(item, RNG.nextInt(amountMax - amountMin + 1) + amountMin, price);
                 unusedItems.remove(productNumber);
-                usedItems.add(tmpItem);
+                usedItems.add(item);
             }
         }
         shopItems.removeAll(usedItems);
@@ -551,29 +547,17 @@ public class Generator {
             shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, price);
         }
 
-        /*for(Shop shop: shops){
-            Log.log(Log.Level.NORMAL, shop.getName() + ":");
-            for(Item item: shop.getOfferedItems()){
-                Log.log(Log.Level.NORMAL, item.getName() + " for " + shop.getPrice(item));
-            }
-        }*/
-
-        //generate dumps
+        // generate dumps
         int dumpCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
                 int numberOfFacilities = 0;
                 if(dumpDensity < 1){
-                    if(RNG.nextDouble() < dumpDensity){
-                        numberOfFacilities = 1;
-                    }
+                    if(RNG.nextDouble() < dumpDensity) numberOfFacilities = 1;
                 }
-                else{
-                    numberOfFacilities = new Float(dumpDensity).intValue();
-                }
+                else numberOfFacilities = new Float(dumpDensity).intValue();
                 for(int i = 0; i < numberOfFacilities; i++){
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
                     Dump dump1 = new Dump("dump" + dumpCounter, loc);
                     facilities.add(dump1);
                     locations.add(dump1.getLocation());
@@ -581,121 +565,103 @@ public class Generator {
                 }
             }
         }
-        if(dumpCounter==0){
-            Dump dump1 = new Dump("dump" + dumpCounter, getUniqueLocation(locations, world));
-            facilities.add(dump1);
-            locations.add(dump1.getLocation());
-            //dumpCounter++;
+        if(dumpCounter == 0){
+            Dump dump = new Dump("dump" + dumpCounter, getUniqueLocation(locations, world));
+            facilities.add(dump);
+            locations.add(dump.getLocation());
         }
 
         //generate workshops
         int workshopCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
                 int numberOfFacilities = 0;
                 if(workshopDensity < 1){
-                    if(RNG.nextDouble() < workshopDensity){
-                        numberOfFacilities = 1;
-                    }
+                    if(RNG.nextDouble() < workshopDensity) numberOfFacilities = 1;
                 }
-                else{
-                    numberOfFacilities = new Float(workshopDensity).intValue();
-                }
+                else numberOfFacilities = new Float(workshopDensity).intValue();
                 for(int i = 0; i < numberOfFacilities; i++){
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    Workshop workshop1 = new Workshop("workshop" + workshopCounter, loc);
-                    facilities.add(workshop1);
-                    locations.add(workshop1.getLocation());
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
+                    Workshop workshop = new Workshop("workshop" + workshopCounter, loc);
+                    facilities.add(workshop);
+                    locations.add(workshop.getLocation());
                     workshopCounter++;
                 }
             }
         }
-        if(workshopCounter==0){
-            Workshop workshop1 = new Workshop("workshop" + workshopCounter, getUniqueLocation(locations, world));
-            facilities.add(workshop1);
-            locations.add(workshop1.getLocation());
-            //workshopCounter++;
+        if(workshopCounter == 0){
+            Workshop workshop = new Workshop("workshop" + workshopCounter, getUniqueLocation(locations, world));
+            facilities.add(workshop);
+            locations.add(workshop.getLocation());
         }
 
-        //generate storage
+        // generate storage
         int storageCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
                 int numberOfFacilities = 0;
                 if(storageDensity < 1){
-                    if(RNG.nextDouble() < storageDensity){
-                        numberOfFacilities = 1;
-                    }
+                    if(RNG.nextDouble() < storageDensity) numberOfFacilities = 1;
                 }
-                else{
-                    numberOfFacilities = new Float(storageDensity).intValue();
-                }
+                else numberOfFacilities = new Float(storageDensity).intValue();
                 for(int i = 0; i < numberOfFacilities; i++){
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a+quadSize, b, b+quadSize);
-                    Storage storage1 = new Storage("storage" + storageCounter, loc, (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
+                    Storage storage = new Storage("storage" + storageCounter, loc,
+                            (RNG.nextInt(capacityMax - capacityMin + 1) + capacityMin),
                             world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
-                    facilities.add(storage1);
-                    locations.add(storage1.getLocation());
+                    facilities.add(storage);
+                    locations.add(storage.getLocation());
                     storageCounter++;
                 }
             }
         }
-        if(storageCounter==0){
-            Storage storage1 = new Storage("storage" + storageCounter, getUniqueLocation(locations, world),
-                    (RNG.nextInt((capacityMax-capacityMin) + 1) + capacityMin),
+        if(storageCounter == 0){
+            Storage storage = new Storage("storage" + storageCounter, getUniqueLocation(locations, world),
+                    (RNG.nextInt(capacityMax - capacityMin + 1) + capacityMin),
                     world.getTeams().stream().map(TeamState::getName).collect(Collectors.toSet()));
-            facilities.add(storage1);
-            locations.add(storage1.getLocation());
-            //storageCounter++;
+            facilities.add(storage);
+            locations.add(storage.getLocation());
         }
 
-        //generate resource nodes
+        // generate resource nodes
         int nodeCounter = 0;
         for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) {
-                // (a,b) = corner of the current quadrant
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
                 int numberOfFacilities = 0;
                 if (resourceDensity < 1) {
-                    if (RNG.nextDouble() < resourceDensity) {
-                        numberOfFacilities = 1;
-                    }
-                } else {
-                    numberOfFacilities = new Float(resourceDensity).intValue();
+                    if (RNG.nextDouble() < resourceDensity) numberOfFacilities = 1;
                 }
+                else numberOfFacilities = new Float(resourceDensity).intValue();
                 for (int i = 0; i < numberOfFacilities; i++) {
                     Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
-                    ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, loc, resources.get(nodeCounter % resources.size()),
-                            RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
-                    facilities.add(node1);
-                    locations.add(node1.getLocation());
-                    resourceNodes.add(node1);
+                    ResourceNode node = new ResourceNode("resourceNode" + nodeCounter, loc,
+                            resources.get(nodeCounter % resources.size()),
+                            RNG.nextInt(gatherFrequencyMax - gatherFrequencyMin + 1) + gatherFrequencyMin);
+                    facilities.add(node);
+                    locations.add(node.getLocation());
+                    resourceNodes.add(node);
                     nodeCounter++;
                 }
             }
         }
-        if(nodeCounter<resources.size()){
-            for(int i=nodeCounter; i<resources.size(); i++){
-                ResourceNode node1 = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world),
+        if(nodeCounter < resources.size()){
+            for(int i = nodeCounter; i < resources.size(); i++){
+                ResourceNode node = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world),
                         resources.get(nodeCounter % resources.size()),
-                        RNG.nextInt((gatherFrequencyMax-gatherFrequencyMin) + 1) + gatherFrequencyMin);
-                facilities.add(node1);
-                locations.add(node1.getLocation());
-                resourceNodes.add(node1);
+                        RNG.nextInt(gatherFrequencyMax - gatherFrequencyMin + 1) + gatherFrequencyMin);
+                facilities.add(node);
+                locations.add(node.getLocation());
+                resourceNodes.add(node);
                 nodeCounter++;
             }
         }
 
         for(ResourceNode node: resourceNodes){
-            Log.log(Log.Level.NORMAL, "Configuring resource nodes: " + node.getName() + ": " + node.getResource().getName() +
+            Log.log(Log.Level.NORMAL, "Added resource node: " + node.getName() + ": " + node.getResource().getName() +
                     " " + node.getLocation().getLat() + ", " + node.getLocation().getLon());
         }
 
-        for(Facility fac: facilities){
-            Log.log(Log.Level.NORMAL, "Configuring facilities: " + fac.getName() + ": " + fac.getLocation().getLat() +
-                    ", " + fac.getLocation().getLon());
-        }
+        for(Facility fac: facilities) Log.log(Log.Level.NORMAL, "Added facility: " + fac);
 
         return facilities;
     }
