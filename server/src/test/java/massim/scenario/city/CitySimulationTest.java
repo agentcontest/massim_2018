@@ -723,10 +723,8 @@ public class CitySimulationTest {
         for(Item item: baseItems){
             assert item.getVolume()>0;
             assert item.getValue()>0;
-            boolean assembleValue = item.getAssembleValue()==0;
-            assert assembleValue;
-            boolean reqBaseItems = item.getRequiredBaseItems().isEmpty();
-            assert reqBaseItems;
+            assert item.getAssembleValue() == 0;
+            assert item.getRequiredBaseItems().size() == 1;
             assert !item.needsAssembly();
         }
 
