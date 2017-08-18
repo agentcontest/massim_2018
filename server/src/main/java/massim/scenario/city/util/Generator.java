@@ -90,15 +90,15 @@ public class Generator {
 
     private int maxCapacity;
 
-    private Vector<Item> baseItems = new Vector<>();
-    private Vector<Vector<Item>> itemGraph = new Vector<>();
-    private List<Item> resources = new Vector<>();
-    private List<Tool> allTools = new Vector<>();
-    private List<Item> allJobItems = new Vector<>();
+    private List<Item> baseItems = new ArrayList<>();
+    private List<List<Item>> itemGraph = new ArrayList<>();
+    private List<Item> resources = new ArrayList<>();
+    private List<Tool> allTools = new ArrayList<>();
+    private List<Item> assembledItems = new ArrayList<>();
     private int missionID = 0;
     private int missionEnd = 0;
 
-    private Vector<Facility> affectedFacilities = new Vector<>();
+    private List<Facility> affectedFacilities = new ArrayList<>();
 
     public Generator(JSONObject randomConf){
         //parse facilities
@@ -352,142 +352,93 @@ public class Generator {
      * @return a list of items
      */
     public List<Item> generateItems(List<Tool> tools) {
-        int baseItemAmount = RNG.nextInt((baseItemsMax-baseItemsMin) + 1) + baseItemsMin;
-        int resourcesAmount = RNG.nextInt((resourcesMax-resourcesMin) + 1) + resourcesMin;
+        int baseItemAmount = RNG.nextInt(baseItemsMax - baseItemsMin + 1) + baseItemsMin;
+        int resourcesAmount = RNG.nextInt(resourcesMax - resourcesMin + 1) + resourcesMin;
 
         List<Item> items = new Vector<>();
 
-        //generate base items
-        for(int i=0; i<=baseItemAmount-1;i++){
-            Item item = new Item("item"+i,RNG.nextInt((maxVol-minVol) + 1) + minVol,
-                    RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
+        // generate base items
+        for(int i = 0; i < baseItemAmount + resourcesAmount; i++){
+            Item item = new Item("item" + i, RNG.nextInt(maxVol - minVol + 1) + minVol,
+                    RNG.nextInt(valueMax - valueMin + 1) + valueMin);
             items.add(item);
             baseItems.add(item);
         }
 
-        //generate resources
-        for(int i=0; i<=resourcesAmount-1;i++){
-            Item item = new Item("item"+(baseItemAmount+i),RNG.nextInt((maxVol-minVol) + 1) + minVol,
-                    RNG.nextInt((valueMax-valueMin) + 1) + valueMin, new HashSet<>());
-            items.add(item);
-            resources.add(item);
-            baseItems.add(item);
-        }
+        resources.addAll(items.subList(baseItemAmount, items.size())); // determine resources
         itemGraph.add(baseItems);
 
-        //generate assembled items
-        int graphDepth = RNG.nextInt((graphDepthMax-graphDepthMin) + 1) + graphDepthMin;
-        int levelAmount = baseItemAmount; //only base items without resources otherwise graph gets to big!
-        int counter = baseItemAmount + resourcesAmount;
-
-        for(int i=1; i<=graphDepth; i++){
-            levelAmount = levelAmount - (RNG.nextInt((levelDecreaseMax-levelDecreaseMin) + 1) + levelDecreaseMin);
-            Vector<Item> levelItems = new Vector<>();
-            for(int j=1; j<=levelAmount;j++){
-
-                //generate required items
+        // generate assembled items
+        int graphDepth = RNG.nextInt(graphDepthMax - graphDepthMin + 1) + graphDepthMin;
+        int levelAmount = baseItemAmount; // only base items without resources, otherwise graph gets too big!
+        for(int i = 1; i <= graphDepth; i++){
+            levelAmount = Math.max(1, // at least 1 item per level
+                    levelAmount - (RNG.nextInt(levelDecreaseMax - levelDecreaseMin + 1) + levelDecreaseMin));
+            List<Item> levelItems = new ArrayList<>();
+            for(int j = 1; j <= levelAmount; j++){
+                // determine required items
                 Map<Item, Integer> requiredItems = new HashMap<>();
-                int requiredAmount = RNG.nextInt((maxReq-minReq) + 1) + minReq;
-                requiredAmount = Math.min(requiredAmount, (baseItemAmount+resourcesAmount));
-                //add item from one level beneath, if level beneath is level 0, take a resource
-                Vector<Item> tmpItems;
-                if (i - 1 == 0) {
-                    tmpItems = new Vector<>(resources);
-                } else {
-                    tmpItems = new Vector<>(itemGraph.get(i - 1));
-                }
+                int requiredAmount = RNG.nextInt(maxReq - minReq + 1) + minReq;
+                requiredAmount = Math.min(requiredAmount, baseItemAmount + resourcesAmount);
+                // add item from one level beneath; if level beneath is level 0, take a resource
+                List<Item> tmpItems = (i == 1)? new ArrayList<>(resources)
+                                              : new ArrayList<>(itemGraph.get(i - 1));
                 RNG.shuffle(tmpItems);
-                requiredItems.put(tmpItems.get(0),RNG.nextInt((reqAmountMax-reqAmountMin) + 1) + reqAmountMin);
-                requiredAmount = requiredAmount - 1;
-                //get list of possible levels and possible items
-                Vector<Vector<Item>> possibleLevels = new Vector<>();
-                if(i - 1 == 0){
-                    possibleLevels.add(itemGraph.get(0));
-                }else{
-                    //only use items up to level i-2 to avoid high assembleValues
-                    for (int k = 0; k < i-1; k++) {
-                        possibleLevels.add(itemGraph.get(k));
+                requiredItems.put(tmpItems.get(0), RNG.nextInt(reqAmountMax - reqAmountMin + 1) + reqAmountMin);
+                requiredAmount -= 1;
+                // get list of possible levels and possible items
+                List<Item> possibleItems = new ArrayList<>();
+                if(i == 1){
+                    possibleItems.addAll(itemGraph.get(0));
+                } else {
+                    //only use items up to level (i-2) to avoid high assembleValues
+                    for (int k = 0; k < i - 1; k++) {
+                        possibleItems.addAll(itemGraph.get(k));
                     }
                 }
-                ArrayList<Item> possibleItems = new ArrayList<>();
-                for (Vector<Item> level : possibleLevels) {
-                    possibleItems.addAll(level);
-                }
-                possibleItems.remove(tmpItems.get(0)); //remove the item that was already added in the first step
+                possibleItems.remove(tmpItems.get(0)); // remove the item that was already added in the first step
                 RNG.shuffle(possibleItems);
-                //add amount of required items
-                for (int l = 0; l < requiredAmount; l++) {
-                    requiredItems.put(possibleItems.get(l), RNG.nextInt((reqAmountMax-reqAmountMin) + 1) + reqAmountMin);
+                // add amount of required items
+                for (int l = 0; l < Math.min(requiredAmount, possibleItems.size()); l++) {
+                    requiredItems.put(possibleItems.get(l), RNG.nextInt(reqAmountMax - reqAmountMin + 1) + reqAmountMin);
                 }
 
-                //generate required tools
-                Vector<Tool> tmpTools = new Vector<>(tools);
-                Vector<Tool> requiredTools = new Vector<>();
-                if(RNG.nextDouble()<toolProbability){
-                    RNG.shuffle(tmpTools);
-                    requiredTools.add(tmpTools.get(0));
-                    if(RNG.nextDouble()<toolProbability){
-                        requiredTools.add(tmpTools.get(1));
+                // calculate volume of assembled item
+                int volume = 0;
+                for(Map.Entry<Item,Integer> e: requiredItems.entrySet()){
+                    volume += e.getKey().getVolume() * e.getValue();
+                }
+                // subtract random percentage (up to 50%)
+                volume -= (int) (RNG.nextDouble() * .5 * volume);
+                // ensure that at least the role with max capacity can carry this item
+                if(volume > maxCapacity) volume = (int) (maxCapacity * .9);
+
+                // create assembled item
+                Item item = new Item("item" + items.size(), volume, 0);
+                item.setRequiredItems(requiredItems);
+
+                // determine required tools
+                List<Tool> tempTools = new ArrayList<>(tools);
+                if(RNG.nextDouble() < toolProbability){
+                    RNG.shuffle(tempTools);
+                    item.addRequiredTool(tempTools.get(0));
+                    if(RNG.nextDouble() < toolProbability){
+                        item.addRequiredTool(tempTools.get(1));
                     }
                 }
-
-                //calculate volume of assembled item
-                int volume = 0;
-                for(Item reqItem: requiredItems.keySet()){
-                    volume= volume + (reqItem.getVolume() * requiredItems.get(reqItem));
-                }
-                //subtract random percentage (up to 50%)
-                volume = volume - (int) ((RNG.nextDouble()) * 0.5 * volume);
-                //ensure that at least the role with max capacity can carry this item
-                if(volume>maxCapacity){
-                    volume = (int) (maxCapacity * 0.9);
-                }
-
-                //generate assembled item
-                Item item = new Item("item"+counter, volume, 0, new HashSet<>());
-                for(Item reqItem: requiredItems.keySet()){
-                    item.addRequirement(reqItem, requiredItems.get(reqItem));
-                }
-                for(Tool reqTool: requiredTools){
-                    item.addRequiredTool(reqTool);
-                }
-                item.getAssembleValue();
-
-                item.getRequiredBaseItems();
-                Vector<String> reqBaseItems = new Vector<>();
-                for(Item reqItem: item.getRequiredBaseItems().keySet()){
-                    reqBaseItems.add(item.getRequiredBaseItems().get(reqItem) + "x " + reqItem.getName());
-                    //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
-                }
-                System.out.println("Base Items for " + item.getName() + ": " + String.join(",", reqBaseItems));
-
 
                 items.add(item);
                 levelItems.add(item);
-                allJobItems.add(item);
-                counter++;
+                assembledItems.add(item);
             }
             itemGraph.add(levelItems);
         }
 
-        int counter2=0;
-        for(Vector<Item> itemList: itemGraph){
-            Log.log(Log.Level.NORMAL, "Configuring items: item graph level " + counter2);
-            for(Item item: itemList){
-                Vector<String> reqItems = new Vector<>();
-                for(Item reqItem: item.getRequiredItems().keySet()){
-                    reqItems.add(item.getRequiredItems().get(reqItem) + "x " + reqItem.getName());
-                    //System.out.println(reqItem.getName() + ": " + item.getRequiredItems().get(reqItem));
-                }
-                Vector<String> reqTools = new Vector<>();
-                for(Tool reqTool: item.getRequiredTools()){
-                    reqTools.add(reqTool.getName());
-                }
-                Log.log(Log.Level.NORMAL, "Configuring items: " + item.getName() + " volume=" + item.getVolume() +
-                        " value=" + item.getValue() + " assembleValue=" + item.getAssembleValue() +
-                        " items=" + String.join(",", reqItems) + " tools=" + String.join(",", reqTools));
+        for(int i = 0; i < itemGraph.size(); i++){
+            Log.log(Log.Level.NORMAL, "Generated item graph level " + i);
+            for(Item item: itemGraph.get(i)){
+                Log.log(Log.Level.NORMAL, "Generated item: " + item);
             }
-            counter2++;
         }
         return items;
     }
@@ -496,7 +447,7 @@ public class Generator {
      * Generates a number of facilities dependent on config parameters
      * @return a list of facilities
      */
-    public List<Facility> generateFacilities(List<Item> items, WorldState world) {
+    public List<Facility> generateFacilities(WorldState world) {
         double minLat = world.getMinLat();
         double maxLat = world.getMaxLat();
         double minLon = world.getMinLon();
@@ -808,7 +759,7 @@ public class Generator {
         if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
             tmpJobItems.addAll(baseItems); // only require base items in this case
         }else{
-            tmpJobItems.addAll(allJobItems);
+            tmpJobItems.addAll(assembledItems);
         }
         Set<Job> jobs = new HashSet<>();
 

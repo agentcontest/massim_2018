@@ -136,7 +136,7 @@ public class WorldState {
         List<Tool> genTools = generator.generateTools(roles);
         genTools.forEach(t -> tools.put(t.getName(), t));
         generator.generateItems(genTools).forEach(i -> items.put(i.getName(), i));
-        generator.generateFacilities(new ArrayList<>(items.values()), this).forEach(f -> facilities.put(f.getName(), f));
+        generator.generateFacilities(this).forEach(f -> facilities.put(f.getName(), f));
         facilities.values().forEach(f -> facilityByLocation.put(f.getLocation(), f));
         facilities.values().forEach(f -> {
             if(f instanceof Workshop) workshops.add((Workshop) f);
