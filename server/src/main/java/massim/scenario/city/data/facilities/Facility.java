@@ -39,10 +39,13 @@ public abstract class Facility implements Comparable<Facility>{
      */
     public void initiateBlackout(int duration) { blackoutCounter = duration; }
 
-    public void decrementBlackoutCounter(){
-        if(blackoutCounter>0){
-            blackoutCounter--;
-        }
+    /**
+     * Decrements blackout counter if possible.
+     * @return the current value of the blackout counter after the decrement
+     */
+    public int stepBlackoutCounter(){
+        if(blackoutCounter > 0) blackoutCounter--;
+        return blackoutCounter;
     }
 
     /**

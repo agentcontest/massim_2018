@@ -805,7 +805,7 @@ public class CitySimulationTest {
         assert e1.getCurrentBattery() == 0;
 
         station.initiateBlackout(5);
-        world.getGenerator().addToAffectedFacilities(station);
+        world.getGenerator().addToBlackoutFacilities(station);
 
         sim.preStep(step);
         Map<String, Action> actions = buildActionMap();

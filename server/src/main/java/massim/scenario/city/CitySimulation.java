@@ -99,7 +99,7 @@ public class CitySimulation extends AbstractSimulation {
         currentStep = stepNo;
 
         //blackout generator
-        generator.generateBlackout(world);
+        generator.handleBlackouts(world);
 
          // step job generator
         generator.generateJobs(stepNo, world).forEach(job -> world.addJob(job));

@@ -98,7 +98,7 @@ public class Generator {
     private int missionID = 0;
     private int missionEnd = 0;
 
-    private List<Facility> affectedFacilities = new ArrayList<>();
+    private Set<Facility> blackoutFacilities = new HashSet<>();
 
     public Generator(JSONObject randomConf){
         //parse facilities
@@ -836,7 +836,7 @@ public class Generator {
             for(Item item: job.getRequiredItems().getStoredTypes()){
                 reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
             }
-            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(",", reqItems) + " " + job.getReward() +
+            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(", ", reqItems) + " " + job.getReward() +
                     " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass().getName());
         }
 
@@ -861,28 +861,29 @@ public class Generator {
         return reward;
     }
 
-    public void generateBlackout(WorldState world){
+    /**
+     * Progresses each facility's blackout and may generate new ones.
+     * @param world the current world state
+     */
+    public void handleBlackouts(WorldState world){
 
-        //manage facilities affected by blackout
-        Vector<Facility> workingFacilities = new Vector<>();
-        for(Facility facility: affectedFacilities){
-            facility.decrementBlackoutCounter();
-            if(facility.getBlackoutCounter()==0){
-                workingFacilities.add(facility);
-            }
+        // manage facilities affected by blackout
+        List<Facility> workingFacilities = new ArrayList<>();
+        for(Facility facility: blackoutFacilities){
+            facility.stepBlackoutCounter();
+            if(facility.stepBlackoutCounter() == 0) workingFacilities.add(facility);
         }
-        affectedFacilities.removeAll(workingFacilities);
+        blackoutFacilities.removeAll(workingFacilities);
 
-        //initiate new blackout
+        // initiate new blackout
         if(RNG.nextDouble() < blackoutProbability){
-            int duration = RNG.nextInt((blackoutTimeMax-blackoutTimeMin) + 1) + blackoutTimeMin;
-            Vector<Facility> facilities = new Vector<>(world.getChargingStations());
-            RNG.shuffle(facilities);
-            Facility targetFacility = facilities.get(0);
-            if(!affectedFacilities.contains(targetFacility)){
+            List<Facility> facilities = new ArrayList<>(world.getChargingStations());
+            Facility targetFacility = facilities.get(RNG.nextInt(facilities.size()));
+            if(!blackoutFacilities.contains(targetFacility)){
+                int duration = RNG.nextInt(blackoutTimeMax - blackoutTimeMin + 1) + blackoutTimeMin;
                 targetFacility.initiateBlackout(duration);
-                affectedFacilities.add(targetFacility);
-                Log.log(Log.Level.NORMAL, "Configuring facilities: blackout in " + targetFacility.getName() + ", duration " + duration + " steps!");
+                blackoutFacilities.add(targetFacility);
+                Log.log(Log.Level.NORMAL, "New blackout in " + targetFacility.getName() + ", duration " + duration + " steps.");
             }
         }
     }
@@ -890,7 +891,7 @@ public class Generator {
     /**
      * Adds a facility to the list of facilities affected by blackout (for testing)
      */
-    public void addToAffectedFacilities(Facility facility){ affectedFacilities.add(facility);}
+    public void addToBlackoutFacilities(Facility facility){ blackoutFacilities.add(facility);}
 
     /**
      * @return a list containing all resources
@@ -901,5 +902,4 @@ public class Generator {
      * @return a list containing all base items
      */
     public List<Item> getBaseItems(){ return baseItems;}
-
 }
