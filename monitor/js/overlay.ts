@@ -42,13 +42,14 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
     const role = staticWorld.roles.filter(r => r.name === sel.role)[0];
     const lastAction = sel.lastAction || {
       type: 'noAction',
-      result: 'successful'
+      result: 'successful',
+      params: []
     };
     return h('div', [
       h('div', h('strong',  ['Agent ', h('em', sel.name)])),
       h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
       h('div', ['load: ', h('em', n(sel.load))]),
-      h('div', ['lastAction: ', h('em', [lastAction.type, '(', ') = ', lastAction.result])])
+      h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])])
     ]);
   }
   else return h('div', [
