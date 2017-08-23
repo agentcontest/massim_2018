@@ -75,16 +75,12 @@ public class Item {
      * @return the item's assembleValue
      */
     public int getAssembleValue(){
-        if(assembleValue==0){
-            if(needsAssembly()){
-                int aValue = 1;
+        if(!needsAssembly()) return 0;
+        if(assembleValue == 0){
+                assembleValue = 1;
                 for(Item item: requiredItems.keySet()){
-                    aValue = aValue + requiredItems.get(item) * (item.getAssembleValue());
+                    assembleValue += requiredItems.get(item) * item.getAssembleValue();
                 }
-                this.assembleValue = aValue;
-                return aValue;
-            }
-            return 0;
         }
         return assembleValue;
     }

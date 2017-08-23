@@ -716,155 +716,123 @@ public class Generator {
     }
 
     /**
+     * Randomly picks a number of items to use for a job
+     * @param possibleItems list of all items that can be used for the job
+     */
+    private Map<Item, Integer> determineJobItems(List<Item> possibleItems){
+
+        Map<Item, Integer> result = new HashMap<>();
+        int currentDifficulty = 0;
+        int difficulty = RNG.nextInt(difficultyMax - difficultyMin + 1) + difficultyMin;
+
+        int numberOfItems = Math.min(RNG.nextInt(productTypesMax - productTypesMin + 1) + productTypesMin,
+                possibleItems.size());
+
+        // choose items for job
+        RNG.shuffle(possibleItems);
+        int currentNumberOfProducts = 0;
+        for (Item tmpJobItem : possibleItems) {
+            if (currentDifficulty + tmpJobItem.getAssembleValue() < difficulty) {
+                currentDifficulty += tmpJobItem.getAssembleValue();
+                result.put(tmpJobItem, 1);
+                currentNumberOfProducts++;
+            }
+            if (currentNumberOfProducts >= numberOfItems) break;
+        }
+
+        // determine quantities for each item
+        List<Item> itemList = new ArrayList<>(result.keySet());
+        while(currentDifficulty < difficulty && (!itemList.isEmpty())){
+            int itemIndex = RNG.nextInt(itemList.size());
+            if(currentDifficulty + itemList.get(itemIndex).getAssembleValue() < difficulty){
+                currentDifficulty += itemList.get(itemIndex).getAssembleValue();
+                int amount = result.get(itemList.get(itemIndex));
+                result.put(itemList.get(itemIndex), amount + 1);
+            }
+            else itemList.remove(itemIndex);
+        }
+        return result;
+    }
+
+    /**
      * Generates a number of jobs dependent on config parameters
      * @return a set of jobs
      * @param stepNo the number of the current step
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
-        Vector<Item> tmpJobItems = new Vector<>();
+        Set<Job> jobs = new HashSet<>();
+        List<Item> tmpJobItems = new ArrayList<>();
+
         if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
             tmpJobItems.addAll(baseItems); // only require base items in this case
-        }else{
+        } else {
             tmpJobItems.addAll(assembledItems);
         }
-        Set<Job> jobs = new HashSet<>();
 
-        double jobProb = Math.exp((-1)*(double) (float) stepNo/world.getSteps()) * rate;
-        if(RNG.nextDouble() <= jobProb){
-            ArrayList<Storage> tmpStorage = new ArrayList<>(world.getStorages());
-            int storageNumber = RNG.nextInt(tmpStorage.size());
+        double jobProb = Math.exp(-1d * (double)stepNo/(double)world.getSteps()) * rate;
+        if(RNG.nextDouble() <= jobProb){ // create a new job
 
-            Map<Item, Integer> jobItems = new HashMap<>();
-            int numberOfProducts = RNG.nextInt((productTypesMax-productTypesMin) + 1) + productTypesMin;
-            numberOfProducts = Math.min(numberOfProducts, tmpJobItems.size());
-            int currentDifficulty = 0;
+            List<Storage> storageList = new ArrayList<>(world.getStorages());
 
-            if(RNG.nextDouble() > missionProbability || stepNo<missionEnd){
-                int difficulty = RNG.nextInt((difficultyMax-difficultyMin) + 1) + difficultyMin;
+            Storage storage = storageList.get(RNG.nextInt(storageList.size()));
+            Map<Item, Integer> jobItems = determineJobItems(tmpJobItems);
+            int length = RNG.nextInt(timeMax - timeMin + 1) + timeMin;
 
-                //choose items for job
-                RNG.shuffle(tmpJobItems);
-                int currentNumberOfProducts = 0;
-                for (Item tmpJobItem : tmpJobItems) {
-                    if ((currentDifficulty + tmpJobItem.getAssembleValue()) <= difficulty) {
-                        currentDifficulty = currentDifficulty + tmpJobItem.getAssembleValue();
-                        jobItems.put(tmpJobItem, 1);
-                        currentNumberOfProducts++;
-                    }
-                    if (currentNumberOfProducts >= numberOfProducts) {
-                        break;
-                    }
-                }
+            int reward = computeReward(jobItems);
+            int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
+            reward += rewardAdd;
+            if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) reward = jobItems.keySet().size() * 100;
 
-                //determine amount for each item
-                ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
-                while(currentDifficulty<difficulty && (!itemList.isEmpty())){
-                    RNG.shuffle(itemList);
-                    if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
-                        currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
-                        int amount = jobItems.get(itemList.get(0));
-                        jobItems.replace(itemList.get(0), amount, amount+1);
-                    }else{
-                        itemList.remove(0);
-                    }
-                }
-
-                int reward = computeReward(jobItems);
-                int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
-                reward = reward + rewardAdd;
+            if(RNG.nextDouble() > missionProbability || stepNo < missionEnd){ // no mission
 
                 if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
                     reward = jobItems.keySet().size() * 100;
                 }
 
-                int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
-
+                Job job;
                 if(RNG.nextDouble() > auctionProbability){
-                    //generate job
-                    Job job1 = new Job(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, JobData.POSTER_SYSTEM);
-                    for(Item item: jobItems.keySet()){
-                        job1.addRequiredItem(item, jobItems.get(item));
-                    }
-                    jobs.add(job1);
-                }else{
-                    //generate auction
-                    int auctionTime = RNG.nextInt((auctionTimeMax - auctionTimeMin) + 1) + auctionTimeMin;
+                    // create regular job
+                    job = new Job(reward, storage, stepNo + 1, stepNo + 1 + length, JobData.POSTER_SYSTEM);
+                }
+                else {
+                    // create auction
+                    int auctionTime = RNG.nextInt(auctionTimeMax - auctionTimeMin + 1) + auctionTimeMin;
                     int fine;
-                    int fineMod = 1 + RNG.nextInt(fineAdd+fineSub);
-                    if(fineMod > fineSub){
-                        fine = reward + (int) (reward * ((fineMod-fineSub)/100.0f));
-                    }else{
-                        fine = reward - (int) (reward * (fineMod/100.0f));
+                    int fineMod = 1 + RNG.nextInt(fineAdd + fineSub);
+                    if(fineMod > fineSub) {
+                        fine = reward + (int) (reward * ((fineMod - fineSub) / 100.0f));
+                    } else {
+                        fine = reward - (int) (reward * (fineMod / 100.0f));
                     }
                     maxRewardAdd = 1 + RNG.nextInt(rewardAddMax);
-                    reward = reward + (int) (reward*maxRewardAdd/100.0f);
-                    AuctionJob auction1 = new AuctionJob(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, auctionTime, fine);
-                    for(Item item: jobItems.keySet()){
-                        auction1.addRequiredItem(item, jobItems.get(item));
-                    }
-                    jobs.add(auction1);
+                    reward += (int) (reward * maxRewardAdd / 100.0f);
+                    job = new AuctionJob(reward, storage, stepNo + 1, stepNo + 1 + length, auctionTime, fine);
                 }
-            }else{
-                //generate mission
-                int difficulty = RNG.nextInt((missionDifficultyMax-difficultyMin) + 1) + difficultyMin;
-
-                //choose items for job
-                RNG.shuffle(tmpJobItems);
-                int currentNumberOfProducts = 0;
-                for (Item tmpJobItem : tmpJobItems) {
-                    if ((currentDifficulty + tmpJobItem.getAssembleValue()) <= difficulty) {
-                        currentDifficulty = currentDifficulty + tmpJobItem.getAssembleValue();
-                        jobItems.put(tmpJobItem, 1);
-                        currentNumberOfProducts++;
-                    }
-                    if (currentNumberOfProducts >= numberOfProducts) {
-                        break;
-                    }
-                }
-
-                //determine amount for each item
-                ArrayList<Item> itemList = new ArrayList<>(jobItems.keySet());
-                while(currentDifficulty<difficulty && (!itemList.isEmpty())){
-                    RNG.shuffle(itemList);
-                    if((currentDifficulty + itemList.get(0).getAssembleValue() ) < difficulty){
-                        currentDifficulty = currentDifficulty + itemList.get(0).getAssembleValue();
-                        int amount = jobItems.get(itemList.get(0));
-                        jobItems.replace(itemList.get(0), amount, amount+1);
-                    }else{
-                        itemList.remove(0);
-                    }
-                }
-
-                int reward = computeReward(jobItems);
-                int rewardAdd = (int) (reward*(RNG.nextInt((rewardAddMax - rewardAddMin) + 1) + rewardAddMin)/100.0f);
-                reward = reward + rewardAdd;
-
-                if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
-                    reward = jobItems.keySet().size() * 100;
-                }
-
-                int length = RNG.nextInt((timeMax - timeMin) + 1) + timeMin;
-                missionEnd = stepNo+1+length;
+                for(Item item: jobItems.keySet()) job.addRequiredItem(item, jobItems.get(item));
+                jobs.add(job);
+            } else {
+                // create mission
+                missionEnd = stepNo + 1 + length;
                 int fine;
-                int fineMod = 1 + RNG.nextInt(fineAdd+fineSub);
+                int fineMod = 1 + RNG.nextInt(fineAdd + fineSub);
                 if(fineMod > fineSub){
-                    fine = reward + (int) (reward * ((fineMod-fineSub)/100.0f));
-                }else{
-                    fine = reward - (int) (reward * (fineMod/100.0f));
+                    fine = reward + (int) (reward * ((fineMod - fineSub) / 100.0f));
+                } else {
+                    fine = reward - (int) (reward * (fineMod / 100.0f));
                 }
-                for(TeamState team: world.getTeams()){
-                    Mission mission1 = new Mission(reward,tmpStorage.get(storageNumber), stepNo+1, stepNo+1+length, fine, team, Integer.toString(missionID));
-                    for(Item item: jobItems.keySet()){
-                        mission1.addRequiredItem(item, jobItems.get(item));
-                    }
-                    jobs.add(mission1);
+
+                for(TeamState team: world.getTeams()){ // one mission instance for each team
+                    Mission mission = new Mission(reward, storage, stepNo + 1, stepNo + 1 + length, fine, team, String.valueOf(missionID));
+                    for(Item item: jobItems.keySet()) mission.addRequiredItem(item, jobItems.get(item));
+                    jobs.add(mission);
                 }
                 missionID++;
             }
         }
 
+        // Log jobs
         for(Job job: jobs){
-            Vector<String> reqItems = new Vector<>();
+            List<String> reqItems = new ArrayList<>();
             for(Item item: job.getRequiredItems().getStoredTypes()){
                 reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
             }
@@ -883,11 +851,11 @@ public class Generator {
     private int computeReward(Map<Item, Integer> requiredItems){
         int reward = 0;
         for(Item reqItem: requiredItems.keySet()){
-            for(int i=0; i<requiredItems.get(reqItem); i++){
+            for(int i = 0; i < requiredItems.get(reqItem); i++){
                 for(Item reqBaseItem: reqItem.getRequiredBaseItems().keySet()){
-                    reward = reward + (reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue());
+                    reward += reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue();
                 }
-                reward = reward + (reqItem.getAssembleValue() * 100);
+                reward += reqItem.getAssembleValue() * 100;
             }
         }
         return reward;

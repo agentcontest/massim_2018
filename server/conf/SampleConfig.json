@@ -118,7 +118,7 @@
           "reqAmountMax" : 3,
           "toolsMin" : 3,
           "toolsMax" : 10,
-          "toolProbability" : 0.5
+          "toolProbability" : 0.9
         },
         "jobs" : {
           "rate" : 0.2,
