@@ -116,6 +116,7 @@ export type ActionType = 'noAction' | string;
 export interface LastAction {
   result: ActionResult;
   type: ActionType;
+  params: string[];
 }
 
 export interface RequiredItem {
