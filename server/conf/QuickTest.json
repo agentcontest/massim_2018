@@ -54,7 +54,7 @@
       "generate" : {
         "facilities" : {
           "quadSize" : 0.04,
-          "blackoutProbability" : 0.1,
+          "blackoutProbability" : 0,
           "blackoutTimeMin" : 5,
           "blackoutTimeMax" : 10,
           "chargingStations" : {
