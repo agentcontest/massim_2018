@@ -719,11 +719,11 @@ public class Generator {
      * Randomly picks a number of items to use for a job
      * @param possibleItems list of all items that can be used for the job
      */
-    private Map<Item, Integer> determineJobItems(List<Item> possibleItems){
+    private Map<Item, Integer> determineJobItems(List<Item> possibleItems, boolean mission){
 
         Map<Item, Integer> result = new HashMap<>();
         int currentDifficulty = 0;
-        int difficulty = RNG.nextInt(difficultyMax - difficultyMin + 1) + difficultyMin;
+        int difficulty = RNG.nextInt((mission? missionDifficultyMax : difficultyMax) - difficultyMin + 1) + difficultyMin;
 
         int numberOfItems = Math.min(RNG.nextInt(productTypesMax - productTypesMin + 1) + productTypesMin,
                 possibleItems.size());
@@ -772,10 +772,11 @@ public class Generator {
         double jobProb = Math.exp(-1d * (double)stepNo/(double)world.getSteps()) * rate;
         if(RNG.nextDouble() <= jobProb){ // create a new job
 
-            List<Storage> storageList = new ArrayList<>(world.getStorages());
+            boolean createMission = stepNo >= missionEnd && RNG.nextDouble() <= missionProbability;
 
+            List<Storage> storageList = new ArrayList<>(world.getStorages());
             Storage storage = storageList.get(RNG.nextInt(storageList.size()));
-            Map<Item, Integer> jobItems = determineJobItems(tmpJobItems);
+            Map<Item, Integer> jobItems = determineJobItems(tmpJobItems, createMission);
             int length = RNG.nextInt(timeMax - timeMin + 1) + timeMin;
 
             int reward = computeReward(jobItems);
@@ -783,18 +784,14 @@ public class Generator {
             reward += rewardAdd;
             if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) reward = jobItems.keySet().size() * 100;
 
-            if(RNG.nextDouble() > missionProbability || stepNo < missionEnd){ // no mission
+            if(!createMission){
 
                 if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
                     reward = jobItems.keySet().size() * 100;
                 }
 
                 Job job;
-                if(RNG.nextDouble() > auctionProbability){
-                    // create regular job
-                    job = new Job(reward, storage, stepNo + 1, stepNo + 1 + length, JobData.POSTER_SYSTEM);
-                }
-                else {
+                if(RNG.nextDouble() <= auctionProbability){
                     // create auction
                     int auctionTime = RNG.nextInt(auctionTimeMax - auctionTimeMin + 1) + auctionTimeMin;
                     int fine;
@@ -807,6 +804,10 @@ public class Generator {
                     maxRewardAdd = 1 + RNG.nextInt(rewardAddMax);
                     reward += (int) (reward * maxRewardAdd / 100.0f);
                     job = new AuctionJob(reward, storage, stepNo + 1, stepNo + 1 + length, auctionTime, fine);
+                }
+                else {
+                    // create regular job
+                    job = new Job(reward, storage, stepNo + 1, stepNo + 1 + length, JobData.POSTER_SYSTEM);
                 }
                 for(Item item: jobItems.keySet()) job.addRequiredItem(item, jobItems.get(item));
                 jobs.add(job);
