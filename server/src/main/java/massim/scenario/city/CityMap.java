@@ -53,7 +53,7 @@ public class CityMap implements Serializable {
 	 */
     public Route findRoute(Location from, Location to, Set<String> permissions){
 		if(from == null || to == null) return null;
-		if(!isInBounds(to)) return null; // target must be in bounds
+		if(!isReachable(to, permissions)) return null; // target must be reachable
 		if (permissions.contains(GraphHopperManager.PERMISSION_AIR))
 			return getNewAirRoute(from, to);
 		if (permissions.contains(GraphHopperManager.PERMISSION_ROAD) && existsRoute(to, from))
