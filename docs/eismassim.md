@@ -200,8 +200,12 @@ The following percepts might be included in a `SIM-START` message:
   * parts : Function - all quantities of items required for assembly
     * item1 : Identifier - the first item required for assembly
     * qty1 : Numeral - quantity of 'item1' required for assembly
-* `{min,max}{Lat,Lon}(coordinate)`
-  * coordinate: Numeral - one of the 4 map bounds
+* `{min,max,center}{Lat,Lon}(coordinate)`
+  * coordinate: Numeral - one of the 4 map bounds or the "center"
+* `proximity(p)`
+  * p : Numeral - the proximity (see [scenario.md](scenario.md))
+* `cellSize(c)`
+  * c : Numeral - the cellSize (see [scenario.md](scenario.md))
 
 #### REQUEST-ACTION percepts
 

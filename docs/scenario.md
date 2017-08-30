@@ -507,7 +507,7 @@ Example:
 <message timestamp="1489763697332" type="sim-start">
   <simulation id="2017-QuickTest-Sim" map="london"
               seedCapital="10" steps="1000" team="A"
-              minLat="1.1" maxLat="1.2" minLon="2.1" maxLon="2.3">
+              minLat="1.1" maxLat="1.2" minLon="2.1" maxLon="2.3" centerLat="1.15" centerLon="2.2">
     <role battery="500" load="1000" name="SampleRole" speed="10">
       <tool name="tool0"/>
       <tool name="tool1"/>
