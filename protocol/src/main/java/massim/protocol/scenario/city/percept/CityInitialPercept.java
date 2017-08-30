@@ -26,6 +26,10 @@ public class CityInitialPercept extends SimStart {
     @XmlAttribute private double maxLat;
     @XmlAttribute private double minLon;
     @XmlAttribute private double maxLon;
+    @XmlAttribute private double centerLat;
+    @XmlAttribute private double centerLon;
+    @XmlAttribute private int proximity;
+    @XmlAttribute private double cellSize;
     @XmlElement private RoleData role;
     @XmlElement(name="item") public List<ItemData> items;
 
@@ -47,7 +51,8 @@ public class CityInitialPercept extends SimStart {
      */
     public CityInitialPercept(String name, String simId, int steps, String teamName, String mapName, long seedCapital,
                               RoleData role, List<ItemData> items,
-                              double minLat, double maxLat, double minLon, double maxLon) {
+                              double minLat, double maxLat, double minLon, double maxLon,
+                              double centerLat, double centerLon, int proximity, double cellSize) {
         this.name = name;
         this.simId = simId;
         this.steps = steps;
@@ -60,6 +65,10 @@ public class CityInitialPercept extends SimStart {
         this.maxLat = maxLat;
         this.minLon = minLon;
         this.maxLon = maxLon;
+        this.centerLat = centerLat;
+        this.centerLon = centerLon;
+        this.cellSize = cellSize;
+        this.proximity = proximity;
     }
 
     public String getName(){
@@ -101,4 +110,20 @@ public class CityInitialPercept extends SimStart {
     public double getMinLon(){return minLon;}
 
     public double getMaxLon(){return maxLon;}
+
+    public double getCenterLat() {
+        return centerLat;
+    }
+
+    public double getCenterLon() {
+        return centerLon;
+    }
+
+    public int getProximity() {
+        return proximity;
+    }
+
+    public double getCellSize() {
+        return cellSize;
+    }
 }

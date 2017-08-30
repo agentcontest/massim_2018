@@ -245,4 +245,11 @@ public class CityMap implements Serializable {
 	public Location getCenter(){
     	return center;
 	}
+
+	/**
+	 * @return the cell size of the map
+	 */
+	public double getCellSize(){
+		return cellSize;
+	}
 }

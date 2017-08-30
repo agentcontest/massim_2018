@@ -19,6 +19,10 @@ public class Location {
         this.lon = lon;
     }
 
+    public static int getProximity() {
+        return proximity;
+    }
+
     /**
      * @return the location's latitude
      */
