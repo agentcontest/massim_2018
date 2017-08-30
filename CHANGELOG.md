@@ -1,5 +1,20 @@
 # MASSim CHANGELOG
 
+## Package release 1.5
+
+* scenario
+  * added percepts for map center, cellSize and proximity
+* monitor
+  * fixed display of stored items
+  * added a third team color
+  * added display of action parameters
+* eismassim
+  * improved entity re/connection
+  * added the new percepts
+* server
+  * fixed a bug where actions could go missing on extremely slow hardware
+  * refactored the scenario generation
+
 ## Package release 1.4
 
 * protocol
