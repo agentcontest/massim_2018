@@ -51,7 +51,7 @@ public class CityMap implements Serializable {
 	 * @param permissions the permissions to use
 	 * @return a new route or null, if the permissions were incorrectly set or some other error occurred (e.g. no route exists).
 	 */
-    Route findRoute(Location from, Location to, Set<String> permissions){
+    public Route findRoute(Location from, Location to, Set<String> permissions){
 		if(from == null || to == null) return null;
 		if(!isInBounds(to)) return null; // target must be in bounds
 		if (permissions.contains(GraphHopperManager.PERMISSION_AIR))
