@@ -751,6 +751,10 @@ public class Generator {
             }
             else itemList.remove(itemIndex);
         }
+
+        // safeguard
+        if(result.isEmpty()) result.put(possibleItems.get(0), 1);
+
         return result;
     }
 
