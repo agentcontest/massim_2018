@@ -3,6 +3,7 @@ import { Ctrl, MapView, Located, Facility, FacilityType, Agent } from './interfa
 import ol = require('openlayers');
 
 const CLAUSTHAL: ol.Coordinate = [10.340707, 51.8080063];
+const COLORS: { [index:string] : string } = {a: 'rgba(0,114,178,1)', b: 'rgba(0,158,115,1)', c: 'rgba(98,98,98,1)'};
 
 function xy(lonlat: Located): ol.Coordinate {
   return ol.proj.fromLonLat([lonlat.lon, lonlat.lat]);
@@ -40,6 +41,15 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       })
     });
   };
+
+  const teamColorStyle = function(agent: Agent): ol.style.Style {
+    return new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: COLORS[ctrl.normalizeTeam(agent.team)] || COLORS.a,
+        width: 3
+      }),
+    });
+  }
 
   const openStreetMapLayer = new ol.layer.Tile({
     source: new ol.source.OSM({
@@ -92,6 +102,13 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       };
     };
 
+    const renderRoute = function(agent: Agent){
+      const polyline = new ol.geom.LineString(agent.route.map(xy));
+      const feature = new ol.Feature({geometry: polyline});
+      feature.setStyle(teamColorStyle(agent));
+      vectorSource.addFeature(feature);
+    }
+
     ctrl.vm.dynamic.workshops.forEach(renderFacility('workshop'));
     ctrl.vm.dynamic.dumps.forEach(renderFacility('dump'));
     ctrl.vm.dynamic.shops.forEach(renderFacility('shop'));
@@ -103,6 +120,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       const active = agent.lastAction && agent.lastAction.type !== 'noAction' &&
                      agent.lastAction.result.indexOf('successful') === 0;
       addFeature(agent, agentIconStyle(agent, agent === ctrl.selection(), active));
+      renderRoute(agent);
     };
 
     ctrl.vm.dynamic.entities.forEach(agent => {

@@ -99,7 +99,7 @@ export interface Agent {
   load: number;
   charge: number;
   routeLength: number;
-  route: any[];
+  route: Waypoint[];
   items: any[];
   facility?: string;
   lastAction?: LastAction;
@@ -178,6 +178,12 @@ export interface StaticWorld {
   maxLat: number;
   minLon: number;
   maxLon: number;
+}
+
+export interface Waypoint {
+  index: number,
+  lat: number,
+  lon: number
 }
 
 export type Redraw = () => void;
