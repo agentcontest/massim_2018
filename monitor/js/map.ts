@@ -102,12 +102,12 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       };
     };
 
-    const renderRoute = function(agent: Agent){
+    const renderRoute = function(agent: Agent) {
       const polyline = new ol.geom.LineString(agent.route.map(xy));
-      const feature = new ol.Feature({geometry: polyline});
+      const feature = new ol.Feature({ geometry: polyline });
       feature.setStyle(teamColorStyle(agent));
       vectorSource.addFeature(feature);
-    }
+    };
 
     ctrl.vm.dynamic.workshops.forEach(renderFacility('workshop'));
     ctrl.vm.dynamic.dumps.forEach(renderFacility('dump'));
