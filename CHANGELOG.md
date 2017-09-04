@@ -1,5 +1,14 @@
 # MASSim CHANGELOG
 
+## Package release 1.6
+
+* scenario
+  * added measure to prevent empty jobs
+  * fixed issue where agents could be trapped in some parts of the map
+  * changed cellSize to Integer
+* monitor
+  * added rendering of agents' routes
+
 ## Package release 1.5
 
 * scenario
