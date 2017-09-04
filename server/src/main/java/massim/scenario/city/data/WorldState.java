@@ -82,7 +82,7 @@ public class WorldState {
         int proximity = config.optInt("proximity", 4);
         Log.log(Log.Level.NORMAL, "Configuring scenario proximity: " + proximity);
         Location.setProximity(proximity);
-        double cellSize = config.optDouble("cellSize", 0.001);
+        int cellSize = config.optInt("cellSize", 500);
         Log.log(Log.Level.NORMAL, "Configuring scenario cellSize: " + cellSize);
         double centerLat = config.optDouble("centerLat", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario centerLat: " + centerLat);

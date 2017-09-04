@@ -27,14 +27,14 @@ import java.util.Set;
  */
 public class CityMap implements Serializable {
 
-	private double cellSize;
+	private int cellSize;
 	private double minLat;
 	private double maxLat;
 	private double minLon;
 	private double maxLon;
 	private Location center;
 
-	public CityMap(String mapName, double cellSize, double minLat, double maxLat, double minLon, double maxLon, Location center) {
+	public CityMap(String mapName, int cellSize, double minLat, double maxLat, double minLon, double maxLon, Location center) {
 		this.cellSize = cellSize;
 		this.minLon = minLon;
 		this.maxLon = maxLon;
@@ -70,7 +70,7 @@ public class CityMap implements Serializable {
      */
 	private Route getNewAirRoute(Location from, Location to){
 		Route route = new Route();
-		double fractions = getLength(from, to) / cellSize;
+		double fractions = getLength(from, to) / (double)cellSize;
 		Location loc = null;
 		for (long i = 1; i <= fractions; i++) {
 			loc = getIntermediateLoc(from, to, fractions, i);
@@ -101,7 +101,7 @@ public class CityMap implements Serializable {
      */
     private boolean existsRoute(Location from, Location to) {
         GHResponse rsp = queryGH(from, to);
-        rsp.getErrors().forEach(error -> Log.log(Log.Level.ERROR, error.getMessage()));
+        rsp.getErrors().forEach(error -> Log.log(Log.Level.ERROR, "GH: " + error.getMessage()));
         return !rsp.hasErrors() && rsp.getBest().getPoints().size() > 0;
     }
 	
@@ -249,7 +249,7 @@ public class CityMap implements Serializable {
 	/**
 	 * @return the cell size of the map
 	 */
-	public double getCellSize(){
+	public int getCellSize(){
 		return cellSize;
 	}
 }

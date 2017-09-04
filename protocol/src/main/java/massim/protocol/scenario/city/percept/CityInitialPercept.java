@@ -29,7 +29,7 @@ public class CityInitialPercept extends SimStart {
     @XmlAttribute private double centerLat;
     @XmlAttribute private double centerLon;
     @XmlAttribute private int proximity;
-    @XmlAttribute private double cellSize;
+    @XmlAttribute private int cellSize;
     @XmlElement private RoleData role;
     @XmlElement(name="item") public List<ItemData> items;
 
@@ -52,7 +52,7 @@ public class CityInitialPercept extends SimStart {
     public CityInitialPercept(String name, String simId, int steps, String teamName, String mapName, long seedCapital,
                               RoleData role, List<ItemData> items,
                               double minLat, double maxLat, double minLon, double maxLon,
-                              double centerLat, double centerLon, int proximity, double cellSize) {
+                              double centerLat, double centerLon, int proximity, int cellSize) {
         this.name = name;
         this.simId = simId;
         this.steps = steps;
