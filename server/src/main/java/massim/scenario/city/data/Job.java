@@ -3,6 +3,7 @@ package massim.scenario.city.data;
 import massim.protocol.scenario.city.data.ItemAmountData;
 import massim.protocol.scenario.city.data.JobData;
 import massim.scenario.city.data.facilities.Storage;
+import massim.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +111,7 @@ public class Job {
                 if(!getPoster().equals(JobData.POSTER_SYSTEM)){
                     storage.addDelivered(requiredItems, getPoster());
                 }
+                Log.log(Log.Level.NORMAL, "Job completed by " + team + ": " + this);
                 return true;
             }
         }
