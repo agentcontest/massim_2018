@@ -12,6 +12,7 @@ import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
 import massim.util.*;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +39,7 @@ public class Server {
     private LoginManager loginManager;
     private AgentManager agentManager;
     private Monitor monitor;
+    private ReplayWriter replayWriter;
 
     /**
      * whether server should stop after the next match (random mode)
@@ -125,6 +127,10 @@ public class Server {
             }
         }
         server.config.monitorPort = monitorPort;
+
+        if (server.config.replayPath != null) {
+            server.replayWriter = new ReplayWriter(server.config.replayPath);
+        }
 
         server.go();
         server.close();
@@ -370,19 +376,9 @@ public class Server {
      * @param startTime string representation of the simulation's start time
      * @param world the world state
      */
-    private void handleSimState(String simID, String startTime, WorldData world) {
-        if(monitor != null) monitor.updateState(world);
-        if(config.replayPath != null){
-            // determine file name
-            String file = "";
-            if(world instanceof StaticWorldData) file = "static";
-            else if(world instanceof DynamicWorldData) file = "step-" + String.valueOf(((DynamicWorldData) world).step);
-            // save to file
-            IOUtil.writeXMLToFile(
-                    world.toXML(world.getClass()),
-                    Paths.get(config.replayPath, startTime + "-" + simID, file + ".xml").toFile(),
-                    true);
-        }
+    private void handleSimState(String simId, String startTime, WorldData world) {
+        if (monitor != null) monitor.updateState(world);
+        if (replayWriter != null) replayWriter.updateState(simId, startTime, world);
     }
 
     /**

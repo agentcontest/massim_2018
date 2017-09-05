@@ -54,7 +54,7 @@ public class Monitor {
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://localhost:%d/", port));
+        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://127.0.0.1:%d/", port));
     }
 
     /**
@@ -86,33 +86,12 @@ public class Monitor {
     }
 
     private String staticToJson(StaticCityData data) {
-        JSONObject d = new JSONObject();
-        d.put("simId", data.simId);
-        d.put("steps", data.steps);
-        d.put("map", data.map);
-        d.put("seedCapital", data.seedCapital);
-        d.put("teams", data.teams);
-        d.put("roles", data.roles);
-        d.put("items", data.items);
-        d.put("minLon", data.minLon);
-        d.put("minLat", data.minLat);
-        d.put("maxLon", data.maxLon);
-        d.put("maxLat", data.maxLat);
+        JSONObject d = new JSONObject(data);
         return d.toString();
     }
 
     private String dynamicToJson(DynamicCityData data) {
-        JSONObject d = new JSONObject();
-        d.put("step", data.step);
-        d.put("workshops", data.workshops);
-        d.put("chargingStations", data.chargingStations);
-        d.put("shops", data.shops);
-        d.put("dumps", data.dumps);
-        d.put("resourceNodes", data.resourceNodes);
-        d.put("storages", data.storages);
-        d.put("entities", data.entities);
-        d.put("jobs", data.jobs);
-        d.put("teams", data.teams);
+        JSONObject d = new JSONObject(data);
         return d.toString();
     }
 }

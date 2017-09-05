@@ -60,4 +60,40 @@ public class DynamicCityData extends DynamicWorldData {
         this.resourceNodes = resourceNodes;
         this.teams = teams;
     }
+
+    public List<WorkshopData> getWorkshops() {
+        return this.workshops;
+    }
+
+    public List<ChargingStationData> getChargingStations() {
+        return this.chargingStations;
+    }
+
+    public List<ShopData> getShops() {
+        return this.shops;
+    }
+
+    public List<DumpData> getDumps() {
+        return this.dumps;
+    }
+
+    public List<ResourceNodeData> getResourceNodes() {
+        return this.resourceNodes;
+    }
+
+    public List<StorageData> getStorages() {
+        return this.storages;
+    }
+
+    public List<EntityData> getEntities() {
+        return this.entities;
+    }
+
+    public List<JobData> getJobs() {
+        return this.jobs;
+    }
+
+    public List<TeamData> getTeams() {
+        return this.teams;
+    }
 }
