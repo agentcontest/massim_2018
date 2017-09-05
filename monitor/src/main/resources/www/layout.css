@@ -74,3 +74,10 @@ ul {
   line-height: 1.2em;
   padding-left: 1.5em;
 }
+
+button {
+  width: 3em;
+  height: 2em;
+  margin: 0.2em;
+  border-radius: 1px;
+}
