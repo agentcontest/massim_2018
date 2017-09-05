@@ -23,14 +23,18 @@ function disconnected(ctrl: Ctrl) {
   ]);
 }
 
-function replay(ctrl: ReplayCtrl) {
+function replay(ctrl: ReplayCtrl, staticWorld: StaticWorld) {
   return h('div', [
     h('div', [h('strong', 'Replay:'), ' ', ctrl.name()]),
-    h('div', h('button', {
-      on: {
-        click: () => ctrl.toggle()
-      }
-    }, ctrl.playing() ? '||' : '>'))
+    h('div', [
+      h('button', { on: { click: () => ctrl.setStep(0) } }, '|<<'),
+      h('button', { on: { click: () => ctrl.setStep(ctrl.step() - 10) } }, '<<'),
+      h('button', {
+        on: { click: () => ctrl.toggle() }
+      }, ctrl.playing() ? '||' : '>'),
+      h('button', { on: { click: () => ctrl.setStep(ctrl.step() + 10) } }, '>>'),
+      h('button', { on: { click: () => ctrl.setStep(staticWorld.steps - 1) } }, '>>|')
+    ])
   ]);
 }
 
@@ -116,7 +120,7 @@ export default function(ctrl: Ctrl) {
   else if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
     return loading();
   else return h('div#overlay', [
-    ctrl.replay ? h('div.btn', replay(ctrl.replay)) : undefined,
+    ctrl.replay ? h('div.btn', replay(ctrl.replay, ctrl.vm.static)) : undefined,
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
     h('div.btn', details(ctrl, ctrl.vm.static)),
     h('div.btn', jobs(ctrl.vm.dynamic))
