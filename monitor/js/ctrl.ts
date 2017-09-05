@@ -39,6 +39,9 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     var step = 0;
     var timer: number | undefined = undefined;
 
+    var cache: any = {};
+    var cacheSize = 0;
+
     function stop() {
       if (timer) clearInterval(timer);
       timer = undefined;
@@ -64,6 +67,14 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     }
 
     function loadDynamic(step: number) {
+      // got from cache
+      if (cache[step]) {
+        vm.dynamic = cache[step];
+        vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
+        redraw();
+        return;
+      }
+
       const group = Math.floor(step / 5) * 5;
       const xhr = new XMLHttpRequest();
       xhr.open('GET', path + '/' + group + '.json');
@@ -72,6 +83,16 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
           var response = JSON.parse(xhr.responseText);
           vm.dynamic = response[step];
           vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
+
+          // write to cache
+          if (cacheSize > 100) {
+            cache = {};
+            cacheSize = 0;
+          }
+          for (var s in response) {
+            cache[s] = response[s];
+            cacheSize++;
+          }
         } else {
           console.log('indeed');
           vm.state = 'error';
