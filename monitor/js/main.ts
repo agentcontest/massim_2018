@@ -32,7 +32,10 @@ export default function Monitor(mapTarget: Element, overlayTarget: Element) {
     });
   };
 
-  ctrl = makeCtrl(redraw, '/replays/2017-09-05-13-56-59-2017-QuickTest-Sim');
+  const replayPath = window.location.search.length > 1 ?
+    window.location.search.substr(1) : undefined;
+
+  ctrl = makeCtrl(redraw, replayPath);
   map = makeMap(mapTarget, ctrl);
   redraw();
 }
