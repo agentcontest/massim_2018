@@ -16,7 +16,7 @@ function loading() {
 
 function disconnected(ctrl: Ctrl) {
   return h('div.modal-overlay', [
-    h('p', ctrl.replay ? 'Replay unavailable.' : 'Not connected to the monitor.'),
+    h('p', ctrl.replay ? 'Replay unavailable.' : 'Live server not connected.'),
     h('a', {
       props: { href: '/' }
     }, 'Retry now.')
