@@ -54,7 +54,7 @@ public class Monitor {
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://localhost:%d/", port));
+        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://127.0.0.1:%d/", port));
     }
 
     /**
