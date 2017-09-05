@@ -111,6 +111,7 @@ public class Job {
                 if(!getPoster().equals(JobData.POSTER_SYSTEM)){
                     storage.addDelivered(requiredItems, getPoster());
                 }
+
                 Log.log(Log.Level.NORMAL, "Job completed by " + team + ": " + this);
                 return true;
             }
@@ -216,5 +217,9 @@ public class Job {
      */
     public enum JobStatus{
         ACTIVE, ENDED, COMPLETED, AUCTION, FUTURE
+    }
+
+    public String toString(){
+        return String.format("type(%s) reward(%d) from(%s)", getClass().getSimpleName(), reward, poster);
     }
 }
