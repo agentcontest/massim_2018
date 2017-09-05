@@ -102,17 +102,7 @@ public class Monitor {
     }
 
     private String dynamicToJson(DynamicCityData data) {
-        JSONObject d = new JSONObject();
-        d.put("step", data.step);
-        d.put("workshops", data.workshops);
-        d.put("chargingStations", data.chargingStations);
-        d.put("shops", data.shops);
-        d.put("dumps", data.dumps);
-        d.put("resourceNodes", data.resourceNodes);
-        d.put("storages", data.storages);
-        d.put("entities", data.entities);
-        d.put("jobs", data.jobs);
-        d.put("teams", data.teams);
+        JSONObject d = new JSONObject(data);
         return d.toString();
     }
 }

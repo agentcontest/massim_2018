@@ -23,4 +23,8 @@ public abstract class DynamicWorldData extends WorldData {
     public DynamicWorldData(int step){
         this.step = step;
     }
+
+    public int getStep() {
+        return this.step;
+    }
 }
