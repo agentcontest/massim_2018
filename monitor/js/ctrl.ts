@@ -88,10 +88,18 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     }
 
     function setStep(s: number) {
-      step = s;
+      // keep step in bounds
+      step = Math.max(0, s);
+      if (vm.static && step >= vm.static.steps) {
+        stop();
+        step = vm.static.steps - 1;
+      }
+
+      // show connecting after a while
       vm.state = 'connecting';
       setTimeout(() => redraw(), 500);
-      loadDynamic(s);
+
+      loadDynamic(step);
     }
 
     loadStatic();
