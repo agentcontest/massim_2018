@@ -35,8 +35,14 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     };
   };
 
-  const startReplay = function(path: string): ReplayCtrl {
+  const makeReplayCtrl = function(path: string): ReplayCtrl {
     var step = 0;
+    var timer: number | undefined = undefined;
+
+    function stop() {
+      if (timer) clearInterval(timer);
+      timer = undefined;
+    }
 
     function loadStatic() {
       const xhr = new XMLHttpRequest();
@@ -58,20 +64,24 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     }
 
     function loadDynamic(step: number) {
+      const group = Math.floor(step / 5) * 5;
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', path + '/' + step + '.json');
+      xhr.open('GET', path + '/' + group + '.json');
       xhr.onload = function() {
         if (xhr.status === 200) {
           var response = JSON.parse(xhr.responseText);
           vm.dynamic = response[step];
           vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
         } else {
+          console.log('indeed');
           vm.state = 'error';
+          stop();
         }
         redraw();
       };
       xhr.onerror = function() {
         vm.state = 'error';
+        stop();
         redraw();
       };
       xhr.send();
@@ -80,8 +90,8 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     function setStep(s: number) {
       step = s;
       vm.state = 'connecting';
+      setTimeout(() => redraw(), 500);
       loadDynamic(s);
-      redraw();
     }
 
     loadStatic();
@@ -90,12 +100,22 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
       step: function() {
         return step;
       },
-      setStep
+      setStep,
+      toggle: function() {
+        if (timer) stop();
+        else {
+          timer = setInterval(function () {
+            setStep(step + 1);
+          }, 2000);
+        }
+        redraw();
+      }
     };
   };
 
-  const replay = replayPath ? startReplay(replayPath) : undefined;
+  const replay = replayPath ? makeReplayCtrl(replayPath) : undefined;
   if (!replay) connect();
+  else replay.toggle(); // XXX
 
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;

@@ -24,6 +24,7 @@ export interface ViewModel {
 export interface ReplayCtrl {
   step(): number;
   setStep(s: number): void;
+  toggle(): void;
 }
 
 export type FacilityType = 'workshop' | 'resourceNode' | 'shop' | 'dump' |
