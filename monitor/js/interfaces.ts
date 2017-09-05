@@ -22,9 +22,11 @@ export interface ViewModel {
 }
 
 export interface ReplayCtrl {
+  name(): string;
   step(): number;
   setStep(s: number): void;
   toggle(): void;
+  playing(): boolean;
 }
 
 export type FacilityType = 'workshop' | 'resourceNode' | 'shop' | 'dump' |

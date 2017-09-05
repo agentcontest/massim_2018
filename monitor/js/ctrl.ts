@@ -97,6 +97,10 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     loadStatic();
 
     return {
+      name: function() {
+        const parts = path.split('/');
+        return parts[parts.length - 1];
+      },
       step: function() {
         return step;
       },
@@ -106,9 +110,12 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
         else {
           timer = setInterval(function () {
             setStep(step + 1);
-          }, 2000);
+          }, 1000);
         }
         redraw();
+      },
+      playing: function() {
+        return !!timer;
       }
     };
   };

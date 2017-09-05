@@ -1,4 +1,4 @@
-import { Ctrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
+import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
@@ -20,6 +20,17 @@ function disconnected(ctrl: Ctrl) {
     h('a', {
       props: { href: '/' }
     }, 'Retry now.')
+  ]);
+}
+
+function replay(ctrl: ReplayCtrl) {
+  return h('div', [
+    h('div', [h('strong', 'Replay:'), ' ', ctrl.name()]),
+    h('div', h('button', {
+      on: {
+        click: () => ctrl.toggle()
+      }
+    }, ctrl.playing() ? '||' : '>'))
   ]);
 }
 
@@ -105,6 +116,7 @@ export default function(ctrl: Ctrl) {
   else if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
     return loading();
   else return h('div#overlay', [
+    ctrl.replay ? h('div.btn', replay(ctrl.replay)) : undefined,
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
     h('div.btn', details(ctrl, ctrl.vm.static)),
     h('div.btn', jobs(ctrl.vm.dynamic))
