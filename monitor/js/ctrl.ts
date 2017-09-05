@@ -117,7 +117,7 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
         if (timer) stop();
         else {
           timer = setInterval(function () {
-            setStep(step + 1);
+            if (vm.state !== 'connecting') setStep(step + 1);
           }, 1000);
         }
         redraw();
