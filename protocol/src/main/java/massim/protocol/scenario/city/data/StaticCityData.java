@@ -67,4 +67,48 @@ public class StaticCityData extends StaticWorldData {
         this.minLon = minLon;
         this.maxLon = maxLon;
     }
+
+    public String getSimId() {
+        return this.simId;
+    }
+
+    public int getSteps() {
+        return this.steps;
+    }
+
+    public String getMap() {
+        return this.map;
+    }
+
+    public long getSeedCapital() {
+        return this.seedCapital;
+    }
+
+    public List<String> getTeams() {
+        return this.teams;
+    }
+
+    public List<RoleData> getRoles() {
+        return this.roles;
+    }
+
+    public List<ItemData> getItems() {
+        return this.items;
+    }
+
+    public double getMinLon() {
+        return this.minLon;
+    }
+
+    public double getMinLat() {
+        return this.minLat;
+    }
+
+    public double getMaxLon() {
+        return this.maxLon;
+    }
+
+    public double getMaxLat() {
+        return this.maxLat;
+    }
 }
