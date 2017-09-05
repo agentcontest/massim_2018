@@ -122,7 +122,7 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
 
   const replay = replayPath ? makeReplayCtrl(replayPath) : undefined;
   if (!replay) connect();
-  else replay.toggle(); // XXX
+  else replay.toggle();
 
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
