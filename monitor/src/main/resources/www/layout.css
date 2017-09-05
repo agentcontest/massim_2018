@@ -16,6 +16,9 @@ body {
   max-width: calc(100vw - 0.5em - 5em);
   position: absolute;
 }
+#overlay.replay {
+  z-index: 2; /* on top of loading overlay */
+}
 
 .modal-overlay {
   background: rgba(200, 200, 200, 0.8);
