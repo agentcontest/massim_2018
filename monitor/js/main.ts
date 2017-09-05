@@ -32,9 +32,7 @@ export default function Monitor(mapTarget: Element, overlayTarget: Element) {
     });
   };
 
-  ctrl = makeCtrl(redraw);
+  ctrl = makeCtrl(redraw, '/replay');
   map = makeMap(mapTarget, ctrl);
   redraw();
-
-  ctrl.connect();
 }

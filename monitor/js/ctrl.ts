@@ -1,8 +1,8 @@
-import { Redraw, Ctrl, ViewModel, Agent, Facility } from './interfaces';
+import { Redraw, Ctrl, ReplayCtrl, ViewModel, Agent, Facility } from './interfaces';
 
 const TEAMS = ['a', 'b', 'c'];
 
-export default function(redraw: Redraw): Ctrl {
+export default function(redraw: Redraw, replayPath?: string): Ctrl {
   const vm: ViewModel = {
     state: 'connecting',
     selected: [],
@@ -35,6 +35,68 @@ export default function(redraw: Redraw): Ctrl {
     };
   };
 
+  const startReplay = function(path: string): ReplayCtrl {
+    var step = 0;
+
+    function loadStatic() {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', path + '/static.json');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          vm.static = JSON.parse(xhr.responseText);
+          setStep(0);
+        } else {
+          vm.state = 'error';
+        }
+        redraw();
+      };
+      xhr.onerror = function() {
+        vm.state = 'error';
+        redraw();
+      };
+      xhr.send();
+    }
+
+    function loadDynamic(step: number) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', path + '/' + step + '.json');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          vm.dynamic = response[step];
+          vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
+        } else {
+          vm.state = 'error';
+        }
+        redraw();
+      };
+      xhr.onerror = function() {
+        vm.state = 'error';
+        redraw();
+      };
+      xhr.send();
+    }
+
+    function setStep(s: number) {
+      step = s;
+      vm.state = 'connecting';
+      loadDynamic(s);
+      redraw();
+    }
+
+    loadStatic();
+
+    return {
+      step: function() {
+        return step;
+      },
+      setStep
+    };
+  };
+
+  const replay = replayPath ? startReplay(replayPath) : undefined;
+  if (!replay) connect();
+
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
     if (!d) return [];
@@ -58,7 +120,7 @@ export default function(redraw: Redraw): Ctrl {
   };
 
   return {
-    connect: connect,
+    replay: replay,
     vm: vm,
     entities: entities,
     setSelection(names: string[]) {

@@ -14,9 +14,9 @@ function loading() {
   return h('div.modal-overlay', h('div.loader', 'Loading ...'));
 }
 
-function disconnected() {
+function disconnected(ctrl: Ctrl) {
   return h('div.modal-overlay', [
-    h('p', 'Not connected to the monitor.'),
+    h('p', ctrl.replay ? 'Replay unavailable.' : 'Not connected to the monitor.'),
     h('a', {
       props: { href: '/' }
     }, 'Retry now.')
@@ -101,7 +101,7 @@ function jobs(dynamic: DynamicWorld) {
 }
 
 export default function(ctrl: Ctrl) {
-  if (ctrl.vm.state === 'error') return disconnected();
+  if (ctrl.vm.state === 'error') return disconnected(ctrl);
   else if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
     return loading();
   else return h('div#overlay', [
