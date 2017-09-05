@@ -32,7 +32,7 @@ export default function Monitor(mapTarget: Element, overlayTarget: Element) {
     });
   };
 
-  ctrl = makeCtrl(redraw, '/replay');
+  ctrl = makeCtrl(redraw, '/replays/2017-09-05-13-56-59-2017-QuickTest-Sim');
   map = makeMap(mapTarget, ctrl);
   redraw();
 }

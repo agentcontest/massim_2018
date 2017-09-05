@@ -41,7 +41,7 @@ function replay(ctrl: ReplayCtrl, staticWorld: StaticWorld) {
 function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld) {
   return h('div', [
     h('div', [h('strong', 'Simulation:'), ' ', staticWorld.simId]),
-    h('div', [h('strong', 'Step:'), ' ', n(dynamic.step), ' / ', n(staticWorld.steps)])
+    h('div', [h('strong', 'Step:'), ' ', n(dynamic.step), ' / ', n(staticWorld.steps - 1)])
   ].concat(dynamic.teams.map(team =>
     h('div', [h('strong', ['Team ', h('span.team.' + ctrl.normalizeTeam(team.name), team.name), ':']), ' ', n(team.money, '$')])
   )));
