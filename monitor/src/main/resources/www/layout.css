@@ -40,8 +40,7 @@ body {
   background: rgba(0, 60, 136, 0.5);
   color: white;
   margin: 1px;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
+  padding: 0.4em;
   max-width: 300px;
 }
 
