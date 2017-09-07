@@ -65,11 +65,11 @@ public class Monitor {
     Monitor(int port, String replayPath) throws ExecutionException, InterruptedException {
         WebServer server = WebServers.createWebServer(port)
             .add(new EmbeddedResourceHandler("www"))
-            .add("replay", new StaticFileHandler(replayPath))
+            .add(new StaticFileHandler(replayPath))
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?/replay", replayPath, port));
+        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?", replayPath, port));
     }
 
     private void broadcast(String message) {
@@ -118,7 +118,7 @@ public class Monitor {
         }
 
         if (path == null) {
-            System.out.println("Usage: java -jar monitor.jar [--port PORT] <path to replay>")
+            System.out.println("Usage: java -jar monitor.jar [--port PORT] <path to replay>");
         } else {
             new Monitor(port, path);
         }
