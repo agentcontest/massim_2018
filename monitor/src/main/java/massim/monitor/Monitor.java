@@ -133,8 +133,7 @@ public class Monitor {
         }
 
         if (!Paths.get(path, "static.json").toFile().exists()) {
-            System.out.println("Is this really a replay directory?");
-            System.out.println("static.json does not seem to exist.");
+            System.out.println("Not a replay. static.json does not seem to exist in this directory.");
             return;
         }
 

@@ -20,5 +20,5 @@ Usage:
 java -jar monitor/monitor-[version]-with-dependencies.jar [--port PORT] <server/replays/path>
 ```
 
-Then navigate to [http://localhost:8000/](http://localhost:8000/) (or similar)
+Then navigate to [http://localhost:8000/?/](http://localhost:8000/?/) (or similar)
 in your browser.
