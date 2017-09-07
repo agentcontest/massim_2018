@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
+import java.nio.file.Paths;
+
 /**
  * The web monitor for the MASSim server.
  */
@@ -127,8 +129,15 @@ public class Monitor {
 
         if (path == null) {
             System.out.println("Usage: java -jar monitor.jar [--port PORT] <path to replay>");
-        } else {
-            new Monitor(port, path);
+            return;
         }
+
+        if (!Paths.get(path, "static.json").toFile().exists()) {
+            System.out.println("Is this really a replay directory?");
+            System.out.println("static.json does not seem to exist.");
+            return;
+        }
+
+        new Monitor(port, path);
     }
 }
