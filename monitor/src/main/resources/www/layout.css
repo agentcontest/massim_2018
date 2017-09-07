@@ -79,7 +79,7 @@ ul {
 }
 
 button {
-  width: 3em;
+  min-width: 3em;
   height: 2em;
   margin: 0.2em;
   border-radius: 1px;
