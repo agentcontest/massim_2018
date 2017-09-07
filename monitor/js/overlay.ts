@@ -18,7 +18,7 @@ function disconnected(ctrl: Ctrl) {
   return h('div.modal-overlay', [
     h('p', ctrl.replay ? 'Replay unavailable.' : 'Live server not connected.'),
     h('a', {
-      props: { href: document.location.href }
+      props: { href: document.location.pathname + document.location.search }
     }, 'Retry now.')
   ]);
 }
