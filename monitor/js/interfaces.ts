@@ -26,6 +26,8 @@ export interface ReplayCtrl {
   step(): number;
   setStep(s: number): void;
   toggle(): void;
+  stop(): void;
+  start(): void;
   playing(): boolean;
 }
 

@@ -45,6 +45,14 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
     function stop() {
       if (timer) clearInterval(timer);
       timer = undefined;
+      redraw();
+    }
+
+    function start() {
+      if (!timer) timer = setInterval(function() {
+        if (vm.state !== 'connecting') setStep(step + 1);
+      }, 1000);
+      redraw();
     }
 
     function loadStatic() {
@@ -139,13 +147,10 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
       setStep,
       toggle: function() {
         if (timer) stop();
-        else {
-          timer = setInterval(function () {
-            if (vm.state !== 'connecting') setStep(step + 1);
-          }, 1000);
-        }
-        redraw();
+        else start();
       },
+      stop,
+      start,
       playing: function() {
         return !!timer;
       }
