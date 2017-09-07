@@ -13,8 +13,10 @@ import org.webbitserver.WebSocketConnection;
 import org.webbitserver.handler.HttpToWebSocketHandler;
 import org.webbitserver.handler.EmbeddedResourceHandler;
 import org.webbitserver.handler.StaticFileHandler;
+import org.webbitserver.handler.StringHttpHandler;
 
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -63,13 +65,19 @@ public class Monitor {
      * @param replayPath the path to a replay file
      */
     Monitor(int port, String replayPath) throws ExecutionException, InterruptedException {
+        // read index.html from resources
+        String html = new Scanner(Monitor.class.getClassLoader().getResourceAsStream("www/index.html"), "UTF-8")
+            .useDelimiter("\\A")
+            .next();
+
         WebServer server = WebServers.createWebServer(port)
             .add(new EmbeddedResourceHandler("www"))
+            .add("/?/", new StringHttpHandler("text/html", html))
             .add(new StaticFileHandler(replayPath))
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?", replayPath, port));
+        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?/", replayPath, port));
     }
 
     private void broadcast(String message) {
