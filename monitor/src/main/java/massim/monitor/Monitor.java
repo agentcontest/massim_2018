@@ -12,6 +12,7 @@ import org.webbitserver.WebServers;
 import org.webbitserver.WebSocketConnection;
 import org.webbitserver.handler.HttpToWebSocketHandler;
 import org.webbitserver.handler.EmbeddedResourceHandler;
+import org.webbitserver.handler.StaticFileHandler;
 
 import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
@@ -61,8 +62,14 @@ public class Monitor {
      * Creates a new monitor to watch replays with.
      * @param replayPath the path to a replay file
      */
-    Monitor(int port, String replayPath) {
-        // TODO
+    Monitor(int port, String replayPath) throws ExecutionException, InterruptedException {
+        WebServer server = WebServers.createWebServer(port)
+            .add(new EmbeddedResourceHandler("www"))
+            .add("replay", new StaticFileHandler(replayPath))
+            .start()
+            .get();
+
+        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?/replay", replayPath, port));
     }
 
     private void broadcast(String message) {
@@ -93,5 +100,27 @@ public class Monitor {
     private String dynamicToJson(DynamicCityData data) {
         JSONObject d = new JSONObject(data);
         return d.toString();
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        int port = 8000;
+        String path = null;
+
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
+                case "--port":
+                    port = Integer.parseInt(args[++i]);
+                    break;
+                default:
+                    path = args[i];
+                    break;
+            }
+        }
+
+        if (path == null) {
+            System.out.println("Usage: java -jar monitor.jar [--port PORT] <path to replay>")
+        } else {
+            new Monitor(port, path);
+        }
     }
 }

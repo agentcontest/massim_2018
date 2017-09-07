@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>massim.monitor.Main</mainClass>
+                            <mainClass>massim.monitor.Monitor</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
