@@ -120,6 +120,9 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
       vm.state = 'connecting';
       setTimeout(() => redraw(), 500);
 
+      // update url
+      if (history.replaceState) history.replaceState({}, document.title, '#' + step);
+
       loadDynamic(step);
     }
 
