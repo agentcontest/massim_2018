@@ -105,7 +105,7 @@ public class Item {
 
     @Override
     public String toString(){
-        String ret = "Item " + id + ": \tvol("+volume+")\tAV(" + getAssembleValue() + ")";
+        String ret = "Item " + id + ": \tvol("+volume+")\tAV(" + getAssembleValue() + ")\tval(" + getValue() + ")";
         if(requiredItems.keySet().size() > 0)
             ret += "\tparts([" + requiredItems.entrySet().stream()
                 .map(e -> "(" + e.getValue() + ", " + e.getKey().getName() + ")")
