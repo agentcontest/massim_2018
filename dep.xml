@@ -80,5 +80,14 @@
                 <include>*.json</include>
             </includes>
         </fileSet>
+
+        <!-- Monitor -->
+        <fileSet>
+            <directory>monitor/target</directory>
+            <outputDirectory>monitor</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
