@@ -5,8 +5,8 @@ export interface Ctrl {
   setSelection(names: string[]): void;
   selection(): Agent | Facility | null;
   normalizeTeam(team: string): string;
-  connect(): void;
   vm: ViewModel;
+  replay?: ReplayCtrl,
 }
 
 export interface MapView {
@@ -19,6 +19,14 @@ export interface ViewModel {
   selectionIndex: number;
   dynamic?: DynamicWorld;
   static?: StaticWorld;
+}
+
+export interface ReplayCtrl {
+  name(): string;
+  step(): number;
+  setStep(s: number): void;
+  toggle(): void;
+  playing(): boolean;
 }
 
 export type FacilityType = 'workshop' | 'resourceNode' | 'shop' | 'dump' |

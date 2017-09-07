@@ -1,8 +1,8 @@
-import { Redraw, Ctrl, ViewModel, Agent, Facility } from './interfaces';
+import { Redraw, Ctrl, ReplayCtrl, ViewModel, Agent, Facility } from './interfaces';
 
 const TEAMS = ['a', 'b', 'c'];
 
-export default function(redraw: Redraw): Ctrl {
+export default function(redraw: Redraw, replayPath?: string): Ctrl {
   const vm: ViewModel = {
     state: 'connecting',
     selected: [],
@@ -35,6 +35,126 @@ export default function(redraw: Redraw): Ctrl {
     };
   };
 
+  const makeReplayCtrl = function(path: string): ReplayCtrl {
+    var step = 0;
+    var timer: number | undefined = undefined;
+
+    var cache: any = {};
+    var cacheSize = 0;
+
+    function stop() {
+      if (timer) clearInterval(timer);
+      timer = undefined;
+    }
+
+    function loadStatic() {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', path + '/static.json');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          vm.static = JSON.parse(xhr.responseText);
+          setStep(step);
+        } else {
+          vm.state = 'error';
+        }
+        redraw();
+      };
+      xhr.onerror = function() {
+        vm.state = 'error';
+        redraw();
+      };
+      xhr.send();
+    }
+
+    function loadDynamic(step: number) {
+      // got from cache
+      if (cache[step]) {
+        vm.dynamic = cache[step];
+        vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
+        redraw();
+        return;
+      }
+
+      const group = Math.floor(step / 5) * 5;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', path + '/' + group + '.json');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          vm.dynamic = response[step];
+          vm.state = (vm.dynamic && vm.dynamic.step == step) ? 'online' : 'connecting';
+
+          // write to cache
+          if (cacheSize > 100) {
+            cache = {};
+            cacheSize = 0;
+          }
+          for (var s in response) {
+            cache[s] = response[s];
+            cacheSize++;
+          }
+        } else {
+          console.log('indeed');
+          vm.state = 'error';
+          stop();
+        }
+        redraw();
+      };
+      xhr.onerror = function() {
+        vm.state = 'error';
+        stop();
+        redraw();
+      };
+      xhr.send();
+    }
+
+    function setStep(s: number) {
+      // keep step in bounds
+      step = Math.max(0, s);
+      if (vm.static && step >= vm.static.steps) {
+        stop();
+        step = vm.static.steps - 1;
+      }
+
+      // show connecting after a while
+      vm.state = 'connecting';
+      setTimeout(() => redraw(), 500);
+
+      // update url
+      if (history.replaceState) history.replaceState({}, document.title, '#' + step);
+
+      loadDynamic(step);
+    }
+
+    loadStatic();
+
+    return {
+      name: function() {
+        const parts = path.split('/');
+        return parts[parts.length - 1];
+      },
+      step: function() {
+        return step;
+      },
+      setStep,
+      toggle: function() {
+        if (timer) stop();
+        else {
+          timer = setInterval(function () {
+            if (vm.state !== 'connecting') setStep(step + 1);
+          }, 1000);
+        }
+        redraw();
+      },
+      playing: function() {
+        return !!timer;
+      }
+    };
+  };
+
+  const replay = replayPath ? makeReplayCtrl(replayPath) : undefined;
+  if (!replay) connect();
+
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
     if (!d) return [];
@@ -58,7 +178,7 @@ export default function(redraw: Redraw): Ctrl {
   };
 
   return {
-    connect: connect,
+    replay: replay,
     vm: vm,
     entities: entities,
     setSelection(names: string[]) {

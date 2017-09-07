@@ -1,4 +1,4 @@
-import { Ctrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
+import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
@@ -14,19 +14,34 @@ function loading() {
   return h('div.modal-overlay', h('div.loader', 'Loading ...'));
 }
 
-function disconnected() {
+function disconnected(ctrl: Ctrl) {
   return h('div.modal-overlay', [
-    h('p', 'Not connected to the monitor.'),
+    h('p', ctrl.replay ? 'Replay unavailable.' : 'Live server not connected.'),
     h('a', {
-      props: { href: '/' }
+      props: { href: document.location.href }
     }, 'Retry now.')
+  ]);
+}
+
+function replay(ctrl: ReplayCtrl) {
+  return h('div.btn.replay', [
+    h('div', [h('strong', 'Replay:'), ' ', ctrl.name()]),
+    h('div', [
+      h('button', { on: { click: () => ctrl.setStep(0) } }, '|<<'),
+      h('button', { on: { click: () => ctrl.setStep(ctrl.step() - 10) } }, '<<'),
+      h('button', {
+        on: { click: () => ctrl.toggle() }
+      }, ctrl.playing() ? '||' : '>'),
+      h('button', { on: { click: () => ctrl.setStep(ctrl.step() + 10) } }, '>>'),
+      h('button', { on: { click: () => ctrl.setStep(99999999) } }, '>>|')
+    ])
   ]);
 }
 
 function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld) {
   return h('div', [
     h('div', [h('strong', 'Simulation:'), ' ', staticWorld.simId]),
-    h('div', [h('strong', 'Step:'), ' ', n(dynamic.step), ' / ', n(staticWorld.steps)])
+    h('div', [h('strong', 'Step:'), ' ', n(dynamic.step), ' / ', n(staticWorld.steps - 1)])
   ].concat(dynamic.teams.map(team =>
     h('div', [h('strong', ['Team ', h('span.team.' + ctrl.normalizeTeam(team.name), team.name), ':']), ' ', n(team.money, '$')])
   )));
@@ -101,10 +116,14 @@ function jobs(dynamic: DynamicWorld) {
 }
 
 export default function(ctrl: Ctrl) {
-  if (ctrl.vm.state === 'error') return disconnected();
-  else if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
-    return loading();
+  if (ctrl.vm.state === 'error') return disconnected(ctrl);
+  if (ctrl.vm.state === 'connecting' || !ctrl.vm.static || !ctrl.vm.dynamic)
+    return h('div', [
+      loading(),
+      ctrl.replay ? h('div#overlay.replay', replay(ctrl.replay)) : undefined
+    ]);
   else return h('div#overlay', [
+    ctrl.replay ? replay(ctrl.replay) : undefined,
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
     h('div.btn', details(ctrl, ctrl.vm.static)),
     h('div.btn', jobs(ctrl.vm.dynamic))

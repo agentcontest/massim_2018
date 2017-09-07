@@ -32,9 +32,17 @@ export default function Monitor(mapTarget: Element, overlayTarget: Element) {
     });
   };
 
-  ctrl = makeCtrl(redraw);
+  const replayPath = window.location.search.length > 1 ?
+    window.location.search.substr(1) : undefined;
+
+  ctrl = makeCtrl(redraw, replayPath);
+
+  if (ctrl.replay) {
+    const step = parseInt(document.location.hash.substr(1), 10);
+    if (step > 0) ctrl.replay.setStep(step);
+    else ctrl.replay.toggle();
+  }
+
   map = makeMap(mapTarget, ctrl);
   redraw();
-
-  ctrl.connect();
 }

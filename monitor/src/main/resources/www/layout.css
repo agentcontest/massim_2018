@@ -16,6 +16,9 @@ body {
   max-width: calc(100vw - 0.5em - 5em);
   position: absolute;
 }
+#overlay.replay {
+  z-index: 2; /* on top of loading overlay */
+}
 
 .modal-overlay {
   background: rgba(200, 200, 200, 0.8);
@@ -40,8 +43,7 @@ body {
   background: rgba(0, 60, 136, 0.5);
   color: white;
   margin: 1px;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
+  padding: 0.4em;
   max-width: 300px;
 }
 
@@ -74,4 +76,11 @@ ul {
   font-size: 0.8em;
   line-height: 1.2em;
   padding-left: 1.5em;
+}
+
+button {
+  width: 3em;
+  height: 2em;
+  margin: 0.2em;
+  border-radius: 1px;
 }
