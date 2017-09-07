@@ -53,7 +53,7 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
       xhr.onload = function() {
         if (xhr.status === 200) {
           vm.static = JSON.parse(xhr.responseText);
-          setStep(0);
+          setStep(step);
         } else {
           vm.state = 'error';
         }
@@ -151,7 +151,6 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
 
   const replay = replayPath ? makeReplayCtrl(replayPath) : undefined;
   if (!replay) connect();
-  else replay.toggle();
 
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
