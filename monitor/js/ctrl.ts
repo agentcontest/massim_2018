@@ -36,6 +36,8 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
   };
 
   const makeReplayCtrl = function(path: string): ReplayCtrl {
+    if (path[path.length - 1] == '/') path = path.substr(0, path.length - 1);
+
     var step = 0;
     var timer: number | undefined = undefined;
 
@@ -57,7 +59,7 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
 
     function loadStatic() {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', path + ((path[path.length - 1] == '/') ? '' : '/') + 'static.json');
+      xhr.open('GET', path + '/static.json');
       xhr.onload = function() {
         if (xhr.status === 200) {
           vm.static = JSON.parse(xhr.responseText);
@@ -85,7 +87,7 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
 
       const group = Math.floor(step / 5) * 5;
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', path + ((path[path.length - 1] == '/') ? '' : '/') + group + '.json');
+      xhr.open('GET', path + '/' + group + '.json');
       xhr.onload = function() {
         if (xhr.status === 200) {
           var response = JSON.parse(xhr.responseText);
