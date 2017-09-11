@@ -1,0 +1,160 @@
+{
+  "server" : {
+    "tournamentMode" : "round-robin",
+    "teamsPerMatch" : 1,
+    "teamSize" : 28,
+    "launch" : "key",
+    "port" : 12300,
+    "backlog" : 10000,
+    "agentTimeout" : 4000,
+    "resultPath" : "results",
+    "logLevel" : "normal",
+    "logPath" : "logs",
+    "replayPath" : "replays",
+    "maxPacketLength" : 65536
+  },
+
+  "match" : [
+    {
+      "id" : "2017-TokyoTest",
+      "scenarioClass" : "city.CitySimulation",
+      "steps" : 1000,
+      "map" : "tokyo",
+      "seedCapital" : 50000,
+      "minLat" : 35.59,
+      "maxLat" : 35.71,
+      "minLon" : 139.26,
+      "maxLon" : 139.44,
+      "centerLat" : 35.65,
+      "centerLon" : 139.35,
+      "proximity" : 5,
+      "cellSize" : 500,
+      "randomSeed" : 17,
+      "randomFail" : 1,
+      "postJobLimit": 10,
+      "gotoCost" : 10,
+      "rechargeRate" : 5,
+      "visibilityRange" : 500,
+      "restock" : 1.0,
+      "restockResource" : 0.9,
+
+      "roles" : {
+        "car" : {
+          "speed" : 3,
+          "load" : 550,
+          "battery" : 500,
+          "roads" : ["road"]
+        },
+        "drone" : {
+          "speed" : 5,
+          "load" : 100,
+          "battery" : 250,
+          "roads" : ["air"]
+        },
+        "motorcycle" : {
+          "speed" : 4,
+          "load" : 300,
+          "battery" : 350,
+          "roads" : ["road"]
+        },
+        "truck" : {
+          "speed" : 2,
+          "load" : 3000,
+          "battery" : 2000,
+          "roads" : ["road"]
+        }
+      },
+
+      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
+
+      "generate" : {
+        "facilities" : {
+          "quadSize" : 0.04,
+          "blackoutProbability" : 0.1,
+          "blackoutTimeMin" : 5,
+          "blackoutTimeMax" : 10,
+          "chargingStations" : {
+            "density" : 0.9,
+            "rateMin" : 50,
+            "rateMax" : 150
+          },
+          "shops" : {
+            "density" : 0.8,
+            "minProd" : 3,
+            "maxProd" : 10,
+            "amountMin" : 5,
+            "amountMax" : 20,
+            "priceAddMin" : 100,
+            "priceAddMax" : 150,
+            "restockMin" : 1,
+            "restockMax" : 5
+          },
+          "dumps" : {
+            "density" : 0.6
+          },
+          "workshops" : {
+            "density" : 0.6
+          },
+          "storage" : {
+            "density" : 0.8,
+            "capacityMin" : 7500,
+            "capacityMax" : 15000
+          },
+          "resourceNodes":{
+            "density" : 0.7,
+            "gatherFrequencyMin" : 4,
+            "gatherFrequencyMax" : 8
+          }
+        },
+        "items" : {
+          "baseItemsMin" : 5,
+          "baseItemsMax" : 7,
+          "levelDecreaseMin" : 1,
+          "levelDecreaseMax" : 2,
+          "graphDepthMin" : 3,
+          "graphDepthMax" : 4,
+          "resourcesMin" : 2,
+          "resourcesMax" : 4,
+          "minVol" : 10,
+          "maxVol" : 50,
+          "valueMin" : 10,
+          "valueMax" : 100,
+          "minReq" : 1,
+          "maxReq" : 3,
+          "reqAmountMin" : 1,
+          "reqAmountMax" : 3,
+          "toolsMin" : 3,
+          "toolsMax" : 10,
+          "toolProbability" : 0.9
+        },
+        "jobs" : {
+          "rate" : 0.2,
+          "auctionProbability" : 0.4,
+          "missionProbability" : 0.1,
+          "productTypesMin" : 3,
+          "productTypesMax" : 5,
+          "difficultyMin" : 3,
+          "difficultyMax" : 12,
+          "timeMin" : 100,
+          "timeMax" : 400,
+          "rewardAddMin" : 50,
+          "rewardAddMax" : 100,
+          "auctions" : {
+            "auctionTimeMin" : 2,
+            "auctionTimeMax" : 10,
+            "fineSub" : 50,
+            "fineAdd" : 50,
+            "maxRewardAdd" : 50
+          },
+          "missions" : {
+            "missionDifficultyMax" : 6
+          }
+        }
+      }
+    }
+  ],
+
+  "teams" : {
+    "A" : "$(teams/A.json)"
+  }
+}
