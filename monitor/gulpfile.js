@@ -11,7 +11,7 @@ const www = 'src/main/resources/www/';
 function build() {
   return browserify('js/main.ts', {
       standalone: 'Monitor',
-      debug: true
+      debug: false
     })
     .plugin(tsify);
 }
