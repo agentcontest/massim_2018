@@ -215,7 +215,8 @@ public class CityMap implements Serializable {
 			loc = getNearestRoad(new Location(lon, lat));
 			if (isReachable(loc, roads)) return loc;
 		}
-		Log.log(Log.Level.ERROR, "Exceeded max tries to find a location.");
+		Log.log(Log.Level.ERROR,
+				String.format("Exceeded max tries to find a location. %f, %f : %f, %f", minLat, minLon, maxLat, maxLon));
 		return center;
 	}
 
