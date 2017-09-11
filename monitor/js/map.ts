@@ -14,7 +14,7 @@ function facilityStyle(type: FacilityType, selected: boolean): ol.style.Style {
 
   return new ol.style.Style({
     image: new ol.style.Icon({
-      src: '/img/' + type + suffix + '.png',
+      src: 'img/' + type + suffix + '.png',
       anchor: [17, 50],
       anchorXUnits: 'pixels',
       anchorYUnits: 'pixels'
@@ -34,7 +34,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
 
     return new ol.style.Style({
       image: new ol.style.Icon({
-        src: '/img/' + entity.role + '-' + ctrl.normalizeTeam(entity.team) + suffix + '.png',
+        src: 'img/' + entity.role + '-' + ctrl.normalizeTeam(entity.team) + suffix + '.png',
         anchor: [25, 25],
         anchorXUnits: 'pixels',
         anchorYUnits: 'pixels'
@@ -54,7 +54,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
   const openStreetMapLayer = new ol.layer.Tile({
     source: new ol.source.OSM({
       attributions: [ol.source.OSM.ATTRIBUTION],
-      url: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      url: '//{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     })
   });
 
