@@ -1,5 +1,15 @@
 # MASSim CHANGELOG
 
+## Package release 1.7
+
+* monitor
+  * added replay mechanism
+* scenario
+  * added the 2 missing tournament maps
+  * added config files for the new maps
+* server
+  * added some more log output
+
 ## Package release 1.6
 
 * scenario
