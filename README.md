@@ -45,7 +45,7 @@ Documentation
 
 [javaagents.md](docs/javaagents.md) gives a short introduction to the java agents framework, which holds skeletons that can already communicate with the MASSim server and have basic agent capabilities.
 
-[momitor.md](docs/monitor.md) describes how to view live matches and replays in the browser.
+[monitor.md](docs/monitor.md) describes how to view live matches and replays in the browser.
 
 License
 -------
