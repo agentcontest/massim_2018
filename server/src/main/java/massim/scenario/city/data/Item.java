@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * A product/item in the City scenario.
  */
-public class Item {
+public class Item implements Comparable<Item>{
     private String id;
     private int volume;
     private Map<Item, Integer> requiredItems = new HashMap<>();
@@ -117,5 +117,10 @@ public class Item {
                 .collect(Collectors.joining(", ")) + "])";
 
         return ret;
+    }
+
+    @Override
+    public int compareTo(Item o) {
+        return this.getName().compareTo(o.getName());
     }
 }

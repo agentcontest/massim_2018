@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 public class ItemBox {
 
-    private Map<Item, Integer> items = new HashMap<>();
+    private Map<Item, Integer> items = new TreeMap<>();
 
     /**
      * Stores a number of items in this box.
