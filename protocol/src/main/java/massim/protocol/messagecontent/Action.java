@@ -19,7 +19,7 @@ public class Action extends MessageContent {
 
     public final static String NO_ACTION = "noAction";
     private final static String UNKNOWN_ACTION = "unknownAction";
-    private final static String RANDOM_FAIL = "randomFail";
+    public final static String RANDOM_FAIL = "randomFail";
 
     public static final Action STD_NO_ACTION = new Action(NO_ACTION);
     public static final Action STD_UNKNOWN_ACTION = new Action(UNKNOWN_ACTION);

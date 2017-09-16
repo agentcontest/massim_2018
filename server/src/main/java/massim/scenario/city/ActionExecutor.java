@@ -79,13 +79,6 @@ public class ActionExecutor {
 
         Entity entity = world.getEntity(agent);
 
-        // determine random fail
-        if (RNG.nextInt(100) < world.getRandomFail()){
-            entity.setLastAction(Action.STD_RANDOM_FAIL_ACTION);
-            entity.setLastActionResult(FAILED);
-            return;
-        }
-
         Action action = actions.get(agent);
         if(action == null){
             Log.log(Log.Level.CRITICAL, "Step " + stepNo + ": No action for agent " + agent + " provided.");
@@ -94,6 +87,10 @@ public class ActionExecutor {
         entity.setLastAction(action);
         List<String> params = action.getParameters();
         switch (action.getActionType()){
+
+            case Action.RANDOM_FAIL:
+                entity.setLastActionResult(FAILED);
+                break;
 
             case Action.NO_ACTION:
                 entity.setLastActionResult(SUCCESSFUL);

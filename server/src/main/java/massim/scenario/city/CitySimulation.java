@@ -350,6 +350,15 @@ public class CitySimulation extends AbstractSimulation {
         List<String> agents = world.getAgents();
         RNG.shuffle(agents);
         actionExecutor.preProcess();
+
+        // determine random fail
+        new ArrayList<>(actions.keySet()).forEach(agent -> {
+            if (RNG.nextInt(100) < world.getRandomFail()){
+                actions.put(agent, Action.STD_RANDOM_FAIL_ACTION);
+            }
+        });
+
+        // execute all actions
         for(String agent: agents)
             actionExecutor.execute(agent, actions, stepNo);
         actionExecutor.postProcess();
