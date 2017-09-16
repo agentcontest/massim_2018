@@ -5,9 +5,7 @@ import massim.protocol.scenario.city.data.JobData;
 import massim.scenario.city.data.facilities.Storage;
 import massim.util.Log;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -104,9 +102,7 @@ public class Job {
             if(completed){
                 status = JobStatus.COMPLETED;
                 // transfer partially delivered items
-                deliveredItems.entrySet().stream()
-                        .filter(entry -> !entry.getKey().equals(team)) // completing team does not get any items
-                        .forEach(entry -> storage.addDelivered(entry.getValue(), entry.getKey()));
+                returnPartialDeliveries(new HashSet<>(Collections.singletonList(team)));
                 // transfer required items to posting team
                 if(!getPoster().equals(JobData.POSTER_SYSTEM)){
                     storage.addDelivered(requiredItems, getPoster());
@@ -117,6 +113,17 @@ public class Job {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns partially delivered items to the teams.
+     * Should be called if a job is completed or terminated.
+     * @param excludeTeams teams which shall not gain items back (e.g. the team that completed the job).
+     */
+    private void returnPartialDeliveries(Set<String> excludeTeams){
+        deliveredItems.entrySet().stream()
+                .filter(entry -> !excludeTeams.contains(entry.getKey())) // filter unwanted teams
+                .forEach(entry -> storage.addDelivered(entry.getValue(), entry.getKey()));
     }
 
     /**
@@ -155,6 +162,7 @@ public class Job {
     public void terminate(){
         if(!(status == JobStatus.COMPLETED)){
            status = JobStatus.ENDED;
+           returnPartialDeliveries(new HashSet<>());
         }
     }
 
