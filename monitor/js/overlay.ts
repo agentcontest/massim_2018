@@ -64,7 +64,10 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
       h('div', h('strong',  ['Agent ', h('em', sel.name)])),
       h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
       h('div', ['load: ', h('em', n(sel.load))]),
-      h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])])
+      h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])]),
+      h('div', ['items:', h('ul', sel.items.map(item =>
+        h('li', n(item.amount, 'x') + ' ' + item.name)
+      ))])
     ]);
   }
   else return h('div', [

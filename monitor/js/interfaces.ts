@@ -110,7 +110,7 @@ export interface Agent {
   charge: number;
   routeLength: number;
   route: Waypoint[];
-  items: any[];
+  items: ItemAmount[];
   facility?: string;
   lastAction?: LastAction;
 }
@@ -129,7 +129,7 @@ export interface LastAction {
   params: string[];
 }
 
-export interface RequiredItem {
+export interface ItemAmount {
   name: string;
   amount: number;
 }
@@ -139,8 +139,8 @@ export interface Job {
   poster: string;
   start: number;
   end: number;
-  requiredItems: RequiredItem[];
-  deliveredItems: RequiredItem[];
+  requiredItems: ItemAmount[];
+  deliveredItems: ItemAmount[];
   lowestBid: number;
   reward: number;
   storage: string;
