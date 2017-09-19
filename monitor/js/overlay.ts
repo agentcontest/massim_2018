@@ -104,14 +104,16 @@ function storageItems(ctrl: Ctrl, storage: Storage): VNode {
 }
 
 function jobs(dynamic: DynamicWorld) {
+  const jobs = dynamic.jobs.filter((j) => j.end <= dynamic.step);
+
   return h('div', [
     h('strong', 'Jobs and auctions'),
-    h('ul', dynamic.jobs.slice(0, MAX_JOBS).map(job => {
+    h('ul', jobs.slice(0, MAX_JOBS).map(job => {
       return h('li', [
         h('em', n(job.reward, '$')), ' by ', h('em', job.poster)
       ])
     })),
-    dynamic.jobs.length > MAX_JOBS ? h('div', 'and ' + (dynamic.jobs.length - MAX_JOBS) + ' more') : null
+    jobs.length > MAX_JOBS ? h('div', 'and ' + (jobs.length - MAX_JOBS) + ' more ongoing') : null
   ]);
 }
 
