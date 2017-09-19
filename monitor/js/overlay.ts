@@ -65,9 +65,9 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
       h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
       h('div', ['load: ', h('em', n(sel.load))]),
       h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])]),
-      h('div', ['items:', h('ul', sel.items.map(item =>
+      h('div', ['items:', sel.items.length ? h('ul', sel.items.map(item =>
         h('li', n(item.amount, 'x') + ' ' + item.name)
-      ))])
+      )) : h('em', 'none')])
     ]);
   }
   else return h('div', [
