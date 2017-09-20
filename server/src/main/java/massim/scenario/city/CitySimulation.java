@@ -10,6 +10,7 @@ import massim.protocol.messagecontent.SimStart;
 import massim.protocol.scenario.city.data.*;
 import massim.protocol.scenario.city.percept.CityInitialPercept;
 import massim.protocol.scenario.city.percept.CityStepPercept;
+import massim.protocol.scenario.city.util.LocationUtil;
 import massim.scenario.AbstractSimulation;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Facility;
@@ -362,6 +363,36 @@ public class CitySimulation extends AbstractSimulation {
         for(String agent: agents)
             actionExecutor.execute(agent, actions, stepNo);
         actionExecutor.postProcess();
+
+        // check if agents may be stuck
+        Set<String> roads = new HashSet<>(Collections.singletonList("road"));
+        world.getEntities().stream()
+                .filter(e -> e.getLastActionResult().equals(ActionExecutor.FAILED_NO_ROUTE))
+                .forEach(entity -> {
+            Route route = world.getMap().findRoute(entity.getLocation(), world.getMap().getCenter(), roads);
+            if(route == null){ // no route, agent must be stuck
+                // find nearest facility
+                Facility nextFac = null;
+                double min = Double.MAX_VALUE;
+                for(Facility fac: world.getFacilities()){
+                    double airDistance = LocationUtil.calculateRange(entity.getLocation().getLat(),
+                            entity.getLocation().getLon(), fac.getLocation().getLat(), fac.getLocation().getLon());
+                    if(airDistance < min){
+                        min = airDistance;
+                        nextFac = fac;
+                    }
+                }
+                // "teleport" entity to nearest facility
+                if (nextFac != null) {
+                    Log.log(Log.Level.NORMAL, "Agent " + world.getAgentForEntity(entity)
+                            + " seems stuck. Moving it to nearest facility "
+                            + nextFac.getName() + ".");
+                    entity.setLocation(nextFac.getLocation());
+                }
+            }
+        });
+
+        // step shops
         world.getShops().forEach(Shop::step);
 
         // process new jobs (created in this step)

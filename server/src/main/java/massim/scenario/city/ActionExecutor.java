@@ -20,7 +20,7 @@ public class ActionExecutor {
     public final static String SUCCESSFUL = "successful";
     private final static String FAILED_COUNTERPART = "failed_counterpart";
     private final static String FAILED_LOCATION = "failed_location";
-    private final static String FAILED_NO_ROUTE = "failed_no_route";
+    public final static String FAILED_NO_ROUTE = "failed_no_route";
     private final static String FAILED_UNKNOWN_ITEM = "failed_unknown_item";
     private final static String FAILED_UNKNOWN_AGENT = "failed_unknown_agent";
     private final static String FAILED_ITEM_AMOUNT = "failed_item_amount";

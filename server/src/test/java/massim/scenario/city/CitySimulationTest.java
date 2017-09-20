@@ -794,6 +794,24 @@ public class CitySimulationTest {
     }
 
     @Test
+    public void stuckAgentsAreRescued(){
+        WorldState world = sim.getWorldState();
+        Entity e1 = world.getEntity("agentA1");
+
+        e1.setLocation(new Location(2.34953, 48.86091));
+
+        sim.preStep(step);
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("goto", "shop3"));
+        sim.step(step, actions);
+        assert e1.getLastActionResult().equals(ActionExecutor.FAILED_NO_ROUTE);
+        sim.preStep(step);
+        actions.put("agentA1", new Action("goto", "shop3"));
+        sim.step(step, actions);
+        assert !e1.getLastActionResult().equals(ActionExecutor.FAILED_NO_ROUTE);
+    }
+
+    @Test
     public void blackoutWorks(){
         WorldState world = sim.getWorldState();
         Entity e1 = world.getEntity("agentA1");
