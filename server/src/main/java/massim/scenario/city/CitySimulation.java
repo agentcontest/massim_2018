@@ -367,6 +367,7 @@ public class CitySimulation extends AbstractSimulation {
         // check if agents may be stuck
         Set<String> roads = new HashSet<>(Collections.singletonList("road"));
         world.getEntities().stream()
+                .filter(e -> !e.getRole().getName().equals("drone"))
                 .filter(e -> e.getLastActionResult().equals(ActionExecutor.FAILED_NO_ROUTE))
                 .forEach(entity -> {
             Route route = world.getMap().findRoute(entity.getLocation(), world.getMap().getCenter(), roads);
