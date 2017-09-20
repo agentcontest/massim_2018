@@ -64,7 +64,10 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
       h('div', h('strong',  ['Agent ', h('em', sel.name)])),
       h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
       h('div', ['load: ', h('em', n(sel.load))]),
-      h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])])
+      h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])]),
+      h('div', ['items: ', sel.items.length ? h('ul', sel.items.map(item =>
+        h('li', n(item.amount, 'x') + ' ' + item.name)
+      )) : h('em', 'none')])
     ]);
   }
   else return h('div', [
@@ -104,14 +107,16 @@ function storageItems(ctrl: Ctrl, storage: Storage): VNode {
 }
 
 function jobs(dynamic: DynamicWorld) {
+  const jobs = dynamic.jobs.filter(job => dynamic.step <= job.end);
+
   return h('div', [
     h('strong', 'Jobs and auctions'),
-    h('ul', dynamic.jobs.slice(0, MAX_JOBS).map(job => {
+    h('ul', jobs.slice(0, MAX_JOBS).map(job => {
       return h('li', [
         h('em', n(job.reward, '$')), ' by ', h('em', job.poster)
       ])
     })),
-    dynamic.jobs.length > MAX_JOBS ? h('div', 'and ' + (dynamic.jobs.length - MAX_JOBS) + ' more') : null
+    jobs.length > MAX_JOBS ? h('div', 'and ' + (jobs.length - MAX_JOBS) + ' more ongoing') : null
   ]);
 }
 

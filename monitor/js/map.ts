@@ -103,7 +103,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
     };
 
     const renderRoute = function(agent: Agent) {
-      const polyline = new ol.geom.LineString(agent.route.map(xy));
+      const polyline = new ol.geom.LineString([xy(agent)].concat(agent.route.map(xy)));
       const feature = new ol.Feature({ geometry: polyline });
       feature.setStyle(teamColorStyle(agent));
       vectorSource.addFeature(feature);
