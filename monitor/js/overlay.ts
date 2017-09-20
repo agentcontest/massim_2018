@@ -107,7 +107,7 @@ function storageItems(ctrl: Ctrl, storage: Storage): VNode {
 }
 
 function jobs(dynamic: DynamicWorld) {
-  const jobs = dynamic.jobs.filter((j) => j.end <= dynamic.step);
+  const jobs = dynamic.jobs.filter(job => dynamic.step <= job.end);
 
   return h('div', [
     h('strong', 'Jobs and auctions'),
