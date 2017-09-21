@@ -18,7 +18,7 @@ import org.webbitserver.handler.StringHttpHandler;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.ExecutionException;
 
 import java.nio.file.Paths;
@@ -31,7 +31,7 @@ public class Monitor {
     private String latestStatic;
     private String latestDynamic;
 
-    private final Lock poolLock = new ReadWriteLock();
+    private final ReentrantReadWriteLock poolLock = new ReentrantReadWriteLock();
     private final HashSet<WebSocketConnection> pool = new HashSet<WebSocketConnection>();
 
     private final BaseWebSocketHandler socketHandler = new BaseWebSocketHandler() {
@@ -99,7 +99,7 @@ public class Monitor {
 
     private void broadcast(String message) {
         Lock lock = poolLock.readLock();
-        lock.acquire();
+        lock.lock();
         try {
             for (WebSocketConnection client: this.pool) {
                 client.send(message);
