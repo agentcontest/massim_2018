@@ -17,6 +17,8 @@ import org.webbitserver.handler.StringHttpHandler;
 
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.ExecutionException;
 
 import java.nio.file.Paths;
@@ -29,22 +31,35 @@ public class Monitor {
     private String latestStatic;
     private String latestDynamic;
 
+    private final Lock poolLock = new ReadWriteLock();
     private final HashSet<WebSocketConnection> pool = new HashSet<WebSocketConnection>();
 
     private final BaseWebSocketHandler socketHandler = new BaseWebSocketHandler() {
 
         @Override
         public void onOpen(WebSocketConnection client) {
-            pool.add(client);
-            if (latestStatic != null) client.send(latestStatic);
-            if (latestDynamic != null) client.send(latestDynamic);
-            System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
+            Lock lock = poolLock.writeLock();
+            lock.lock();
+            try {
+                pool.add(client);
+                if (latestStatic != null) client.send(latestStatic);
+                if (latestDynamic != null) client.send(latestDynamic);
+                System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
+            } finally {
+                lock.unlock();
+            }
         }
 
         @Override
         public void onClose(WebSocketConnection client) {
-            pool.remove(client);
-            System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
+            Lock lock = poolLock.writeLock();
+            lock.lock();
+            try {
+                pool.remove(client);
+                System.out.println(String.format("[ MONITOR ] %d viewer(s) connected", pool.size()));
+            } finally {
+                lock.unlock();
+            }
         }
     };
 
@@ -83,8 +98,14 @@ public class Monitor {
     }
 
     private void broadcast(String message) {
-        for (WebSocketConnection client: this.pool) {
-            client.send(message);
+        Lock lock = poolLock.readLock();
+        lock.acquire();
+        try {
+            for (WebSocketConnection client: this.pool) {
+                client.send(message);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
