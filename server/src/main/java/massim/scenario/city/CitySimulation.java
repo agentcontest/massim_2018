@@ -116,7 +116,7 @@ public class CitySimulation extends AbstractSimulation {
         /* create percept data */
         // create team data
         Map<String, TeamData> teamData = new HashMap<>();
-        world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(null, team.getMassium())));
+        world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(null, team.getMassium(), team.getScore())));
 
         // create entity data as visible to other entities (containing name, team, role and location)
         List<EntityData> entities = new Vector<>();
@@ -490,7 +490,7 @@ public class CitySimulation extends AbstractSimulation {
                                 .collect(Collectors.toList())))
                         .collect(Collectors.toList()),
                 world.getTeams().stream()
-                        .map(team -> new TeamData(team.getName(), team.getMassium()))
+                        .map(team -> new TeamData(team.getName(), team.getMassium(), team.getScore()))
                         .collect(Collectors.toList()));
     }
 
