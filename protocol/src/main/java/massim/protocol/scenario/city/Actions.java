@@ -31,11 +31,13 @@ public abstract class Actions {
     public final static String POST_JOB = "post_job";
     public final static String GATHER = "gather";
     public final static String RECHARGE = "recharge";
+    public final static String BUILD = "build";
+    public final static String DISMANTLE = "dismantle";
 
     /**
      * Unmodifiable list of all actions in the scenario.
      */
     public final static List<String> ALL_ACTIONS = Collections.unmodifiableList(Arrays.asList(GO_TO, RECEIVE, GIVE,
             STORE, RETRIEVE, ASSEMBLE, ASSIST_ASSEMBLE, BUY, DELIVER_JOB, RETRIEVE_DELIVERED, BID_FOR_JOB, DUMP, CHARGE,
-            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE, ABORT));
+            CONTINUE, SKIP, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE, ABORT, BUILD, DISMANTLE));
 }
