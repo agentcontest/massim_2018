@@ -6,6 +6,7 @@ package massim.scenario.city.data;
 public class TeamState {
 
     private long money;
+    private long score = 0;
 
     private String name;
 
@@ -28,5 +29,13 @@ public class TeamState {
 
     public void subMoney(long amount){
         money -= amount;
+    }
+
+    public void addScore(int points) {
+        score += points;
+    }
+
+    public long getScore() {
+        return score;
     }
 }
