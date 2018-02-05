@@ -11,6 +11,7 @@ public class Entity {
     private Role role;
     private Location location;
     private Route route;
+    private int skill;
 
     private int currentBattery;
     private BoundedItemBox items;
@@ -190,5 +191,9 @@ public class Entity {
      */
     public void discharge(){
         this.currentBattery = 0;
+    }
+
+    public int getSkill() {
+        return skill;
     }
 }

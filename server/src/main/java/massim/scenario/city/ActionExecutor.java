@@ -34,6 +34,8 @@ public class ActionExecutor {
     private final static String FAILED_JOB_TYPE = "failed_job_type";
     private final static String PARTIAL_SUCCESS = "successful_partial"; // part of the job was delivered, still active.
     private final static String FAILED_WRONG_PARAM = "failed_wrong_param";
+    private final static String FAILED_RESOURCES = "failed_resources";
+    private final static String FAILED_ROLE = "failed_role";
     private final static String FAILED = "failed";
     private final static String USELESS = "useless";
     private final static String FAILED_FACILITY_STATE = "failed_facility_state";
@@ -126,6 +128,70 @@ public class ActionExecutor {
                     break;
                 }
                 entity.setLastActionResult(entity.advanceRoute(world.getGotoCost())? SUCCESSFUL : FAILED_NO_ROUTE);
+                break;
+
+            case BUILD:
+                if(entity.getRole().getName().equalsIgnoreCase("Drone")){
+                    entity.setLastActionResult(FAILED_ROLE);
+                }
+                if(params.size() > 1){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    return;
+                }
+                if(params.size() == 1) { // param must be well type name
+                    Facility facility = world.getFacilityByLocation(entity.getLocation());
+                    if(facility != null) { // current location is not free
+                        entity.setLastActionResult(FAILED_LOCATION);
+                        return;
+                    }
+                    Well.WellType wellType = world.getWellType(params.get(0));
+                    if(wellType == null) {
+                        entity.setLastActionResult(FAILED_UNKNOWN_FACILITY);
+                        return;
+                    }
+                    TeamState team = world.getTeam(world.getTeamForAgent(agent));
+                    if(team.getMoney() < wellType.cost){
+                        entity.setLastActionResult(FAILED_RESOURCES);
+                        return;
+                    }
+                    world.addWell(wellType, agent);
+                    team.subMoney(wellType.cost);
+                    entity.setLastActionResult(SUCCESSFUL);
+                    return;
+                }
+                else { // build up existing well
+                    Facility facility = world.getFacilityByLocation(entity.getLocation());
+                    if(facility == null) {
+                        entity.setLastActionResult(FAILED_LOCATION);
+                        return;
+                    }
+                    if(!(facility instanceof Well)) {
+                        entity.setLastActionResult(FAILED_WRONG_FACILITY);
+                        return;
+                    }
+                    Well well = (Well) facility;
+                    well.build(entity.getSkill());
+                }
+                break;
+
+            case DISMANTLE:
+                if(params.size() > 0){
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    return;
+                }
+                Facility fac = world.getFacilityByLocation(entity.getLocation());
+                if(fac == null || !(fac instanceof Well)) {
+                    entity.setLastActionResult(FAILED_LOCATION);
+                    return;
+                }
+                Well well = (Well) fac;
+                entity.setLastActionResult(SUCCESSFUL);
+                if(well.dismantle(entity.getSkill())){
+                    world.removeFacility(well);
+                    int refund = (int) (RNG.nextDouble() * .5 * well.getCost()); // refund up to 50% of a well's cost
+                    TeamState team = world.getTeam(world.getTeamForAgent(agent));
+                    team.addMoney(refund);
+                }
                 break;
 
             case GIVE: // 3 params (agent, item, amount)
@@ -510,7 +576,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;
                 }
-                Facility fac = world.getFacility(params.get(2));
+                fac = world.getFacility(params.get(2));
                 if(fac == null || !(fac instanceof Storage)){
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;

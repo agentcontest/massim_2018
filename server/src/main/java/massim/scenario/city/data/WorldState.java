@@ -59,6 +59,9 @@ public class WorldState {
 
     private Generator gen;
 
+    private Map<String, Well.WellType> wellTypes = new HashMap<>();
+    private Set<Integer> wellNumbers = new HashSet<>();
+
     public WorldState(int steps, JSONObject config, Set<TeamConfig> matchTeams, Generator generator) {
 
         gen = generator;
@@ -524,6 +527,40 @@ public class WorldState {
                 }
             }
         }));
+    }
+
+    /**
+     * Retrieves the well type of the given name.
+     * @param typeName name of the well type
+     * @return the requested well type or null if no such type exists
+     */
+    public Well.WellType getWellType(String typeName) {
+        return wellTypes.get(typeName);
+    }
+
+    /**
+     * Creates a well for the given agent.
+     * @param wellType the type of the well
+     * @param agent name of the agent that created the well
+     */
+    public void addWell(Well.WellType wellType, String agent) {
+        int wellNumber;
+        while(true){
+            wellNumber = RNG.nextInt(10000);
+            if(!wellNumbers.contains(wellNumber)) break;
+        }
+        Well well = new Well("well" + wellNumber, getEntity(agent).getLocation(), wellType);
+        facilities.put(well.getName(), well);
+        facilityByLocation.put(well.getLocation(), well);
+    }
+
+    /**
+     * Completely removes a given facility.
+     * @param f the facility to remove
+     */
+    public void removeFacility(Facility f) {
+        facilities.remove(f.getName());
+        facilityByLocation.remove(f.getLocation());
     }
 }
 
