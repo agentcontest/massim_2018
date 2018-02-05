@@ -425,7 +425,7 @@ public class CitySimulation extends AbstractSimulation {
         Map<String, SimEnd> results = new HashMap<>();
         world.getAgents().forEach(agent -> {
             TeamState team = world.getTeam(world.getTeamForAgent(agent));
-            results.put(agent, new SimEnd(rankings.get(team), team.getMoney()));
+            results.put(agent, new SimEnd(rankings.get(team), team.getScore()));
         });
         return results;
     }
@@ -444,15 +444,15 @@ public class CitySimulation extends AbstractSimulation {
     }
 
     /**
-     * Calculates the current rankings based on the teams' current money values.
+     * Calculates the current rankings based on the teams' current score values.
      * @return a map of the current rankings
      */
     private Map<TeamState, Integer> getRankings(){
         Map<TeamState, Integer> rankings = new HashMap<>();
         Map<Long, Set<TeamState>> scoreToTeam = new HashMap<>();
         world.getTeams().forEach(team -> {
-            scoreToTeam.putIfAbsent(team.getMoney(), new HashSet<>());
-            scoreToTeam.get(team.getMoney()).add(team);
+            scoreToTeam.putIfAbsent(team.getScore(), new HashSet<>());
+            scoreToTeam.get(team.getScore()).add(team);
         });
         List<Long> scoreRanking = new ArrayList<>(scoreToTeam.keySet());
         Collections.sort(scoreRanking);     // sort ascending
