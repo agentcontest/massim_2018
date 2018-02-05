@@ -187,7 +187,7 @@ public class ActionExecutor {
                 Well well = (Well) fac;
                 entity.setLastActionResult(SUCCESSFUL);
                 if(well.dismantle(entity.getSkill())){
-                    world.removeFacility(well);
+                    world.removeWell(well);
                     int refund = (int) (RNG.nextDouble() * .5 * well.getCost()); // refund up to 50% of a well's cost
                     TeamState team = world.getTeam(world.getTeamForAgent(agent));
                     team.addMoney(refund);

@@ -47,6 +47,7 @@ public class WorldState {
     private Map<Item, List<Shop>> shopsByItem = new HashMap<>();
     private Set<Storage> storages = new HashSet<>();
     private Set<ResourceNode> resourceNodes = new HashSet<>();
+    private Set<Well> wells = new HashSet<>();
 
     private Vector<String> agentNames;
     private Map<String, String> agentToTeam = new HashMap<>();
@@ -391,6 +392,8 @@ public class WorldState {
 
     public Set<ResourceNode> getResourceNodes() { return resourceNodes; }
 
+    public Set<Well> getWells() { return wells; }
+
     /**
      * @return a new list of all team states
      */
@@ -553,15 +556,17 @@ public class WorldState {
         Well well = new Well("well" + wellNumber, getEntity(agent).getLocation(), wellType);
         facilities.put(well.getName(), well);
         facilityByLocation.put(well.getLocation(), well);
+        wells.add(well);
     }
 
     /**
-     * Completely removes a given facility.
-     * @param f the facility to remove
+     * Completely removes a given well.
+     * @param w the facility to remove
      */
-    public void removeFacility(Facility f) {
-        facilities.remove(f.getName());
-        facilityByLocation.remove(f.getLocation());
+    public void removeWell(Well w) {
+        facilities.remove(w.getName());
+        facilityByLocation.remove(w.getLocation());
+        wells.remove(w);
     }
 }
 

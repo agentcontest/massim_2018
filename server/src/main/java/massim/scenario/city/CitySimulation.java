@@ -16,6 +16,7 @@ import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Facility;
 import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
+import massim.scenario.city.data.facilities.Well;
 import massim.scenario.city.util.Generator;
 import massim.util.Log;
 import massim.util.RNG;
@@ -408,6 +409,14 @@ public class CitySimulation extends AbstractSimulation {
                                && job.getBeginStep() + ((AuctionJob)job).getAuctionTime() - 1 == stepNo
                                && !((AuctionJob)job).isAssigned())
                 .forEach(job -> ((AuctionJob)job).assign());
+
+        // retrieve points from all wells
+        world.getWells().stream()
+                .filter(Well::generatesPoints)
+                .forEach(well -> {
+            TeamState team = world.getTeam(well.getTeam());
+            team.addScore(well.getEfficiency());
+        });
     }
 
     @Override
