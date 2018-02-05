@@ -169,7 +169,7 @@ public class WorldState {
         matchTeams.forEach(team -> {
             for (int i = 0; i < roleSequence.size(); i++) {
                 Entity e = new Entity(roles.get(roleSequence.get(i)), initialLocations[i]);
-                String agentName = "";
+                String agentName;
                 if(team.getAgentNames().size() > i) {
                     agentName = team.getAgentNames().get(i);
                 }
@@ -549,6 +549,7 @@ public class WorldState {
             wellNumber = RNG.nextInt(10000);
             if(!wellNumbers.contains(wellNumber)) break;
         }
+        wellNumbers.add(wellNumber);
         Well well = new Well("well" + wellNumber, getEntity(agent).getLocation(), wellType);
         facilities.put(well.getName(), well);
         facilityByLocation.put(well.getLocation(), well);
