@@ -108,7 +108,7 @@ public class AuctionJob extends Job{
     @Override
     public void terminate(){
         if(!(status == JobStatus.COMPLETED) && assignedTeam != null){
-            assignedTeam.subMoney(fine);
+            assignedTeam.subMassium(fine);
         }
         super.terminate();
     }

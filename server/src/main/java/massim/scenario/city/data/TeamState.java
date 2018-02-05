@@ -5,13 +5,13 @@ package massim.scenario.city.data;
  */
 public class TeamState {
 
-    private long money;
+    private long massium;
     private long score = 0;
 
     private String name;
 
-    public TeamState(long money, String name){
-        this.money = money;
+    TeamState(long massium, String name){
+        this.massium = massium;
         this.name = name;
     }
 
@@ -19,16 +19,16 @@ public class TeamState {
         return name;
     }
 
-    public long getMoney(){
-        return money;
+    public long getMassium(){
+        return massium;
     }
 
-    public void addMoney(long amount){
-        money += amount;
+    public void addMassium(long amount){
+        massium += amount;
     }
 
-    public void subMoney(long amount){
-        money -= amount;
+    public void subMassium(long amount){
+        massium -= amount;
     }
 
     public void addScore(int points) {

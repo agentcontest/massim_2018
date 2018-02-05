@@ -167,7 +167,7 @@ export interface Located {
 
 export interface Team {
   name: string;
-  money: number;
+  massium: number;
 }
 
 export interface Role {

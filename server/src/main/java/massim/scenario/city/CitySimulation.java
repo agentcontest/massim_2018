@@ -116,7 +116,7 @@ public class CitySimulation extends AbstractSimulation {
         /* create percept data */
         // create team data
         Map<String, TeamData> teamData = new HashMap<>();
-        world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(null, team.getMoney())));
+        world.getTeams().forEach(team -> teamData.put(team.getName(), new TeamData(null, team.getMassium())));
 
         // create entity data as visible to other entities (containing name, team, role and location)
         List<EntityData> entities = new Vector<>();
@@ -436,7 +436,7 @@ public class CitySimulation extends AbstractSimulation {
         Map<TeamState, Integer> rankings = getRankings();
         world.getTeams().forEach(team -> {
             JSONObject teamResult = new JSONObject();
-            teamResult.put("score", team.getMoney());
+            teamResult.put("score", team.getMassium());
             teamResult.put("ranking", rankings.get(team));
             result.put(team.getName(), teamResult);
         });
@@ -490,7 +490,7 @@ public class CitySimulation extends AbstractSimulation {
                                 .collect(Collectors.toList())))
                         .collect(Collectors.toList()),
                 world.getTeams().stream()
-                        .map(team -> new TeamData(team.getName(), team.getMoney()))
+                        .map(team -> new TeamData(team.getName(), team.getMassium()))
                         .collect(Collectors.toList()));
     }
 

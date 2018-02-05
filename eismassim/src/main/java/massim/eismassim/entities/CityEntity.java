@@ -102,7 +102,7 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("lat", new Numeral(self.getLat())));
         ret.add(new Percept("lon", new Numeral(self.getLon())));
         ret.add(new Percept("routeLength", new Numeral(self.getRouteLength())));
-        ret.add(new Percept("money", new Numeral(percept.getTeamData().getMoney())));
+        ret.add(new Percept("money", new Numeral(percept.getTeamData().getMassium())));
 
         if(self.getFacility() != null) ret.add(new Percept("facility", new Identifier(self.getFacility())));
 

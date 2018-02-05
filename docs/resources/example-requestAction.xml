@@ -14,7 +14,7 @@
       <route i="5" lat="51.47704" lon="-0.10037"/>
       <route i="6" lat="51.4777" lon="-0.10676"/>
     </self>
-    <team money="77787"/>
+    <team massium="77787"/>
     <entity lat="51.47519" lon="-0.19454" name="agentA2" role="car" team="A"/>
     <entity lat="51.48515" lon="-0.16794" name="agentB3" role="car" team="B"/>
     <entity lat="51.48515" lon="-0.16794" name="agentA3" role="car" team="A"/>

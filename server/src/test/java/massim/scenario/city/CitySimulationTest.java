@@ -367,7 +367,7 @@ public class CitySimulationTest {
     public void buyWorks(){
         WorldState world = sim.getWorldState();
         Entity e3 = world.getEntity("agentA3");
-        long money = world.getTeam("A").getMoney();
+        long money = world.getTeam("A").getMassium();
         Shop shop = null;
         Item item = null;
         for(Shop s: world.getShops()){
@@ -393,7 +393,7 @@ public class CitySimulationTest {
         sim.step(step, actions);
 
         assert e3.getItemCount(item) == 1;
-        assert world.getTeam("A").getMoney() == money - shop.getPrice(item);
+        assert world.getTeam("A").getMassium() == money - shop.getPrice(item);
 
         step++;
 
@@ -405,7 +405,7 @@ public class CitySimulationTest {
 
         assert e3.getItemCount(item) == 1;
         assert e3.getLastActionResult().equals("failed_item_amount");
-        assert world.getTeam("A").getMoney() == money - shop.getPrice(item);
+        assert world.getTeam("A").getMassium() == money - shop.getPrice(item);
     }
 
     @Test
@@ -497,8 +497,8 @@ public class CitySimulationTest {
         Entity eA = world.getEntity("agentA1");
         Entity eB = world.getEntity("agentB1");
         Item item = world.getItems().get(0);
-        long moneyA = world.getTeam("A").getMoney();
-        long moneyB = world.getTeam("B").getMoney();
+        long moneyA = world.getTeam("A").getMassium();
+        long moneyB = world.getTeam("B").getMassium();
         int reward = 77777;
 
         eA.clearInventory();
@@ -549,8 +549,8 @@ public class CitySimulationTest {
 
         assert eA.getItemCount(item) == 1;
         assert eA.getLastActionResult().equals("successful");
-        assert world.getTeam("A").getMoney() == moneyA + reward;
-        assert world.getTeam("B").getMoney() == moneyB - reward;
+        assert world.getTeam("A").getMassium() == moneyA + reward;
+        assert world.getTeam("B").getMassium() == moneyB - reward;
         assert storage.getDelivered(item, "B") == 5;
 
         step++;
@@ -577,8 +577,8 @@ public class CitySimulationTest {
         auction2.addRequiredItem(item, 1);
         world.addJob(auction);
         world.addJob(auction2);
-        long moneyA = world.getTeam("A").getMoney();
-        long moneyB = world.getTeam("B").getMoney();
+        long moneyA = world.getTeam("A").getMassium();
+        long moneyB = world.getTeam("B").getMassium();
         Entity eB = world.getEntity("agentB1");
 
         Map<String, Action> actions = buildActionMap();
@@ -625,8 +625,8 @@ public class CitySimulationTest {
         sim.preStep(step);
         sim.step(step, buildActionMap());
 
-        assert world.getTeam("A").getMoney() == moneyA - auction.getFine();
-        assert world.getTeam("B").getMoney() == moneyB + auction2.getLowestBid();
+        assert world.getTeam("A").getMassium() == moneyA - auction.getFine();
+        assert world.getTeam("B").getMassium() == moneyB + auction2.getLowestBid();
     }
 
     // TODO test facility creation/generation

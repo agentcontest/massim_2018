@@ -150,12 +150,12 @@ public class ActionExecutor {
                         return;
                     }
                     TeamState team = world.getTeam(world.getTeamForAgent(agent));
-                    if(team.getMoney() < wellType.cost){
+                    if(team.getMassium() < wellType.cost){
                         entity.setLastActionResult(FAILED_RESOURCES);
                         return;
                     }
                     world.addWell(wellType, agent);
-                    team.subMoney(wellType.cost);
+                    team.subMassium(wellType.cost);
                     entity.setLastActionResult(SUCCESSFUL);
                     return;
                 }
@@ -190,7 +190,7 @@ public class ActionExecutor {
                     world.removeWell(well);
                     int refund = (int) (RNG.nextDouble() * .5 * well.getCost()); // refund up to 50% of a well's cost
                     TeamState team = world.getTeam(world.getTeamForAgent(agent));
-                    team.addMoney(refund);
+                    team.addMassium(refund);
                 }
                 break;
 
@@ -394,7 +394,7 @@ public class ActionExecutor {
                 }
                 int price = shop.buy(item, amount);
                 entity.addItem(item, amount);
-                world.getTeam(world.getTeamForAgent(agent)).subMoney(price);
+                world.getTeam(world.getTeamForAgent(agent)).subMassium(price);
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 
@@ -437,10 +437,10 @@ public class ActionExecutor {
                     if (job.checkCompletion(teamName)) {
                         // add reward to completing team
                         int reward = job instanceof AuctionJob? ((AuctionJob)job).getLowestBid() : job.getReward();
-                        world.getTeam(teamName).addMoney(reward);
+                        world.getTeam(teamName).addMassium(reward);
                         // if job posted by another team, subtract payment
                         if (!job.getPoster().equals(JobData.POSTER_SYSTEM))
-                            world.getTeam(job.getPoster()).subMoney(reward);
+                            world.getTeam(job.getPoster()).subMassium(reward);
                         entity.setLastActionResult(SUCCESSFUL);
 
                         // restock some of the items

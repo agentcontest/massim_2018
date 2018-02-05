@@ -229,8 +229,8 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * d : Numeral - longitude of the agent's location
 * `routeLength(ln)`
   * ln : Numeral - length of the agent's current route
-* `money(m)`
-  * m : Numeral - the agent's team's current money
+* `massium(m)`
+  * m : Numeral - the agent's team's current massium
 * `facility(f)`
   * f : Identifier - name of the agent's current facility
 * `lastAction(type)`

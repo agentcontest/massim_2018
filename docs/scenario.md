@@ -19,7 +19,7 @@ _In the year 2044, following the great water conflicts of 2033, humankind has fi
 
 ### Introduction
 
-The scenario consists of two __teams__ of a number of agents each moving through the streets of a realistic city. The goal for each team is to earn as much money as possible, which is rewarded for completing certain __jobs__. An agent is characterized by its __battery__ (i.e. how long it can move without recharging), its __capacity__ (i.e. how much volume it can carry) and its __speed__. The scenario features 4 distinct __roles__: drones, motorcycles, cars and trucks, sorted by increasing capacity and energy, and decreasing speed.
+The scenario consists of two __teams__ of a number of agents each moving through the streets of a realistic city. The goal for each team is to earn as much massium as possible, which is rewarded for completing certain __jobs__. An agent is characterized by its __battery__ (i.e. how long it can move without recharging), its __capacity__ (i.e. how much volume it can carry) and its __speed__. The scenario features 4 distinct __roles__: drones, motorcycles, cars and trucks, sorted by increasing capacity and energy, and decreasing speed.
 The city map is taken from __OpenStreetMap__ data and routing is provided by the Contest server. As the simulation is divided into discrete steps, each agent can move a fixed distance each turn (unless its destination is closer than this distance).
 
 Each simulation features a set of random __items__. Items differ by their volume and how they can be acquired.
@@ -28,12 +28,12 @@ The agents are positioned randomly on the map, as are a number of __facilities__
 
 __Jobs__ comprise the acquisition, assembling, and transportation of goods. These jobs can be created by either the system (environment) or one of the agent teams. There are two types of jobs: __regular jobs__ and __auctions__.
 
-A team can accept an __auction__ job by bidding on it. The bid will be the reward, i.e. the team is willing to procure the items for that amount of money. Thus, if both teams bid, the lowest bid wins. If a job is not completed in time, the corresponding team is fined to discourage auction “hoarding”.
+A team can accept an __auction__ job by bidding on it. The bid will be the reward, i.e. the team is willing to procure the items for that amount of massium. Thus, if both teams bid, the lowest bid wins. If a job is not completed in time, the corresponding team is fined to discourage auction “hoarding”.
 
 __Regular jobs__ have their rewards defined upfront, which is given to the first team to complete that job, while the other team goes away empty-handed. The teams have to decide which jobs to complete and how to do that.
-While auction jobs have to be more thoroughly assessed in order to determine a minimum threshold at which the team would still earn money, they provide some safety since the team that did not win the auction is effectively barred from completing it.
+While auction jobs have to be more thoroughly assessed in order to determine a minimum threshold at which the team would still earn massium, they provide some safety since the team that did not win the auction is effectively barred from completing it.
 
-__Tournament points__ are distributed according to the amount of money a team owns at the end of the simulation. To get the most points, a team has to beat the other, as well as surpass the seed capital given to the team at the beginning of the simulation, i.e. make an overall profit.
+__Tournament points__ are distributed according to the amount of massium a team owns at the end of the simulation. To get the most points, a team has to beat the other, as well as surpass the seed capital given to the team at the beginning of the simulation, i.e. make an overall profit.
 
 ## Locations
 
@@ -161,18 +161,18 @@ Each role has its name as key and the following parameters:
 These 4 roles will also be used in the contest, however, the parameters are still subject to change.
 
 ### Job
-A job is the general way to earn money in this scenario.
+A job is the general way to earn massium in this scenario.
 
 - __begin__: the job begins in this step, i.e. this is the first step where the job
 is perceived by all agents
 - __end__: the last step in which the job can be completed. At the end of
 this step, the job cannot be perceived anymore.
-- __reward__: the amount of money that is earned by completing the job
+- __reward__: the amount of massium that is earned by completing the job
 - __storage__: to complete the job, items have to be delivered to this storage
 
 ### AuctionJob
 An auction job has an initial phase in which agent teams can bid for it.
-The teams are bidding the amount of money which they want to be paid for completing
+The teams are bidding the amount of massium which they want to be paid for completing
 the job. Of course, the team with the lowest bid wins.
 
 This type of job has the advantage, that a team can be sure to be the only one
@@ -565,7 +565,7 @@ Example:
       <route i="5" lat="51.47704" lon="-0.10037"/>
       <route i="6" lat="51.4777" lon="-0.10676"/>
     </self>
-    <team money="10"/>
+    <team massium="10"/>
 
     ...
 
@@ -583,7 +583,7 @@ Also, a child element for each carried item type is nested. Finally, if the agen
 
 #### Team details
 
-The `team` element contains information about the agent's team; currently only how much money it owns.
+The `team` element contains information about the agent's team; currently only how much massium it owns.
 
 #### Entity details
 
@@ -754,7 +754,7 @@ For each simulation, the following parameters may be specified:
 * __scenarioClass__: the class containing the scenario; needs to be written as above for this scenario
 * __steps__: the number of steps the simulation will take
 * __map__: the map to use; needs to be in the `server/osm` folder as `XYZ.osm.pbf` file
-* __seedCapital__: the amount of money owned by each team at the start of the simulation
+* __seedCapital__: the amount of massium owned by each team at the start of the simulation
 * __min/maxLon/Lat__: the map bounds; the declared area must be present in the map file
 * __centerLon/Lat__: an internal value used for positioning things and routing; basically, any location of the map is considered reachable if there exists a route between this "center" and that location in both directions
 * __proximity__: the proximity value (see [Locations](#locations) section)
