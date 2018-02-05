@@ -484,7 +484,6 @@ public class ActionExecutor {
                 break;
 
             case CONTINUE:
-            case SKIP:
                 if (entity.getRoute() != null)
                     entity.setLastActionResult(entity.advanceRoute(world.getGotoCost())? SUCCESSFUL : FAILED_NO_ROUTE);
                 else // nothing happens successfully
