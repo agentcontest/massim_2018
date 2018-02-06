@@ -24,6 +24,7 @@ public class Generator {
     private int rateMin;
     private int rateMax;
 
+    // shop parameters
     private double shopDensity;
     private int minProd;
     private int maxProd;
@@ -46,6 +47,18 @@ public class Generator {
     private int gatherFrequencyMin;
     private int gatherFrequencyMax;
 
+    // well type parameters
+    private int wellTypesMin;
+    private int wellTypesMax;
+    private int baseEfficiencyMin;
+    private int baseEfficiencyMax;
+    private int efficiencyIncreaseMin;
+    private int efficiencyIncreaseMax;
+    private int baseIntegrityMin;
+    private int baseIntegrityMax;
+    private int costFactor;
+
+    // item parameters
     private int baseItemsMin;
     private int baseItemsMax;
     private int levelDecreaseMin;
@@ -54,7 +67,6 @@ public class Generator {
     private int graphDepthMax;
     private int resourcesMin;
     private int resourcesMax;
-
     private int minVol;
     private int maxVol;
     private int valueMin;
@@ -63,11 +75,11 @@ public class Generator {
     private int maxReq ;
     private int reqAmountMin;
     private int reqAmountMax;
-
     private int toolsMin;
     private int toolsMax;
     private double toolProbability;
 
+    // job parameters
     private double rate;
     private double auctionProbability;
     private double missionProbability;
@@ -196,6 +208,22 @@ public class Generator {
                 gatherFrequencyMax = resourceNodes.optInt("gatherFrequencyMax", 8);
                 Log.log(Log.Level.NORMAL, "Configuring facilities resource node gatherFrequencyMax: " + gatherFrequencyMax);
             }
+
+            //parse well type info
+            JSONObject welltypes = facilities.optJSONObject("wells");
+            if (resourceNodes == null) {
+                Log.log(Log.Level.ERROR, "No well types configured.");
+            } else {
+                wellTypesMin = optInt(welltypes, "wellTypesMin", 2);
+                wellTypesMax = optInt(welltypes, "wellTypesMax", 5);
+                baseEfficiencyMin = optInt(welltypes, "baseEfficiencyMin", 1);
+                baseEfficiencyMax = optInt(welltypes, "baseEfficiencyMax", 5);
+                efficiencyIncreaseMin = optInt(welltypes, "efficiencyIncreaseMin", 1);
+                efficiencyIncreaseMax = optInt(welltypes, "efficiencyIncreaseMax", 5);
+                baseIntegrityMin = optInt(welltypes, "baseIntegrityMin", 10);
+                baseIntegrityMax = optInt(welltypes, "baseIntegrityMax", 20);
+                costFactor = optInt(welltypes, "costFactor", 100);
+            }
         }
 
         //parse items
@@ -300,6 +328,12 @@ public class Generator {
                 Log.log(Log.Level.NORMAL, "Configuring jobs missionDifficultyMax: " + missionDifficultyMax);
             }
         }
+    }
+
+    private int optInt(JSONObject src, String key, int standard) {
+        int k = src.optInt(key, standard);
+        Log.log(Log.Level.NORMAL, "Config: " + key + " set to " + k);
+        return k;
     }
 
     /**
@@ -907,4 +941,31 @@ public class Generator {
      * @return a list containing all base items
      */
     public List<Item> getBaseItems(){ return baseItems;}
+
+    /**
+     * @return the well types which are creatable in the current simulation run
+     */
+    public Map<String,WellType> generateWellTypes() {
+        Map<String, WellType> result = new HashMap<>();
+        int wellTypes = between(wellTypesMin, wellTypesMax);
+        int efficiency = between(baseEfficiencyMin, baseEfficiencyMax);
+        for(int i = 0; i < wellTypes; i++) {
+            String name = "wellType" + i;
+            efficiency += between(efficiencyIncreaseMin, efficiencyIncreaseMax);
+            int integrity = between(baseIntegrityMin, baseIntegrityMax);
+            int cost = (int) (costFactor * (efficiency + Math.sqrt(efficiency)));
+            WellType type = new WellType(name, Math.max(integrity/2, 1), Math.max(integrity, 1), cost, efficiency);
+            result.put(name, type);
+        }
+        return result;
+    }
+
+    /**
+     * @param min min value
+     * @param max max value
+     * @return random int between min and max values (both bounds inclusive)
+     */
+    private int between(int min, int max) {
+        return min + RNG.nextInt(1 + max - min);
+    }
 }

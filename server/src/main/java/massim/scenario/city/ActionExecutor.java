@@ -144,18 +144,18 @@ public class ActionExecutor {
                         entity.setLastActionResult(FAILED_LOCATION);
                         return;
                     }
-                    Well.WellType wellType = world.getWellType(params.get(0));
+                    WellType wellType = world.getWellType(params.get(0));
                     if(wellType == null) {
                         entity.setLastActionResult(FAILED_UNKNOWN_FACILITY);
                         return;
                     }
                     TeamState team = world.getTeam(world.getTeamForAgent(agent));
-                    if(team.getMassium() < wellType.cost){
+                    if(team.getMassium() < wellType.getCost()){
                         entity.setLastActionResult(FAILED_RESOURCES);
                         return;
                     }
                     world.addWell(wellType, agent);
-                    team.subMassium(wellType.cost);
+                    team.subMassium(wellType.getCost());
                     entity.setLastActionResult(SUCCESSFUL);
                     return;
                 }

@@ -61,6 +61,17 @@
       "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
 
       "generate" : {
+        "wells" : {
+          "wellTypesMin" : 2,
+          "wellTypesMax" : 5,
+          "baseEfficiencyMin" : 1,
+          "baseEfficiencyMax" : 5,
+          "efficiencyIncreaseMin" : 1,
+          "efficiencyIncreaseMax" : 5,
+          "baseIntegrityMin" : 10,
+          "baseIntegrityMax" : 20,
+          "costFactor" : 100
+        },
         "facilities" : {
           "quadSize" : 0.04,
           "blackoutProbability" : 0.1,

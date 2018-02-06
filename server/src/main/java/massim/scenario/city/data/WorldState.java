@@ -60,7 +60,7 @@ public class WorldState {
 
     private Generator gen;
 
-    private Map<String, Well.WellType> wellTypes = new HashMap<>();
+    private Map<String, WellType> wellTypes;
     private Set<Integer> wellNumbers = new HashSet<>();
 
     public WorldState(int steps, JSONObject config, Set<TeamConfig> matchTeams, Generator generator) {
@@ -150,6 +150,7 @@ public class WorldState {
             else if(f instanceof Dump) dumps.add((Dump) f);
             else if(f instanceof ResourceNode) resourceNodes.add((ResourceNode) f);
         });
+        wellTypes = generator.generateWellTypes();
 
         // store shops by items they sell
         items.values().stream().filter(i -> !i.needsAssembly()).forEach(item -> shopsByItem.put(item, new ArrayList<>()));
@@ -537,7 +538,7 @@ public class WorldState {
      * @param typeName name of the well type
      * @return the requested well type or null if no such type exists
      */
-    public Well.WellType getWellType(String typeName) {
+    public WellType getWellType(String typeName) {
         return wellTypes.get(typeName);
     }
 
@@ -546,7 +547,7 @@ public class WorldState {
      * @param wellType the type of the well
      * @param agent name of the agent that created the well
      */
-    public void addWell(Well.WellType wellType, String agent) {
+    public void addWell(WellType wellType, String agent) {
         int wellNumber;
         while(true){
             wellNumber = RNG.nextInt(10000);

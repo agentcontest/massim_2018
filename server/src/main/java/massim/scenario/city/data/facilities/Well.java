@@ -16,10 +16,10 @@ public class Well extends Facility {
 
     public Well(String name, Location location, WellType type) {
         super(name, location);
-        this.efficiency = type.efficiency;
-        this.integrity = type.initialIntegrity;
-        this.maxIntegrity = type.maxIntegrity;
-        this.cost = type.cost;
+        this.efficiency = type.getEfficiency();
+        this.integrity = type.getInitialIntegrity();
+        this.maxIntegrity = type.getMaxIntegrity();
+        this.cost = type.getCost();
     }
 
     public void build(int skill) {
@@ -52,11 +52,4 @@ public class Well extends Facility {
         return cost;
     }
 
-    public class WellType {
-        public String name;
-        public int initialIntegrity;
-        public int maxIntegrity;
-        public int cost;
-        public int efficiency;
-    }
 }
