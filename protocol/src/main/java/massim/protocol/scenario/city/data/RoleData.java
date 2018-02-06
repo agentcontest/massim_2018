@@ -2,10 +2,10 @@ package massim.protocol.scenario.city.data;
 
 
 
-import javax.xml.bind.annotation.*;
-import java.util.List;
-import java.util.Vector;
-import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Holds data of a role for serialization.
@@ -18,80 +18,96 @@ public class RoleData {
     private String name;
 
     @XmlAttribute
-    private int speed;
+    private int baseSpeed;
 
     @XmlAttribute
-    private int battery;
+    private int maxSpeed;
 
     @XmlAttribute
-    private int load;
+    private int baseBattery;
 
-    @XmlElement(name="tool")
-    private List<ToolData> tools;
+    @XmlAttribute
+    private int maxBattery;
+
+    @XmlAttribute
+    private int baseLoad;
+
+    @XmlAttribute
+    private int maxLoad;
+
+    @XmlAttribute
+    private int baseSkill;
+
+    @XmlAttribute
+    private int maxSkill;
+
+    @XmlAttribute
+    private int baseVision;
+
+    @XmlAttribute
+    private int maxVision;
 
     /**
      * For JAXB
      */
     private RoleData(){}
 
-    /**
-     * Constructor.
-     * @param name name of the role
-     * @param speed speed of the role
-     * @param maxBattery maximum charge
-     * @param maxLoad max capacity
-     * @param tools tools usable by the role
-     */
-    public RoleData(String name, int speed, int maxBattery, int maxLoad, List<ToolData> tools){
+    public RoleData(String name, int baseSpeed, int maxSpeed, int baseBattery, int maxBattery, int baseLoad,
+                    int maxLoad, int baseSkill, int maxSkill, int baseVision, int maxVision) {
         this.name = name;
-        this.speed = speed;
-        this.battery = maxBattery;
-        this.load = maxLoad;
-        this.tools = tools;
+        this.baseSpeed = baseSpeed;
+        this.maxSpeed = maxSpeed;
+        this.baseBattery = baseBattery;
+        this.maxBattery = maxBattery;
+        this.baseLoad = baseLoad;
+        this.maxLoad = maxLoad;
+        this.baseSkill = baseSkill;
+        this.maxSkill = maxSkill;
+        this.baseVision = baseVision;
+        this.maxVision = maxVision;
     }
 
-    /**
-     * @return the name of the role
-     */
     public String getName() {
-        return name == null? "" : name;
+        return name;
     }
 
-    /**
-     * @return the role's speed
-     */
-    public int getSpeed() {
-        return speed;
+    public int getBaseSpeed() {
+        return baseSpeed;
     }
 
-    /**
-     * @return the role's max battery charge
-     */
-    public int getBattery() {
-        return battery;
+    public int getMaxSpeed() {
+        return maxSpeed;
     }
 
-    /**
-     * @return the role's max usable volume
-     */
-    public int getLoad() {
-        return load;
+    public int getBaseBattery() {
+        return baseBattery;
     }
 
-    /**
-     * @return all tools usable by the role
-     */
-    public List<String> getTools() {
-        return tools == null? new Vector<>() : tools.stream()
-                                                    .map(ToolData::getName)
-                                                    .collect(Collectors.toList());
+    public int getMaxBattery() {
+        return maxBattery;
     }
 
-    /**
-     * Adds a tool to this role.
-     * @param tool name of the tool
-     */
-    public void addTool(String tool) {
-        tools.add(new ToolData(tool));
+    public int getBaseLoad() {
+        return baseLoad;
+    }
+
+    public int getMaxLoad() {
+        return maxLoad;
+    }
+
+    public int getBaseSkill() {
+        return baseSkill;
+    }
+
+    public int getMaxSkill() {
+        return maxSkill;
+    }
+
+    public int getBaseVision() {
+        return baseVision;
+    }
+
+    public int getMaxVision() {
+        return maxVision;
     }
 }

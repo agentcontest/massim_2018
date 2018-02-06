@@ -53,15 +53,16 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("centerLon", new Numeral(simStart.getCenterLon())));
 
         // prepare list of tools
-        RoleData role = simStart.getRoleData();
-        ParameterList paramTools = new ParameterList();
-        if(role.getTools() != null)
-            role.getTools().forEach(tool -> paramTools.add(new Identifier(tool)));
-
-        // add role percept
-        ret.add(new Percept("role",
-                new Identifier(role.getName()), new Numeral(role.getSpeed()), new Numeral(role.getLoad()),
-                new Numeral(role.getBattery()), paramTools));
+//        RoleData role = simStart.getRoleData();
+//        ParameterList paramTools = new ParameterList();
+//        if(role.getTools() != null)
+//            role.getTools().forEach(tool -> paramTools.add(new Identifier(tool)));
+//
+//        // add role percept
+//        ret.add(new Percept("role",
+//                new Identifier(role.getName()), new Numeral(role.getSpeed()), new Numeral(role.getLoad()),
+//                new Numeral(role.getBattery()), paramTools));
+        // TODO update role percept
 
         // add item percepts
         simStart.getItemData().forEach(item -> {

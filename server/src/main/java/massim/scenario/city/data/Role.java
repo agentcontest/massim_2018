@@ -2,10 +2,8 @@ package massim.scenario.city.data;
 
 import massim.protocol.scenario.city.data.RoleData;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * An agent's role in the City scenario.
@@ -17,46 +15,59 @@ public class Role {
      */
     private RoleData roleData;
     private Set<String> permissions;
-    private Set<Tool> tools = new HashSet<>();
 
     /**
      * Creates a new role.
-     * @param name the role's name
-     * @param battery the maximum charge
-     * @param load the maximum load capacity
+     * @param roleData the role specifics
      * @param permissions the roads usable by this role (e.g. "air", "road", ...)
      */
-    Role(String name, int speed, int battery, int load, Set<String> permissions){
+    Role(RoleData roleData, Set<String> permissions){
         this.permissions = permissions;
-        roleData = new RoleData(name, speed, battery, load, new Vector<>());
+        this.roleData = roleData;
     }
 
-    /**
-     * @return the name of this role
-     */
     public String getName(){
         return roleData.getName();
     }
 
-    /**
-     * @return the maximum battery charge
-     */
+    public int getBaseBattery(){
+        return roleData.getBaseBattery();
+    }
+
+    public int getBaseLoad(){
+        return roleData.getBaseLoad();
+    }
+
+    public int getBaseSpeed(){
+        return roleData.getBaseSpeed();
+    }
+
     public int getMaxBattery(){
-        return roleData.getBattery();
+        return roleData.getMaxBattery();
     }
 
-    /**
-     * @return the maximum volume this role may load
-     */
     public int getMaxLoad(){
-        return roleData.getLoad();
+        return roleData.getMaxLoad();
     }
 
-    /**
-     * @return the speed of this role
-     */
-    public int getSpeed(){
-        return roleData.getSpeed();
+    public int getMaxSpeed(){
+        return roleData.getMaxSpeed();
+    }
+
+    public int getBaseSkill(){
+        return roleData.getBaseSkill();
+    }
+
+    public int getMaxSkill(){
+        return roleData.getMaxSkill();
+    }
+
+    public int getBaseVision(){
+        return roleData.getBaseVision();
+    }
+
+    public int getMaxVision(){
+        return roleData.getMaxVision();
     }
 
     /**
@@ -67,34 +78,9 @@ public class Role {
     }
 
     /**
-     * @return a new set containing all tools usable by this role
-     */
-    public Set<Tool> getTools(){
-        return new HashSet<>(tools);
-    }
-
-    /**
-     * Adds a collection of tools to this role.
-     * @param tools the tools to add
-     */
-    public void addTools(Collection<Tool> tools){
-        this.tools.addAll(tools);
-        tools.forEach(tool -> roleData.addTool(tool.getName()));
-    }
-
-    /**
      * @return the role data object for this role as used by the binding framework
      */
     public RoleData getRoleData(){
         return roleData;
-    }
-
-    /**
-     * Adds one tool to this role
-     * @param tool the tool to add
-     */
-    public void addTool(Tool tool) {
-        tools.add(tool);
-        roleData.addTool(tool.getName());
     }
 }

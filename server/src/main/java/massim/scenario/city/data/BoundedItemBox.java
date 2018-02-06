@@ -56,4 +56,13 @@ public class BoundedItemBox extends ItemBox{
     int getCapacity(){
         return capacity;
     }
+
+    /**
+     * Extends the capacity of this item box
+     * @param increase by how much to increase the capacity
+     * @param max maximum capacity value
+     */
+    public void extend(int increase, int max) {
+        capacity = Math.min(capacity + increase, max);
+    }
 }

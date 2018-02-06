@@ -11,7 +11,11 @@ public class Entity {
     private Role role;
     private Location location;
     private Route route;
+
     private int skill;
+    private int battery;
+    private int speed;
+    private int vision;
 
     private int currentBattery;
     private BoundedItemBox items;
@@ -21,9 +25,14 @@ public class Entity {
 
     Entity(Role role, Location location){
         this.role = role;
-        items = new BoundedItemBox(role.getMaxLoad());
+        skill = role.getBaseSkill();
+        battery = role.getBaseBattery();
+        speed = role.getBaseSpeed();
+        vision = role.getBaseVision();
+
+        items = new BoundedItemBox(role.getBaseLoad());
         this.location = location;
-        currentBattery = role.getMaxBattery();
+        currentBattery = battery;
     }
 
     public int getCurrentBattery(){
@@ -75,7 +84,7 @@ public class Entity {
             return false;
         }
         currentBattery -= cost;
-        Location newLoc = this.route.advance(role.getSpeed());
+        Location newLoc = this.route.advance(speed);
         if (newLoc != null) location = newLoc;
         if (route.isCompleted()) route = null;
         return true;
@@ -154,7 +163,7 @@ public class Entity {
      * @param rate the amount to charge
      */
     public void charge(int rate) {
-        currentBattery = Math.min(currentBattery + rate, role.getMaxBattery());
+        currentBattery = Math.min(currentBattery + rate, battery);
     }
 
     /**
@@ -195,5 +204,25 @@ public class Entity {
 
     public int getSkill() {
         return skill;
+    }
+
+    public void upgradeSkill(int increase) {
+        this.skill = Math.min(skill + increase, role.getMaxSkill());
+    }
+
+    public void upgradeBattery(int increase) {
+        this.battery = Math.min(battery + increase, role.getMaxBattery());
+    }
+
+    public void upgradeCapacity(int increase) {
+        items.extend(increase, role.getMaxLoad());
+    }
+
+    public void upgradeSpeed(int increase) {
+        this.speed = Math.min(speed + increase, role.getMaxSpeed());
+    }
+
+    public void upgradeVision(int increase) {
+        this.vision = Math.min(vision + increase, role.getMaxVision());
     }
 }

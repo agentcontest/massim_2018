@@ -342,6 +342,7 @@ public class Generator {
      * @return a list of tools
      */
     public List<Tool> generateTools(Map<String, Role> roleMap){
+        // TODO generate tools implicitly
         int toolAmount = RNG.nextInt(toolsMax - toolsMin + 1) + toolsMin;
         List<Role> roles = new ArrayList<>(roleMap.values());
 
@@ -372,11 +373,6 @@ public class Generator {
             allTools.add(tool);
             Log.log(Log.Level.NORMAL, "Adding tool: " + tool);
         }
-
-        //add tools to roles
-        allTools.forEach(tool -> tool.getRoles().forEach(role -> {
-            roleMap.get(role).addTool(tool);
-        }));
 
         return allTools;
     }

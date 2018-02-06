@@ -1,5 +1,6 @@
 package massim.scenario.city.data;
 
+import massim.protocol.scenario.city.data.RoleData;
 import massim.util.Log;
 import massim.util.RNG;
 import massim.config.TeamConfig;
@@ -208,8 +209,20 @@ public class WorldState {
                         permissions.add(permissionsJson.optString(i, ""));
                     }
                 }
-                this.roles.put(roleName, new Role(roleName, roleJson.optInt("speed", 5),
-                        roleJson.optInt("battery", 100), roleJson.optInt("load", 100),
+                this.roles.put(roleName, new Role(
+                        new RoleData(
+                                roleName,
+                                roleJson.optInt("baseSpeed", 3),
+                                roleJson.optInt("maxSpeed", 6),
+                                roleJson.optInt("baseBattery", 100),
+                                roleJson.optInt("maxBattery", 1000),
+                                roleJson.optInt("baseLoad", 100),
+                                roleJson.optInt("maxLoad", 1000),
+                                roleJson.optInt("baseSkill", 1),
+                                roleJson.optInt("maxSkill", 5),
+                                roleJson.optInt("baseVision", 500),
+                                roleJson.optInt("maxVision", 2000)
+                        ),
                         permissions));
             }
         });

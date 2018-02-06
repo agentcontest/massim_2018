@@ -675,21 +675,22 @@ public class ActionExecutor {
             else{ // item exists and can be assembled
                 Set<Entity> assembleTeam = new HashSet<>(assistants.get(assembler));
                 assembleTeam.add(assembler);
-                Set<Tool> tools = item.getRequiredTools();
-                boolean toolMissing = false;
-                for (Tool tool : tools) {
-                    boolean toolFound = false;
-                    for (Entity entity : assembleTeam) {
-                        if(entity.getItemCount(tool) > 0 && entity.getRole().getTools().contains(tool)){
-                            toolFound = true;
-                            break;
-                        }
-                    }
-                    if(!toolFound){
-                        toolMissing = true;
-                        break;
-                    }
-                }
+//                Set<Tool> tools = item.getRequiredTools();
+//                boolean toolMissing = false;
+//                for (Tool tool : tools) {
+//                    boolean toolFound = false;
+//                    for (Entity entity : assembleTeam) {
+//                        if(entity.getItemCount(tool) > 0 && entity.getRole().getTools().contains(tool)){
+//                            toolFound = true;
+//                            break;
+//                        }
+//                    }
+//                    if(!toolFound){
+//                        toolMissing = true;
+//                        break;
+//                    }
+//                }
+                boolean toolMissing = false; // TODO impl. role checking
                 if(toolMissing){
                     assembler.setLastActionResult(FAILED_TOOLS);
                     assistants.get(assembler).forEach(a -> a.setLastActionResult(FAILED_TOOLS));
