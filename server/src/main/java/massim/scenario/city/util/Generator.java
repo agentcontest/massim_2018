@@ -59,25 +59,16 @@ public class Generator {
     private int costFactor;
 
     // item parameters
-    private int baseItemsMin;
-    private int baseItemsMax;
     private int levelDecreaseMin;
     private int levelDecreaseMax;
     private int graphDepthMin;
     private int graphDepthMax;
     private int resourcesMin;
     private int resourcesMax;
-    private int minVol;
-    private int maxVol;
-    private int valueMin;
-    private int valueMax;
-    private int minReq;
-    private int maxReq ;
-    private int reqAmountMin;
-    private int reqAmountMax;
-    private int toolsMin;
-    private int toolsMax;
-    private double toolProbability;
+    private int volMin;
+    private int volMax;
+    private int partsMin;
+    private int partsMax;
 
     // job parameters
     private double rate;
@@ -100,13 +91,6 @@ public class Generator {
 
     private int missionDifficultyMax;
 
-    private int maxCapacity;
-
-    private List<Item> baseItems = new ArrayList<>();
-    private List<List<Item>> itemGraph = new ArrayList<>();
-    private List<Item> resources = new ArrayList<>();
-    private List<Tool> allTools = new ArrayList<>();
-    private List<Item> assembledItems = new ArrayList<>();
     private int missionID = 0;
     private int missionEnd = 0;
 
@@ -231,10 +215,6 @@ public class Generator {
         if(items == null) {
             Log.log(Log.Level.ERROR, "No items in configuration.");
         } else {
-            baseItemsMin = items.optInt("baseItemsMin",5);
-            Log.log(Log.Level.NORMAL, "Configuring items baseItemsMin: " + baseItemsMin);
-            baseItemsMax = items.optInt("baseItemsMax",7);
-            Log.log(Log.Level.NORMAL, "Configuring items baseItemsMax: " + baseItemsMax);
             levelDecreaseMin = items.optInt("levelDecreaseMin",1);
             Log.log(Log.Level.NORMAL, "Configuring items levelDecreaseMin: " + levelDecreaseMin);
             levelDecreaseMax = items.optInt("levelDecreaseMax",2);
@@ -248,29 +228,10 @@ public class Generator {
             resourcesMax = items.optInt("resourcesMax",1);
             Log.log(Log.Level.NORMAL, "Configuring items resourcesMax: " + resourcesMax);
 
-            minVol = items.optInt("minVol",10);
-            Log.log(Log.Level.NORMAL, "Configuring items minVol: " + minVol);
-            maxVol = items.optInt("maxVol",100);
-            Log.log(Log.Level.NORMAL, "Configuring items maxVol: " + maxVol);
-            valueMin = items.optInt("valueMin",10);
-            Log.log(Log.Level.NORMAL, "Configuring items valueMin: " + valueMin);
-            valueMax = items.optInt("valueMax",100);
-            Log.log(Log.Level.NORMAL, "Configuring items valueMax: " + valueMax);
-            minReq = items.optInt("minReq",1);
-            Log.log(Log.Level.NORMAL, "Configuring items minReq: " + minReq);
-            maxReq = items.optInt("maxReq",3);
-            Log.log(Log.Level.NORMAL, "Configuring items maxReq: " + maxReq);
-            reqAmountMin = items.optInt("reqAmountMin",1);
-            Log.log(Log.Level.NORMAL, "Configuring items reqAmountMin: " + reqAmountMin);
-            reqAmountMax = items.optInt("reqAmountMax",3);
-            Log.log(Log.Level.NORMAL, "Configuring items reqAmountMax: " + reqAmountMax);
-
-            toolsMin = items.optInt("toolsMin",1);
-            Log.log(Log.Level.NORMAL, "Configuring items toolsMin: " + toolsMin);
-            toolsMax = items.optInt("toolsMax",1);
-            Log.log(Log.Level.NORMAL, "Configuring items toolsMax: " + toolsMax);
-            toolProbability = items.optDouble("toolProbability",0.5);
-            Log.log(Log.Level.NORMAL, "Configuring items toolProbability: " + toolProbability);
+            volMin = optInt(items, "volMin", 10);
+            volMax = optInt(items, "volMax", 100);
+            partsMin = optInt(items, "partsMin", 2);
+            partsMax = optInt(items, "partsMax", 8);
         }
 
         //parse jobs
@@ -330,6 +291,13 @@ public class Generator {
         }
     }
 
+    /**
+     * Reads and logs an int value from a JSON object.
+     * @param src the object to read
+     * @param key the key to use
+     * @param standard the default value
+     * @return the read integer or the default value
+     */
     private int optInt(JSONObject src, String key, int standard) {
         int k = src.optInt(key, standard);
         Log.log(Log.Level.NORMAL, "Config: " + key + " set to " + k);
@@ -337,138 +305,43 @@ public class Generator {
     }
 
     /**
-     * Generates a number of tools dependent on config parameters
-     * @param roleMap map from role names to roles
-     * @return a list of tools
-     */
-    public List<Tool> generateTools(Map<String, Role> roleMap){
-        // TODO generate tools implicitly
-        int toolAmount = RNG.nextInt(toolsMax - toolsMin + 1) + toolsMin;
-        List<Role> roles = new ArrayList<>(roleMap.values());
-
-        //find role with maximum capacity
-        Role maxRole = roles.stream().max(Comparator.comparingInt(Role::getMaxLoad)).orElse(roles.get(0));
-        maxCapacity = maxRole.getMaxLoad();
-
-        for(int i = 0; i < toolAmount; i++){
-            String name = "tool" + i;
-            int volume = RNG.nextInt(maxVol - minVol + 1) + minVol;
-            int value = RNG.nextInt(valueMax - valueMin + 1) + valueMin;
-            Set<String> toolRoles = new HashSet<>();
-
-            // add one role at random
-            int randomRole = RNG.nextInt(roles.size());
-            if(roles.get(randomRole).getMaxLoad() > volume) toolRoles.add(roles.get(randomRole).getName());
-            else{
-                // if volume too high, set it low enough and give to role with max capacity
-                if(volume > maxCapacity) volume = (int) (maxCapacity * 0.9);
-                toolRoles.add(maxRole.getName());
-            }
-            if(RNG.nextInt(2) < 1){
-                // add a second role at 50% chance (and if it's not already added and if the tool fits the role)
-                randomRole = RNG.nextInt(roles.size());
-                if(roles.get(randomRole).getMaxLoad() > volume) toolRoles.add(roles.get(randomRole).getName());
-            }
-            Tool tool = new Tool(name, volume, value, toolRoles.toArray(new String[toolRoles.size()]));
-            allTools.add(tool);
-            Log.log(Log.Level.NORMAL, "Adding tool: " + tool);
-        }
-
-        return allTools;
-    }
-
-    /**
      * Generates a number of items dependent on config parameters
      * @return a list of items
      */
-    public List<Item> generateItems(List<Tool> tools) {
-        int baseItemAmount = RNG.nextInt(baseItemsMax - baseItemsMin + 1) + baseItemsMin;
-        int resourcesAmount = RNG.nextInt(resourcesMax - resourcesMin + 1) + resourcesMin;
+    public List<Item> generateItems(List<Role> r) {
 
-        List<Item> items = new Vector<>();
+        List<Item> items = new ArrayList<>();
+        List<Role> roles = new ArrayList<>(r);
 
-        // generate base items
-        for(int i = 0; i < baseItemAmount + resourcesAmount; i++){
-            Item item = new Item("item" + i, RNG.nextInt(maxVol - minVol + 1) + minVol,
-                    RNG.nextInt(valueMax - valueMin + 1) + valueMin);
+        // generate base items/resources
+        for(int i = 0; i < between(resourcesMin, resourcesMax); i++){
+            Item item = new Item("item" + i, between(volMin, volMax),
+                        new HashSet<>(), new HashSet<>());
             items.add(item);
-            baseItems.add(item);
         }
-
-        resources.addAll(items.subList(baseItemAmount, items.size())); // determine resources
-        itemGraph.add(baseItems);
 
         // generate assembled items
-        int graphDepth = RNG.nextInt(graphDepthMax - graphDepthMin + 1) + graphDepthMin;
-        int levelAmount = baseItemAmount; // only base items without resources, otherwise graph gets too big!
-        for(int i = 1; i <= graphDepth; i++){
-            levelAmount = Math.max(1, // at least 1 item per level
-                    levelAmount - (RNG.nextInt(levelDecreaseMax - levelDecreaseMin + 1) + levelDecreaseMin));
-            List<Item> levelItems = new ArrayList<>();
+        int layers = between(graphDepthMin, graphDepthMax);
+        int levelAmount = items.size();
+        for(int i = 1; i <= layers; i++){
+            levelAmount = Math.max(1, levelAmount - between(levelDecreaseMin, levelDecreaseMax));
+            List<Item> layerItems = new ArrayList<>();
             for(int j = 1; j <= levelAmount; j++){
-                // determine required items
-                Map<Item, Integer> requiredItems = new HashMap<>();
-                int requiredAmount = RNG.nextInt(maxReq - minReq + 1) + minReq;
-                requiredAmount = Math.min(requiredAmount, baseItemAmount + resourcesAmount);
-                // add item from one level beneath; if level beneath is level 0, take a resource
-                List<Item> tmpItems = (i == 1)? new ArrayList<>(resources)
-                                              : new ArrayList<>(itemGraph.get(i - 1));
-                RNG.shuffle(tmpItems);
-                requiredItems.put(tmpItems.get(0), RNG.nextInt(reqAmountMax - reqAmountMin + 1) + reqAmountMin);
-                requiredAmount -= 1;
-                // get list of possible levels and possible items
-                List<Item> possibleItems = new ArrayList<>();
-                if(i == 1){
-                    possibleItems.addAll(itemGraph.get(0));
-                } else {
-                    //only use items up to level (i-2) to avoid high assembleValues
-                    for (int k = 0; k < i - 1; k++) {
-                        possibleItems.addAll(itemGraph.get(k));
-                    }
-                }
-                possibleItems.remove(tmpItems.get(0)); // remove the item that was already added in the first step
-                RNG.shuffle(possibleItems);
-                // add amount of required items
-                for (int l = 0; l < Math.min(requiredAmount, possibleItems.size()); l++) {
-                    requiredItems.put(possibleItems.get(l), RNG.nextInt(reqAmountMax - reqAmountMin + 1) + reqAmountMin);
-                }
+                // draw random parts from all items on previous layers
+                int numberOfParts = between(partsMin, partsMax);
+                List<Item> possibleParts = new ArrayList<>(items);
+                Collections.shuffle(possibleParts);
+                Set<Item> parts = new HashSet<>(possibleParts.subList(0, Math.min(numberOfParts, possibleParts.size())));
+                int volume = parts.stream().mapToInt(Item::getVolume).sum();
 
-                // calculate volume of assembled item
-                int volume = 0;
-                for(Map.Entry<Item,Integer> e: requiredItems.entrySet()){
-                    volume += e.getKey().getVolume() * e.getValue();
-                }
-                // subtract random percentage (up to 50%)
-                volume -= (int) (RNG.nextDouble() * .5 * volume);
-                // ensure that at least the role with max capacity can carry this item
-                if(volume > maxCapacity) volume = (int) (maxCapacity * .9);
+                // determine required roles
+                Collections.shuffle(roles);
+                Set<Role> requiredRoles = new HashSet<>(roles.subList(0, 2));
 
-                // create assembled item
-                Item item = new Item("item" + items.size(), volume, 0);
-                item.setRequiredItems(requiredItems);
-
-                // determine required tools
-                List<Tool> tempTools = new ArrayList<>(tools);
-                if(RNG.nextDouble() < toolProbability){
-                    RNG.shuffle(tempTools);
-                    item.addRequiredTool(tempTools.get(0));
-                    if(RNG.nextDouble() < toolProbability){
-                        item.addRequiredTool(tempTools.get(1));
-                    }
-                }
-
-                items.add(item);
-                levelItems.add(item);
-                assembledItems.add(item);
+                Item item = new Item("item" + items.size(), volume, parts, requiredRoles);
+                layerItems.add(item);
             }
-            itemGraph.add(levelItems);
-        }
-
-        for(int i = 0; i < itemGraph.size(); i++){
-            Log.log(Log.Level.NORMAL, "Generated item graph level " + i);
-            for(Item item: itemGraph.get(i)){
-                Log.log(Log.Level.NORMAL, "Generated item: " + item);
-            }
+            items.addAll(layerItems);
         }
         return items;
     }
@@ -549,33 +422,7 @@ public class Generator {
             locations.add(shop.getLocation());
             shops.add(shop);
         }
-        // add base items, resources and tools to shops
-        List<Item> shopItems = new ArrayList<>();
-        shopItems.addAll(itemGraph.get(0));
-        shopItems.addAll(allTools);
-        List<Item> usedItems = new ArrayList<>();
-        for(Shop shop: shops){
-            int numberOfProducts = Math.min(RNG.nextInt(maxProd - minProd + 1) + minProd, shopItems.size());
-
-            List<Item> unusedItems = new ArrayList<>(shopItems); // items not used for this shop
-            for(int j = 0; j < numberOfProducts; j++){
-                int productNumber = RNG.nextInt(unusedItems.size());
-                Item item = unusedItems.get(productNumber);
-                float priceAdd = (RNG.nextInt(priceAddMax - priceAddMin + 1) + priceAddMin) / 100.0f;
-                int price = (int) (item.getValue() * priceAdd);
-                shop.addItem(item, RNG.nextInt(amountMax - amountMin + 1) + amountMin, price);
-                unusedItems.remove(productNumber);
-                usedItems.add(item);
-            }
-        }
-        shopItems.removeAll(usedItems);
-        for(Item item: shopItems){
-            int shopNumber = RNG.nextInt(shops.size());
-            Shop shop = shops.get(shopNumber);
-            float priceAdd = (RNG.nextInt((priceAddMax-priceAddMin) + 1) + priceAddMin) / 100.0f;
-            int price = (int) (item.getValue() * priceAdd);
-            shop.addItem(item, RNG.nextInt((amountMax-amountMin) + 1) + amountMin, price);
-        }
+        // TODO generate new shop params (and overhaul shops)
 
         // generate dumps
         int dumpCounter = 0;
@@ -655,36 +502,7 @@ public class Generator {
 
         // generate resource nodes
         int nodeCounter = 0;
-        for (double a = minLat; a < maxLat; a += quadSize) {
-            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
-                int numberOfFacilities = 0;
-                if (resourceDensity < 1) {
-                    if (RNG.nextDouble() < resourceDensity) numberOfFacilities = 1;
-                }
-                else numberOfFacilities = new Float(resourceDensity).intValue();
-                for (int i = 0; i < numberOfFacilities; i++) {
-                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
-                    ResourceNode node = new ResourceNode("resourceNode" + nodeCounter, loc,
-                            resources.get(nodeCounter % resources.size()),
-                            RNG.nextInt(gatherFrequencyMax - gatherFrequencyMin + 1) + gatherFrequencyMin);
-                    facilities.add(node);
-                    locations.add(node.getLocation());
-                    resourceNodes.add(node);
-                    nodeCounter++;
-                }
-            }
-        }
-        if(nodeCounter < resources.size()){
-            for(int i = nodeCounter; i < resources.size(); i++){
-                ResourceNode node = new ResourceNode("resourceNode" + nodeCounter, getUniqueLocation(locations, world),
-                        resources.get(nodeCounter % resources.size()),
-                        RNG.nextInt(gatherFrequencyMax - gatherFrequencyMin + 1) + gatherFrequencyMin);
-                facilities.add(node);
-                locations.add(node.getLocation());
-                resourceNodes.add(node);
-                nodeCounter++;
-            }
-        }
+        // TODO generate lots of resource nodes
 
         for(ResourceNode node: resourceNodes){
             Log.log(Log.Level.NORMAL, "Added resource node: " + node.getName() + ": " + node.getResource().getName() +
@@ -758,29 +576,7 @@ public class Generator {
         int numberOfItems = Math.min(RNG.nextInt(productTypesMax - productTypesMin + 1) + productTypesMin,
                 possibleItems.size());
 
-        // choose items for job
-        RNG.shuffle(possibleItems);
-        int currentNumberOfProducts = 0;
-        for (Item tmpJobItem : possibleItems) {
-            if (currentDifficulty + tmpJobItem.getAssembleValue() < difficulty) {
-                currentDifficulty += tmpJobItem.getAssembleValue();
-                result.put(tmpJobItem, 1);
-                currentNumberOfProducts++;
-            }
-            if (currentNumberOfProducts >= numberOfItems) break;
-        }
-
-        // determine quantities for each item
-        List<Item> itemList = new ArrayList<>(result.keySet());
-        while(currentDifficulty < difficulty && (!itemList.isEmpty())){
-            int itemIndex = RNG.nextInt(itemList.size());
-            if(currentDifficulty + itemList.get(itemIndex).getAssembleValue() < difficulty){
-                currentDifficulty += itemList.get(itemIndex).getAssembleValue();
-                int amount = result.get(itemList.get(itemIndex));
-                result.put(itemList.get(itemIndex), amount + 1);
-            }
-            else itemList.remove(itemIndex);
-        }
+        // TODO make a job according to new rules
 
         // safeguard
         if(result.isEmpty()) result.put(possibleItems.get(0), 1);
@@ -795,13 +591,6 @@ public class Generator {
      */
     public Set<Job> generateJobs(int stepNo, WorldState world) {
         Set<Job> jobs = new HashSet<>();
-        List<Item> tmpJobItems = new ArrayList<>();
-
-        if (difficultyMin == 0 && difficultyMax == 0 && missionDifficultyMax == 0) {
-            tmpJobItems.addAll(baseItems); // only require base items in this case
-        } else {
-            tmpJobItems.addAll(assembledItems);
-        }
 
         double jobProb = Math.exp(-1d * (double)stepNo/(double)world.getSteps()) * rate;
         if(RNG.nextDouble() <= jobProb){ // create a new job
@@ -810,7 +599,7 @@ public class Generator {
 
             List<Storage> storageList = new ArrayList<>(world.getStorages());
             Storage storage = storageList.get(RNG.nextInt(storageList.size()));
-            Map<Item, Integer> jobItems = determineJobItems(tmpJobItems, createMission);
+            Map<Item, Integer> jobItems = determineJobItems(new ArrayList<>(world.getAssembledItems()), createMission);
             int length = RNG.nextInt(timeMax - timeMin + 1) + timeMin;
 
             int reward = computeReward(jobItems);
@@ -927,16 +716,6 @@ public class Generator {
      * Adds a facility to the list of facilities affected by blackout (for testing)
      */
     public void addToBlackoutFacilities(Facility facility){ blackoutFacilities.add(facility);}
-
-    /**
-     * @return a list containing all resources
-     */
-    public List<Item> getResources(){ return resources;}
-
-    /**
-     * @return a list containing all base items
-     */
-    public List<Item> getBaseItems(){ return baseItems;}
 
     /**
      * @return the well types which are creatable in the current simulation run

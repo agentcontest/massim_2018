@@ -9,18 +9,19 @@ import java.util.stream.Collectors;
 public class Item implements Comparable<Item>{
     private String id;
     private int volume;
-    private Map<Item, Integer> requiredItems = new HashMap<>();
-    private Set<Tool> toolsNeeded = new HashSet<>();
+    private Set<Item> requiredItems;
+    private Set<Role> rolesNeeded;
     private int value;
-    private int assembleValue;
-    private Map<Item, Integer> requiredBaseItems = new HashMap<>();
 
-    public Item(String id, int volume, int value, Tool... tools){
+    public Item(String id, int volume, Set<Item> parts, Set<Role> roles){
         this.id = id;
         this.volume = volume;
-        Collections.addAll(toolsNeeded, tools);
-        this.value = value;
-        this.assembleValue = 0;
+        this.requiredItems = parts;
+        this.rolesNeeded = roles;
+        if(parts.isEmpty()) value = 0;
+        else {
+            value = getRequiredBaseItems().size();
+        }
     }
 
     /**
@@ -34,36 +35,24 @@ public class Item implements Comparable<Item>{
     public String getName(){ return id; }
 
     /**
-     * Set the items required to assemble this item.
-     * @param requiredItems mapping from items to amounts
+     * @return original set of required items
      */
-    public void setRequiredItems(Map<Item, Integer> requiredItems){
-        this.requiredItems = requiredItems;
-    }
-
-    public void addRequiredTool(Tool tool){
-        toolsNeeded.add(tool);
-    }
-
-    /**
-     * @return mapping from products to required amounts (original map for now)
-     */
-    public Map<Item, Integer> getRequiredItems(){
+    public Set<Item> getRequiredItems(){
         return requiredItems;
     }
 
     /**
-     * @return a new set containing all tools needed to build this item
+     * @return a new set containing all roles needed to build this item
      */
-    public Set<Tool> getRequiredTools(){
-        return new HashSet<>(toolsNeeded);
+    public Set<Role> getRequiredRoles(){
+        return new HashSet<>(rolesNeeded);
     }
 
     /**
      * @return true, if the item needs to be assembled (with other items and/or tools)
      */
     public boolean needsAssembly(){
-        return requiredItems.keySet().size() > 0 || toolsNeeded.size() > 0;
+        return requiredItems.size() > 0 || rolesNeeded.size() > 0;
     }
 
     /**
@@ -72,50 +61,24 @@ public class Item implements Comparable<Item>{
     public int getValue(){ return value; }
 
     /**
-     * @return the item's assembleValue
-     */
-    public int getAssembleValue(){
-        if(!needsAssembly()) return 0;
-        if(assembleValue == 0){
-                assembleValue = 1;
-                for(Item item: requiredItems.keySet()){
-                    assembleValue += requiredItems.get(item) * item.getAssembleValue();
-                }
-        }
-        return assembleValue;
-    }
-
-    /**
      * @return all base items that are needed to build the item and its required items
      */
-    public Map<Item, Integer> getRequiredBaseItems(){
-        if(requiredBaseItems.isEmpty()){
-            if(needsAssembly()){
-                // add all base item amounts required for each part
-                requiredItems.forEach((reqItem, amount) -> reqItem.getRequiredBaseItems()
-                             .forEach((reqBase, baseAmount) -> {
-                    int current = requiredBaseItems.getOrDefault(reqBase, 0);
-                    requiredBaseItems.put(reqBase, current + amount * baseAmount);
-                }));
-            }
-            else requiredBaseItems.put(this, 1); // no assembly
-        }
-        return requiredBaseItems;
+    public Set<Item> getRequiredBaseItems(){
+        return requiredItems.stream().filter(it -> !it.needsAssembly()).collect(Collectors.toSet());
     }
 
     @Override
     public String toString(){
-        String ret = "Item " + id + ": \tvol("+volume+")\tAV(" + getAssembleValue() + ")\tval(" + getValue() + ")";
-        if(requiredItems.keySet().size() > 0)
-            ret += "\tparts([" + requiredItems.entrySet().stream()
-                .map(e -> "(" + e.getValue() + ", " + e.getKey().getName() + ")")
+        String ret = "Item " + id + ": \tvol("+volume+")\tval(" + getValue() + ")";
+        if(requiredItems.size() > 0)
+            ret += "\tparts([" + requiredItems.stream()
+                .map(Item::getName)
                 .collect(Collectors.joining(", ")) + "])";
-        if(toolsNeeded.size() > 0)
-            ret += "\ttools([" + toolsNeeded.stream().map(Tool::getName).collect(Collectors.joining(", ")) + "])";
-        ret += "\treqBaseIt([" + getRequiredBaseItems().entrySet().stream()
-                .map(e -> "(" + e.getValue() + ", " + e.getKey().getName() + ")")
+        if(rolesNeeded.size() > 0)
+            ret += "\troles([" + rolesNeeded.stream().map(Role::getName).collect(Collectors.joining(", ")) + "])";
+        ret += "\treqBaseIt([" + getRequiredBaseItems().stream()
+                .map(Item::getName)
                 .collect(Collectors.joining(", ")) + "])";
-
         return ret;
     }
 

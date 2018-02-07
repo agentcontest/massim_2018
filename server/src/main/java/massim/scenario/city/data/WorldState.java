@@ -32,13 +32,13 @@ public class WorldState {
     private double maxLon;
     private double minLat;
     private double maxLat;
-    private double restock;
-    private double restockResource;
 
-    private Map<String, Tool> tools = new HashMap<>();
     private Map<String, Item> items = new HashMap<>();
+    private List<Item> assembledItems = new ArrayList<>();
+    private List<Item> resources = new ArrayList<>();
+
+
     private Map<String, Role> roles = new HashMap<>();
-    private Set<Item> resourceSet = new HashSet<>();
 
     private Map<String, Facility> facilities = new HashMap<>();
     private Set<Workshop> workshops = new HashSet<>();
@@ -104,10 +104,6 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
         rechargeRate = config.optInt("rechargeRate", 5);
         Log.log(Log.Level.NORMAL, "Configuring recharge rate: " + rechargeRate);
-        restock = config.optDouble("restock", 1.2);
-        Log.log(Log.Level.NORMAL, "Configuring restock: " + restock);
-        restockResource = config.optDouble("restockResource", .8);
-        Log.log(Log.Level.NORMAL, "Configuring restockResource: " + restock);
 
         parseRoles(config.optJSONObject("roles"));
 
@@ -138,9 +134,11 @@ public class WorldState {
         }
 
         // generate the things
-        List<Tool> genTools = generator.generateTools(roles);
-        genTools.forEach(t -> tools.put(t.getName(), t));
-        generator.generateItems(genTools).forEach(i -> items.put(i.getName(), i));
+        generator.generateItems(new ArrayList<>(roles.values())).forEach(i -> items.put(i.getName(), i));
+        for (Item item : items.values()) {
+            if(item.needsAssembly()) assembledItems.add(item);
+            else resources.add(item);
+        }
         generator.generateFacilities(this).forEach(f -> facilities.put(f.getName(), f));
         facilities.values().forEach(f -> facilityByLocation.put(f.getLocation(), f));
         facilities.values().forEach(f -> {
@@ -158,8 +156,6 @@ public class WorldState {
         shops.forEach(shop -> shop.getOfferedItems().stream()
                 .filter(item -> !(item instanceof Tool) && !item.needsAssembly())
                 .forEach(item -> shopsByItem.get(item).add(shop)));
-
-        resourceSet.addAll(gen.getResources());
 
         // draw initial locations
         Location[] initialLocations = new Location[roleSequence.size()];
@@ -277,16 +273,6 @@ public class WorldState {
      */
     public List<Item> getItems() {
         return new ArrayList<>(items.values());
-    }
-
-    /**
-     * @return a new list containing all items and tools of this simulation
-     */
-    public List<Item> getItemsAndTools(){
-        ArrayList<Item> items = new ArrayList<>();
-        items.addAll(this.items.values());
-        items.addAll(this.tools.values());
-        return items;
     }
 
     /**
@@ -423,13 +409,6 @@ public class WorldState {
     }
 
     /**
-     * @return a new list containing all existing tools
-     */
-    public List<Tool> getTools() {
-        return new ArrayList<>(tools.values());
-    }
-
-    /**
      * @return a new list containing all roles in this simulation
      */
     public List<Role> getRoles(){
@@ -492,15 +471,6 @@ public class WorldState {
     public double getMaxLat(){ return maxLat; }
 
     /**
-     * @param name name of an item/tool
-     * @return the item or tool of the given name (or null)
-     */
-    public Item getItemOrTool(String name){
-        if(items.containsKey(name)) return items.get(name);
-        return tools.get(name);
-    }
-
-    /**
      * @return the generator for this world
      */
     public Generator getGenerator(){ return gen;}
@@ -521,29 +491,6 @@ public class WorldState {
         List<Shop> suitableShops = getShopsByItem(item);
         if(suitableShops.isEmpty()) return null;
         return suitableShops.get(RNG.nextInt(suitableShops.size()));
-    }
-
-    /**
-     * Put the required baseitems of the job in some suitable shops.
-     * @param j the job to restock for
-     * @param multiplier the factor to multiply the restock chance with
-     */
-    public void jobRestock(Job j, double multiplier){
-        j.getRequiredItems().forEach((item, number) -> item.getRequiredBaseItems().forEach((baseItem, baseNumber) -> {
-            double chance = resourceSet.contains(baseItem)? restockResource : restock;
-            chance *= multiplier;
-            while(chance >= 1){
-                Shop shop = getRandomShop(baseItem);
-                if(shop != null) shop.restock(baseItem, number * baseNumber);
-                chance--;
-            }
-            if(chance > 0.001){
-                if(RNG.nextDouble() < chance){
-                    Shop shop = getRandomShop(baseItem);
-                    if(shop != null) shop.restock(baseItem, number * baseNumber);
-                }
-            }
-        }));
     }
 
     /**
@@ -581,6 +528,10 @@ public class WorldState {
         facilities.remove(w.getName());
         facilityByLocation.remove(w.getLocation());
         wells.remove(w);
+    }
+
+    public List<Item> getAssembledItems() {
+        return assembledItems;
     }
 }
 
