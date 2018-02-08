@@ -84,14 +84,8 @@
           },
           "shops" : {
             "density" : 0.8,
-            "minProd" : 3,
-            "maxProd" : 10,
-            "amountMin" : 5,
-            "amountMax" : 20,
-            "priceAddMin" : 100,
-            "priceAddMax" : 150,
-            "restockMin" : 1,
-            "restockMax" : 5
+            "tradeModMin" : 1,
+            "tradeModMax" : 4
           },
           "dumps" : {
             "density" : 0.6

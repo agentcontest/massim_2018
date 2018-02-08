@@ -26,14 +26,8 @@ public class Generator {
 
     // shop parameters
     private double shopDensity;
-    private int minProd;
-    private int maxProd;
-    private int amountMin;
-    private int amountMax;
-    private int priceAddMin;
-    private int priceAddMax;
-    private int restockMin;
-    private int restockMax;
+    private int tradeModMin;
+    private int tradeModMax;
 
     private double dumpDensity;
 
@@ -131,22 +125,8 @@ public class Generator {
             } else {
                 shopDensity = shops.optDouble("density", 0.8);
                 Log.log(Log.Level.NORMAL, "Configuring facilities shop density: " + shopDensity);
-                minProd = shops.optInt("minProd", 3);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop minProd: " + minProd);
-                maxProd = shops.optInt("maxProd", 10);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop maxProd: " + maxProd);
-                amountMin = shops.optInt("amountMin", 5);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop amountMin: " + amountMin);
-                amountMax = shops.optInt("amountMax", 20);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop amountMax: " + amountMax);
-                priceAddMin = shops.optInt("priceAddMin", 100);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop priceAddMin: " + priceAddMin);
-                priceAddMax = shops.optInt("priceAddMax", 150);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop priceAddMax: " + priceAddMax);
-                restockMin = shops.optInt("restockMin", 1);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop restockMin: " + restockMin);
-                restockMax = shops.optInt("restockMax", 5);
-                Log.log(Log.Level.NORMAL, "Configuring facilities shop restockMax: " + restockMax);
+                tradeModMin = optInt(shops, "tradeModMin", 1);
+                tradeModMax = optInt(shops, "tradeModMax", 2);
             }
 
             //parse dumps
@@ -330,12 +310,12 @@ public class Generator {
                 // draw random parts from all items on previous layers
                 int numberOfParts = between(partsMin, partsMax);
                 List<Item> possibleParts = new ArrayList<>(items);
-                Collections.shuffle(possibleParts);
+                RNG.shuffle(possibleParts);
                 Set<Item> parts = new HashSet<>(possibleParts.subList(0, Math.min(numberOfParts, possibleParts.size())));
                 int volume = parts.stream().mapToInt(Item::getVolume).sum();
 
                 // determine required roles
-                Collections.shuffle(roles);
+                RNG.shuffle(roles);
                 Set<Role> requiredRoles = new HashSet<>(roles.subList(0, 2));
 
                 Item item = new Item("item" + items.size(), volume, parts, requiredRoles);
@@ -391,38 +371,30 @@ public class Generator {
             locations.add(charging.getLocation());
         }
 
-        // generate empty shops
-        int shopCounter = 0;
-        for (double a = minLat; a < maxLat; a += quadSize) {
+        // generate shops
+        for(double a = minLat; a < maxLat; a += quadSize) {
             for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
-
                 int numberOfFacilities = 0;
                 if(shopDensity < 1){
-                    if(RNG.nextDouble() < shopDensity){
-                        numberOfFacilities = 1;
-                    }
-                }
-                else{
+                    if(RNG.nextDouble() < shopDensity) numberOfFacilities = 1;
+                } else {
                     numberOfFacilities = new Float(shopDensity).intValue();
                 }
-                for(int i = 0; i < numberOfFacilities; i++){
+                for(int i = 0; i < numberOfFacilities; i++) {
                     Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
-                    Shop shop = new Shop("shop" + shopCounter, loc,RNG.nextInt(restockMax - restockMin + 1) + restockMin);
+                    Shop shop = new Shop("shop" + shops.size(), loc, between(tradeModMin, tradeModMax));
                     facilities.add(shop);
                     locations.add(shop.getLocation());
                     shops.add(shop);
-                    shopCounter++;
                 }
             }
         }
-        if(shopCounter == 0){
-            Shop shop = new Shop("shop" + shopCounter, getUniqueLocation(locations, world),
-                    RNG.nextInt(restockMax - restockMin + 1) + restockMin);
+        if(shops.size() == 0){
+            Shop shop = new Shop("shop" + shops.size(), getUniqueLocation(locations, world), between(tradeModMin, tradeModMax));
             facilities.add(shop);
             locations.add(shop.getLocation());
             shops.add(shop);
         }
-        // TODO generate new shop params (and overhaul shops)
 
         // generate dumps
         int dumpCounter = 0;

@@ -44,7 +44,6 @@ public class WorldState {
     private Set<Dump> dumps = new HashSet<>();
     private Set<ChargingStation> chargingStations = new HashSet<>();
     private Set<Shop> shops = new HashSet<>();
-    private Map<Item, List<Shop>> shopsByItem = new HashMap<>();
     private Set<Storage> storages = new HashSet<>();
     private Set<ResourceNode> resourceNodes = new HashSet<>();
     private Set<Well> wells = new HashSet<>();
@@ -149,12 +148,6 @@ public class WorldState {
             else if(f instanceof ResourceNode) resourceNodes.add((ResourceNode) f);
         });
         wellTypes = generator.generateWellTypes();
-
-        // store shops by items they sell
-        items.values().stream().filter(i -> !i.needsAssembly()).forEach(item -> shopsByItem.put(item, new ArrayList<>()));
-        shops.forEach(shop -> shop.getOfferedItems().stream()
-                .filter(item -> !item.needsAssembly())
-                .forEach(item -> shopsByItem.get(item).add(shop)));
 
         // draw initial locations
         Location[] initialLocations = new Location[roleSequence.size()];
@@ -465,24 +458,6 @@ public class WorldState {
      * @return the generator for this world
      */
     public Generator getGenerator(){ return gen;}
-
-    /**
-     * @param item an item
-     * @return a list of all shops where an item can be bought (if it is in stock)
-     */
-    private List<Shop> getShopsByItem(Item item){
-        return shopsByItem.get(item);
-    }
-
-    /**
-     * @param item any item
-     * @return a random shop where that item is sold or null if there is no such shop
-     */
-    private Shop getRandomShop(Item item){
-        List<Shop> suitableShops = getShopsByItem(item);
-        if(suitableShops.isEmpty()) return null;
-        return suitableShops.get(RNG.nextInt(suitableShops.size()));
-    }
 
     /**
      * Retrieves the well type of the given name.

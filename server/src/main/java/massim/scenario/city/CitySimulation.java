@@ -14,7 +14,6 @@ import massim.protocol.scenario.city.util.LocationUtil;
 import massim.scenario.AbstractSimulation;
 import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Facility;
-import massim.scenario.city.data.facilities.Shop;
 import massim.scenario.city.data.facilities.Storage;
 import massim.scenario.city.data.facilities.Well;
 import massim.scenario.city.util.Generator;
@@ -286,11 +285,7 @@ public class CitySimulation extends AbstractSimulation {
                 .sorted()
                 .map(shop ->
                         new ShopData(
-                                shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon(),
-                                shop.getRestock(),
-                                shop.getOfferedItemsSorted().stream()
-                                        .map(item -> new StockData(item.getName(), shop.getPrice(item), shop.getItemCount(item)))
-                                        .collect(Collectors.toList())))
+                                shop.getName(), shop.getLocation().getLat(), shop.getLocation().getLon()))
                 .collect(Collectors.toList());
     }
 
@@ -393,9 +388,6 @@ public class CitySimulation extends AbstractSimulation {
                 }
             }
         });
-
-        // step shops
-        world.getShops().forEach(Shop::step);
 
         // process new jobs (created in this step)
         world.processNewJobs();

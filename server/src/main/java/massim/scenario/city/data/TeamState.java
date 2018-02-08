@@ -23,7 +23,7 @@ public class TeamState {
         return massium;
     }
 
-    public void addMassium(long amount){
+    public void addMassium(int amount){
         massium += amount;
     }
 
