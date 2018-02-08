@@ -3,7 +3,6 @@ package massim.protocol.scenario.city.data;
 import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 /**
  * Holds complete info of an item for serialization.
@@ -19,10 +18,10 @@ public class ItemData {
     private int volume;
 
     @XmlElement(name="item")
-    private List<ItemAmountData> parts;
+    private List<String> parts;
 
-    @XmlElement(name="tool")
-    private List<ToolData> tools;
+    @XmlElement(name="role")
+    private List<String> roles;
 
     /**
      * For JAXB
@@ -34,13 +33,13 @@ public class ItemData {
      * @param name name of the item
      * @param volume volume of the item
      * @param requiredParts items required to assemble the item (may be null or empty)
-     * @param tools tools required to assemble the item (may be null or empty)
+     * @param roles roles required to assemble the item (may be null or empty)
      */
-    public ItemData(String name, int volume, List<ItemAmountData> requiredParts, List<ToolData> tools){
+    public ItemData(String name, int volume, List<String> requiredParts, List<String> roles){
         this.name = name;
         this.volume = volume;
         if(requiredParts.size() > 0) parts = requiredParts;
-        if(tools.size() > 0) this.tools = tools;
+        if(roles.size() > 0) this.roles = roles;
     }
 
     /**
@@ -60,16 +59,14 @@ public class ItemData {
     /**
      * @return a list of the required items to craft this item or null if no items are required
      */
-    public List<ItemAmountData> getParts() {
+    public List<String> getParts() {
         return parts == null? new Vector<>() : parts;
     }
 
     /**
-     * @return a list of all tools necessary to craft this item or null if no tools required
+     * @return a list of all roles necessary to craft this item or null if no roles required
      */
-    public List<String> getTools() {
-        return tools == null? new Vector<>() : tools.stream()
-                                                    .map(ToolData::getName)
-                                                    .collect(Collectors.toList());
+    public List<String> getRoles() {
+        return roles == null? new Vector<>() : roles;
     }
 }

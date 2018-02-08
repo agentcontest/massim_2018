@@ -668,19 +668,13 @@ public class Generator {
     }
 
     /**
-     *
      * @param requiredItems items required to complete the job
      * @return reward for a job with the corresponding required items
      */
     private int computeReward(Map<Item, Integer> requiredItems){
         int reward = 0;
-        for(Item reqItem: requiredItems.keySet()){
-            for(int i = 0; i < requiredItems.get(reqItem); i++){
-                for(Item reqBaseItem: reqItem.getRequiredBaseItems().keySet()){
-                    reward += reqItem.getRequiredBaseItems().get(reqBaseItem) * reqBaseItem.getValue();
-                }
-                reward += reqItem.getAssembleValue() * 100;
-            }
+        for (Map.Entry<Item, Integer> entry : requiredItems.entrySet()) {
+            reward += entry.getKey().getValue() * entry.getValue() * 10;
         }
         return reward;
     }

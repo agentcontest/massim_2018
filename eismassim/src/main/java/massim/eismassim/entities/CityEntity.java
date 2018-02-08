@@ -70,14 +70,14 @@ public class CityEntity extends EISEntity {
             params.add(new Identifier(item.getName()));
             params.add(new Numeral(item.getVolume()));
 
-            ParameterList requiredTools = new ParameterList();
-            if(item.getTools() != null)
-                item.getTools().forEach(tool -> requiredTools.add(new Identifier(tool)));
-            params.add(new Function("tools", requiredTools));
+            ParameterList requiredRoles = new ParameterList();
+            if(item.getRoles() != null)
+                item.getRoles().forEach(role -> requiredRoles.add(new Identifier(role)));
+            params.add(new Function("roles", requiredRoles));
 
             ParameterList requiredParts = new ParameterList();
             item.getParts().forEach(part ->
-                    requiredParts.add(new ParameterList(new Identifier(part.getName()), new Numeral(part.getAmount()))));
+                    requiredParts.add(new Identifier(part)));
             params.add(new Function("parts", requiredParts));
 
             ret.add(new Percept("item", params));

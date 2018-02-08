@@ -4,12 +4,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A product/item in the City scenario.
+ * An item in the City scenario.
  */
 public class Item implements Comparable<Item>{
     private String id;
     private int volume;
     private Set<Item> requiredItems;
+    private Map<Item, Integer> requiredBaseItems;
     private Set<Role> rolesNeeded;
     private int value;
 
@@ -63,8 +64,20 @@ public class Item implements Comparable<Item>{
     /**
      * @return all base items that are needed to build the item and its required items
      */
-    public Set<Item> getRequiredBaseItems(){
-        return requiredItems.stream().filter(it -> !it.needsAssembly()).collect(Collectors.toSet());
+    public Map<Item, Integer> getRequiredBaseItems(){
+        if(requiredBaseItems == null) {
+            requiredBaseItems = new HashMap<>();
+            if (!needsAssembly()) {
+                requiredBaseItems.put(this, 1);
+            } else {
+                for (Item requiredItem : requiredItems) {
+                    requiredItem.getRequiredBaseItems().forEach((item, number) -> {
+                        requiredBaseItems.merge(item, number, Integer::sum);
+                    });
+                }
+            }
+        }
+        return requiredBaseItems;
     }
 
     @Override
@@ -76,8 +89,8 @@ public class Item implements Comparable<Item>{
                 .collect(Collectors.joining(", ")) + "])";
         if(rolesNeeded.size() > 0)
             ret += "\troles([" + rolesNeeded.stream().map(Role::getName).collect(Collectors.joining(", ")) + "])";
-        ret += "\treqBaseIt([" + getRequiredBaseItems().stream()
-                .map(Item::getName)
+        ret += "\treqBaseIt([" + getRequiredBaseItems().entrySet().stream()
+                .map(e -> "(" + e.getKey().getName() + "," + e.getValue() + ")")
                 .collect(Collectors.joining(", ")) + "])";
         return ret;
     }

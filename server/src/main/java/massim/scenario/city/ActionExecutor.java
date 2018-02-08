@@ -200,7 +200,7 @@ public class ActionExecutor {
                 }
                 else {
                     String receiver = params.get(0);
-                    Item item = world.getItemOrTool(params.get(1));
+                    Item item = world.getItemByName(params.get(1));
                     Entity receiverEntity = world.getEntity(receiver);
                     int amount = -1;
                     try { amount = Integer.parseInt(params.get(2)); } catch (NumberFormatException ignored) {}
@@ -249,7 +249,7 @@ public class ActionExecutor {
                     return;
                 }
                 Storage storage = (Storage)facility;
-                Item item = world.getItemOrTool(params.get(0));
+                Item item = world.getItemByName(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     return;
@@ -291,7 +291,7 @@ public class ActionExecutor {
                     return;
                 }
                 storage = (Storage)facility;
-                item = world.getItemOrTool(params.get(0));
+                item = world.getItemByName(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     return;
@@ -375,7 +375,7 @@ public class ActionExecutor {
                     break;
                 }
                 Shop shop = (Shop)facility;
-                item = world.getItemOrTool(params.get(0));
+                item = world.getItemByName(params.get(0));
                 if(item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     break;
@@ -442,10 +442,6 @@ public class ActionExecutor {
                         if (!job.getPoster().equals(JobData.POSTER_SYSTEM))
                             world.getTeam(job.getPoster()).subMassium(reward);
                         entity.setLastActionResult(SUCCESSFUL);
-
-                        // restock some of the items
-                        world.jobRestock(job, 1);
-
                         break;
                     } else {
                         entity.setLastActionResult(PARTIAL_SUCCESS);
@@ -501,7 +497,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
-                item = world.getItemOrTool(params.get(0));
+                item = world.getItemByName(params.get(0));
                 if (item == null){
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     break;
@@ -594,7 +590,7 @@ public class ActionExecutor {
                 // check item requirements
                 Map<Item, Integer> requirements = new HashMap<>();
                 for (int i = 3; i < params.size(); i += 2){
-                    item = world.getItemOrTool(params.get(i));
+                    item = world.getItemByName(params.get(i));
                     if(item == null){
                         entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                         break;
@@ -735,8 +731,8 @@ public class ActionExecutor {
             if(!dryRunResult.equals(SUCCESSFUL)) return dryRunResult;
         }
         int freedVolume = 0;
-        for(Item part: item.getRequiredItems().keySet()){
-            int needed = item.getRequiredItems().get(part);
+        for(Item part: item.getRequiredItems()){
+            int needed = 1;
             int take = Math.min(needed, assembler.getItemCount(part));
             if(applyChanges) assembler.removeItem(part, take);
             needed -= take;

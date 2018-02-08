@@ -37,7 +37,6 @@ public class WorldState {
     private List<Item> assembledItems = new ArrayList<>();
     private List<Item> resources = new ArrayList<>();
 
-
     private Map<String, Role> roles = new HashMap<>();
 
     private Map<String, Facility> facilities = new HashMap<>();
@@ -154,7 +153,7 @@ public class WorldState {
         // store shops by items they sell
         items.values().stream().filter(i -> !i.needsAssembly()).forEach(item -> shopsByItem.put(item, new ArrayList<>()));
         shops.forEach(shop -> shop.getOfferedItems().stream()
-                .filter(item -> !(item instanceof Tool) && !item.needsAssembly())
+                .filter(item -> !item.needsAssembly())
                 .forEach(item -> shopsByItem.get(item).add(shop)));
 
         // draw initial locations
@@ -530,8 +529,19 @@ public class WorldState {
         wells.remove(w);
     }
 
+    /**
+     * @return the original list of assembled items
+     */
     public List<Item> getAssembledItems() {
         return assembledItems;
+    }
+
+    /**
+     * @param name name of an item
+     * @return the item by that name or null
+     */
+    public Item getItemByName(String name) {
+        return items.get(name);
     }
 }
 
