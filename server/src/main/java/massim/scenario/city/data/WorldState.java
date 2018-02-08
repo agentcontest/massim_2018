@@ -290,14 +290,6 @@ public class WorldState {
     }
 
     /**
-     * @param name the name of an item
-     * @return the non-tool item with the given name or null if no item with that name exists
-     */
-    public Item getNonToolItem(String name) {
-        return items.get(name);
-    }
-
-    /**
      * @return a set containing all entities in the simulation
      */
     public Set<Entity> getEntities() {

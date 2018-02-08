@@ -8,6 +8,7 @@ import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static massim.protocol.scenario.city.Actions.*;
 
@@ -659,7 +660,7 @@ public class ActionExecutor {
         // assemblers and assistants are performing correct actions in the correct facility
         // agents are in the same workshop
         assemblers.forEach(assembler -> {
-            Item item = world.getNonToolItem(assembler.getLastAction().getParameters().get(0));
+            Item item = world.getItemByName(assembler.getLastAction().getParameters().get(0));
             if(item == null){
                 assembler.setLastActionResult(FAILED_UNKNOWN_ITEM);
                 assistants.get(assembler).forEach(a -> a.setLastActionResult(FAILED_COUNTERPART));
@@ -671,27 +672,15 @@ public class ActionExecutor {
             else{ // item exists and can be assembled
                 Set<Entity> assembleTeam = new HashSet<>(assistants.get(assembler));
                 assembleTeam.add(assembler);
-//                Set<Tool> tools = item.getRequiredTools();
-//                boolean toolMissing = false;
-//                for (Tool tool : tools) {
-//                    boolean toolFound = false;
-//                    for (Entity entity : assembleTeam) {
-//                        if(entity.getItemCount(tool) > 0 && entity.getRole().getTools().contains(tool)){
-//                            toolFound = true;
-//                            break;
-//                        }
-//                    }
-//                    if(!toolFound){
-//                        toolMissing = true;
-//                        break;
-//                    }
-//                }
-                boolean toolMissing = false; // TODO impl. role checking
-                if(toolMissing){
+                Set<Role> presentRoles = assembleTeam.stream().map(Entity::getRole).collect(Collectors.toSet());
+                Set<Role> missingRoles = new HashSet<>(item.getRequiredRoles());
+                missingRoles.removeAll(presentRoles);
+
+                if(missingRoles.size() > 0){
                     assembler.setLastActionResult(FAILED_TOOLS);
                     assistants.get(assembler).forEach(a -> a.setLastActionResult(FAILED_TOOLS));
                 }
-                else{ // all tools available, check regular items now
+                else{ // all "tools" available, check items now
                     // sort assembly helpers by name
                     List<Entity> assemblyAssistants = new ArrayList<>(assistants.get(assembler));
                     assemblyAssistants.sort((e1, e2) -> {
