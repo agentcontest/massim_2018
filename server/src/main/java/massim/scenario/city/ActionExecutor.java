@@ -618,19 +618,20 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
-                boolean gatherResult = ((ResourceNode) facility).gather();
-                if(gatherResult){
-                    if(entity.getFreeSpace() < ((ResourceNode) facility).getResource().getVolume()){
+                ResourceNode node = (ResourceNode) facility;
+                int resources = node.gather(entity.getSkill());
+                if(resources > 0){
+                    if(entity.getFreeSpace() < resources * node.getResource().getVolume()) {
                         entity.setLastActionResult(FAILED_CAPACITY);
                         break;
                     }
-                    entity.addItem(((ResourceNode) facility).getResource(), 1);
+                    entity.addItem(node.getResource(), resources);
                     entity.setLastActionResult(SUCCESSFUL);
+                    break;
                 } else {
                     entity.setLastActionResult(PARTIAL_SUCCESS);
+                    break;
                 }
-
-                break;
 
             default:
                 entity.setLastAction(Action.STD_UNKNOWN_ACTION);
