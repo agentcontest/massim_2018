@@ -33,7 +33,7 @@ public class ActionExecutor {
     private final static String FAILED_UNKNOWN_JOB = "failed_unknown_job";
     private final static String FAILED_JOB_STATUS = "failed_job_status";
     private final static String FAILED_JOB_TYPE = "failed_job_type";
-    private final static String PARTIAL_SUCCESS = "successful_partial"; // part of the job was delivered, still active.
+    private final static String PARTIAL_SUCCESS = "successful_partial";
     private final static String FAILED_WRONG_PARAM = "failed_wrong_param";
     private final static String FAILED_RESOURCES = "failed_resources";
     private final static String FAILED_ROLE = "failed_role";
@@ -549,7 +549,7 @@ public class ActionExecutor {
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 
-            case POST_JOB:
+            case POST_JOB: // TODO modify or remove
                 if(params.size() < 5 || params.size() % 2 == 0){ // needs at least 5 parameters (and an odd number)
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;
@@ -632,6 +632,36 @@ public class ActionExecutor {
                     entity.setLastActionResult(PARTIAL_SUCCESS);
                     break;
                 }
+
+            case UPGRADE:
+                if(params.size() != 1) {
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    return;
+                }
+                facility = world.getFacilityByLocation(entity.getLocation());
+                if(facility == null){
+                    entity.setLastActionResult(FAILED_LOCATION);
+                    break;
+                }
+                if(!(facility instanceof Shop)){
+                    entity.setLastActionResult(FAILED_WRONG_FACILITY);
+                    break;
+                }
+                String upgradeName = params.get(0);
+                Upgrade upgrade = world.getUpgrade(upgradeName);
+                if(upgrade == null) {
+                    entity.setLastActionResult(FAILED_WRONG_PARAM);
+                    return;
+                }
+                TeamState teamState = world.getTeam(world.getTeamForAgent(agent));
+                if(teamState.getMassium() < upgrade.getCost()) {
+                    entity.setLastActionResult(FAILED_RESOURCES);
+                    return;
+                }
+                entity.upgrade(upgrade);
+                teamState.subMassium(upgrade.getCost());
+                entity.setLastActionResult(SUCCESSFUL);
+                return;
 
             default:
                 entity.setLastAction(Action.STD_UNKNOWN_ACTION);

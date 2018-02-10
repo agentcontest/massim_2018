@@ -206,23 +206,23 @@ public class Entity {
         return skill;
     }
 
-    public void upgradeSkill(int increase) {
-        this.skill = Math.min(skill + increase, role.getMaxSkill());
-    }
-
-    public void upgradeBattery(int increase) {
-        this.battery = Math.min(battery + increase, role.getMaxBattery());
-    }
-
-    public void upgradeCapacity(int increase) {
-        items.extend(increase, role.getMaxLoad());
-    }
-
-    public void upgradeSpeed(int increase) {
-        this.speed = Math.min(speed + increase, role.getMaxSpeed());
-    }
-
-    public void upgradeVision(int increase) {
-        this.vision = Math.min(vision + increase, role.getMaxVision());
+    public void upgrade(Upgrade upgrade) {
+        switch(upgrade.getName()) {
+            case "skill":
+                this.skill = Math.min(skill + upgrade.getStep(), role.getMaxSkill());
+                break;
+            case "battery":
+                this.battery = Math.min(battery + upgrade.getStep(), role.getMaxBattery());
+                break;
+            case "load":
+                items.extend(upgrade.getStep(), role.getMaxLoad());
+                break;
+            case "speed":
+                this.speed = Math.min(speed + upgrade.getStep(), role.getMaxSpeed());
+                break;
+            case "vision":
+                this.vision = Math.min(vision + upgrade.getStep(), role.getMaxVision());
+                break;
+        }
     }
 }

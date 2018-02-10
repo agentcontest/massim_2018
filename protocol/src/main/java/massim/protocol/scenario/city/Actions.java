@@ -32,11 +32,12 @@ public abstract class Actions {
     public final static String BUILD = "build";
     public final static String DISMANTLE = "dismantle";
     public final static String TRADE = "trade";
+    public final static String UPGRADE = "upgrade";
 
     /**
      * Unmodifiable list of all actions in the scenario.
      */
     public final static List<String> ALL_ACTIONS = Collections.unmodifiableList(Arrays.asList(GO_TO, RECEIVE, GIVE,
             STORE, RETRIEVE, ASSEMBLE, ASSIST_ASSEMBLE, DELIVER_JOB, RETRIEVE_DELIVERED, BID_FOR_JOB, DUMP, CHARGE,
-            CONTINUE, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE, ABORT, BUILD, DISMANTLE, TRADE));
+            CONTINUE, POST_JOB, Action.NO_ACTION, GATHER, RECHARGE, ABORT, BUILD, DISMANTLE, TRADE, UPGRADE));
 }

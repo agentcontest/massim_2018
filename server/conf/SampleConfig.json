@@ -31,6 +31,34 @@
       "restock" : 1.0,
       "restockResource" : 0.9,
 
+      "upgrades" : [
+        {
+          "name" : "skill",
+          "cost" : 1000,
+          "step" : 10
+        },
+        {
+          "name" : "vision",
+          "cost" : 1000,
+          "step" : 10
+        },
+        {
+          "name" : "speed",
+          "cost" : 1000,
+          "step" : 1
+        },
+        {
+          "name" : "load",
+          "cost" : 1000,
+          "step" : 10
+        },
+        {
+          "name" : "battery",
+          "cost" : 1000,
+          "step" : 10
+        }
+      ],
+
       "roles" : {
         "car" : {
           "speed" : 3,

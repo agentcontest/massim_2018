@@ -62,6 +62,8 @@ public class WorldState {
     private Map<String, WellType> wellTypes;
     private Set<Integer> wellNumbers = new HashSet<>();
 
+    private Map<String, Upgrade> upgrades = new HashMap<>();
+
     public WorldState(int steps, JSONObject config, Set<TeamConfig> matchTeams, Generator generator) {
 
         gen = generator;
@@ -102,6 +104,14 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
         rechargeRate = config.optInt("rechargeRate", 5);
         Log.log(Log.Level.NORMAL, "Configuring recharge rate: " + rechargeRate);
+
+        // parse upgrades
+        JSONArray confUpgrades = config.getJSONArray("upgrades");
+        for(int i = 0; i < confUpgrades.length(); i++) {
+            JSONObject confUpgrade = confUpgrades.getJSONObject(i);
+            String name = confUpgrade.optString("name", "default");
+            upgrades.put(name, new Upgrade(name, confUpgrade.optInt("cost", 1000), confUpgrade.optInt("step", 1)));
+        }
 
         parseRoles(config.optJSONObject("roles"));
 
@@ -516,6 +526,14 @@ public class WorldState {
      */
     public List<Item> getResources() {
         return resources;
+    }
+
+    /**
+     * @param ability the ability to get an upgrade for
+     * @return the upgrade for that ability
+     */
+    public Upgrade getUpgrade(String ability) {
+        return upgrades.get(ability);
     }
 }
 
