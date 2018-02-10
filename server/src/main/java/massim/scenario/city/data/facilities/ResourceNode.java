@@ -2,28 +2,29 @@ package massim.scenario.city.data.facilities;
 
 import massim.scenario.city.data.Location;
 import massim.scenario.city.data.Item;
+import massim.util.Log;
 
 /**
  * Created by Sarah on 07.03.2017.
  */
 public class ResourceNode extends Facility{
 
-    private Item resource;
-    private int gatherFrequency;
-    private int actionCounter;
+    private final Item resource;
+    private final int threshold;
+    private int gathered = 0;
 
     /**
      * Creates a new resource node.
      * @param name the name of the resource node.
      * @param location the resource node's location.
      * @param resource the resource that is available in this resource node
-     * @param gatherFrequency number of actions until the next resource becomes available
+     * @param threshold the threshold that needs to be achieved (using skill) to mine 1 resource
      */
-    public ResourceNode(String name, Location location, Item resource, int gatherFrequency){
+    public ResourceNode(String name, Location location, Item resource, int threshold){
         super(name, location);
+        if(resource.needsAssembly()) Log.log(Log.Level.ERROR, "Resource node should not yield assembled items.");
         this.resource = resource;
-        this.gatherFrequency = gatherFrequency;
-        this.actionCounter = 0;
+        this.threshold = threshold;
     }
 
     /**
@@ -33,16 +34,15 @@ public class ResourceNode extends Facility{
     public Item getResource() { return resource; }
 
     /**
-     * Keeps track of number of gather actions
-     * @return true if agent gets a resource, false if more gather actions are needed
+     * Tries to get a resource from this node.
+     * @param skill the skill of the gathering agent
+     * @return the number of gathered resources (0 - x)
      */
-    public boolean gather(){
-        actionCounter++;
-        if(actionCounter==gatherFrequency){
-            actionCounter=0;
-            return true;
-        }
-        return false;
+    public int gather(int skill){
+        gathered += skill;
+        int result = gathered / threshold;
+        gathered %= threshold;
+        return result;
     }
 
 }

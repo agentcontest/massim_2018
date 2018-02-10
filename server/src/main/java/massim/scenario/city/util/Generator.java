@@ -38,8 +38,8 @@ public class Generator {
     private int capacityMax;
 
     private double resourceDensity;
-    private int gatherFrequencyMin;
-    private int gatherFrequencyMax;
+    private int thresholdMin;
+    private int thresholdMax;
 
     // well type parameters
     private int wellTypesMin;
@@ -167,10 +167,8 @@ public class Generator {
             } else {
                 resourceDensity = resourceNodes.optDouble("density", 0.7);
                 Log.log(Log.Level.NORMAL, "Configuring facilities resource node density: " + resourceDensity);
-                gatherFrequencyMin = resourceNodes.optInt("gatherFrequencyMin", 4);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource node gatherFrequencyMin: " + gatherFrequencyMin);
-                gatherFrequencyMax = resourceNodes.optInt("gatherFrequencyMax", 8);
-                Log.log(Log.Level.NORMAL, "Configuring facilities resource node gatherFrequencyMax: " + gatherFrequencyMax);
+                thresholdMin = optInt(resourceNodes, "thresholdMin", 10);
+                thresholdMax = optInt(resourceNodes, "thresholdMax", 30);
             }
 
             //parse well type info
@@ -338,7 +336,6 @@ public class Generator {
 
         List<Facility> facilities = new ArrayList<>();
         List<Shop> shops = new ArrayList<>();
-        List<ResourceNode> resourceNodes = new ArrayList<>();
         Set<Location> locations = new HashSet<>();
 
         // generate charging stations
@@ -473,15 +470,31 @@ public class Generator {
         }
 
         // generate resource nodes
-        int nodeCounter = 0;
-        // TODO generate lots of resource nodes
-
-        for(ResourceNode node: resourceNodes){
-            Log.log(Log.Level.NORMAL, "Added resource node: " + node.getName() + ": " + node.getResource().getName() +
-                    " " + node.getLocation().getLat() + ", " + node.getLocation().getLon());
+        int rnCounter = 0;
+        // generate at least 1 resource node for each resource
+        for (Item item : world.getResources()) {
+            Location loc = getUniqueLocation(locations, world);
+            ResourceNode node = new ResourceNode("node" + rnCounter++, loc, item, between(thresholdMin, thresholdMax));
+            facilities.add(node);
+            locations.add(loc);
+        }
+        for(double a = minLat; a < maxLat; a += quadSize) {
+            for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
+                int numberOfFacilities = 0;
+                if(resourceDensity < 1){
+                    if(RNG.nextDouble() < storageDensity) numberOfFacilities = 1;
+                }
+                else numberOfFacilities = new Float(storageDensity).intValue();
+                for(int i = 0; i < numberOfFacilities; i++){
+                    Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
+                    int resIndex = RNG.nextInt(world.getResources().size());
+                    ResourceNode node = new ResourceNode("node" + rnCounter++, loc,
+                            world.getResources().get(resIndex), between(thresholdMin, thresholdMax));
+                }
+            }
         }
 
-        for(Facility fac: facilities) Log.log(Log.Level.NORMAL, "Added facility: " + fac);
+        for(Facility fac: facilities) Log.log(Log.Level.NORMAL, "Created facility: " + fac);
 
         return facilities;
     }

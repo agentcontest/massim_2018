@@ -510,5 +510,12 @@ public class WorldState {
     public Item getItemByName(String name) {
         return items.get(name);
     }
+
+    /**
+     * @return the original list of resources
+     */
+    public List<Item> getResources() {
+        return resources;
+    }
 }
 

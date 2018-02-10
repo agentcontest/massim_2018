@@ -100,8 +100,8 @@
           },
           "resourceNodes":{
             "density" : 0.7,
-            "gatherFrequencyMin" : 4,
-            "gatherFrequencyMax" : 8
+            "thresholdMin" : 10,
+            "thresholdMax" : 30
           }
         },
         "items" : {
