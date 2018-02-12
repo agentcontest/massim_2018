@@ -1,5 +1,6 @@
 package massim.scenario.city.data.facilities;
 
+import massim.protocol.scenario.city.data.WellData;
 import massim.scenario.city.data.Location;
 
 /**
@@ -8,23 +9,20 @@ import massim.scenario.city.data.Location;
 public class Well extends Facility {
 
     private int integrity;
-    private int maxIntegrity;
-    private int efficiency;
     private boolean completed = false;
-    private int cost;
     private String team;
+    private WellType type;
 
-    public Well(String name, Location location, WellType type) {
+    public Well(String name, String team, Location location, WellType type) {
         super(name, location);
-        this.efficiency = type.getEfficiency();
+        this.team = team;
+        this.type = type;
         this.integrity = type.getInitialIntegrity();
-        this.maxIntegrity = type.getMaxIntegrity();
-        this.cost = type.getCost();
     }
 
     public void build(int skill) {
-        integrity = Math.min(integrity + skill, maxIntegrity);
-        if(!completed && integrity == maxIntegrity) completed = true;
+        integrity = Math.min(integrity + skill, type.getMaxIntegrity());
+        if(!completed && integrity == type.getMaxIntegrity()) completed = true;
     }
 
     public boolean dismantle(int skill) {
@@ -41,7 +39,7 @@ public class Well extends Facility {
     }
 
     public int getEfficiency() {
-        return efficiency;
+        return type.getEfficiency();
     }
 
     public String getTeam() {
@@ -49,7 +47,18 @@ public class Well extends Facility {
     }
 
     public int getCost() {
-        return cost;
+        return type.getCost();
     }
 
+    public int getMaxIntegrity() {
+        return type.getMaxIntegrity();
+    }
+
+    public String getTypeName() {
+        return type.getName();
+    }
+
+    public WellData toWellData() {
+        return new WellData(getName(), getLocation().getLat(), getLocation().getLon(), team, type.getName(), integrity);
+    }
 }

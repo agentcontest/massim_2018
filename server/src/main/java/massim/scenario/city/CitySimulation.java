@@ -16,6 +16,7 @@ import massim.scenario.city.data.*;
 import massim.scenario.city.data.facilities.Facility;
 import massim.scenario.city.data.facilities.Storage;
 import massim.scenario.city.data.facilities.Well;
+import massim.scenario.city.data.facilities.WellType;
 import massim.scenario.city.util.Generator;
 import massim.util.Log;
 import massim.util.RNG;
@@ -65,6 +66,10 @@ public class CitySimulation extends AbstractSimulation {
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
+        List<WellTypeData> wellTypeData = world.getWellTypes().stream()
+                .map(WellType::toWellTypeData)
+                .collect(Collectors.toList());
+
         // create the static data object
         staticData = new StaticCityData(world.getSimID(), world.getSteps(), world.getMapName(), world.getSeedCapital(),
                                         world.getTeams().stream()
@@ -74,6 +79,7 @@ public class CitySimulation extends AbstractSimulation {
                                                         .map(Role::getRoleData)
                                                         .collect(Collectors.toList()),
                                         itemData,
+                                        wellTypeData,
                                         world.getMinLat(), world.getMaxLat(),
                                         world.getMinLon(), world.getMaxLon());
 
@@ -91,7 +97,8 @@ public class CitySimulation extends AbstractSimulation {
                         itemData,
                         world.getMinLat(), world.getMaxLat(), world.getMinLon(), world.getMaxLon(),
                         world.getMap().getCenter().getLat(), world.getMap().getCenter().getLon(),
-                        Location.getProximity(), world.getMap().getCellSize()
+                        Location.getProximity(), world.getMap().getCellSize(),
+                        wellTypeData
                         )));
         return initialPercepts;
     }
@@ -136,6 +143,7 @@ public class CitySimulation extends AbstractSimulation {
         List<ChargingStationData> stations = buildChargingStationData();
         List<DumpData> dumps = buildDumpData();
         List<ResourceNodeData> resourceNodes = buildResourceNodeData();
+        List<WellData> wells = buildWellData();
 
         // storage
         Map<String, List<StorageData>> storageMap = new HashMap<>();
@@ -164,35 +172,13 @@ public class CitySimulation extends AbstractSimulation {
         }
 
         /* create job data */
-        Map<String, List<JobData>> jobsPerTeam = new HashMap<>();
-        Map<String, List<JobData>> postedJobsPerTeam = new HashMap<>();
         Map<String, List<AuctionJobData>> auctionsPerTeam = new HashMap<>();
         Map<String, List<MissionData>> missionsPerTeam = new HashMap<>();
-        world.getTeams().forEach(team -> postedJobsPerTeam.put(team.getName(), new ArrayList<>()));
-        world.getTeams().forEach(team -> jobsPerTeam.put(team.getName(), new ArrayList<>()));
-
-        // add all regular jobs (either as posted or not)
-        for (Job job : world.getJobs()) {
-            if(!(job instanceof AuctionJob) && job.isActive()){
-                JobData jobData = job.toJobData(false, false);
-                for(TeamState team: world.getTeams()){
-                    if(job.getPoster().equals(team.getName())){
-                        // add to team's posted jobs
-                        postedJobsPerTeam.get(team.getName()).add(jobData);
-                    }
-                    else{
-                        // add as regular job
-                        jobsPerTeam.get(team.getName()).add(jobData);
-                    }
-                }
-            }
-        }
-
-        // sort jobs and posted jobs
-        world.getTeams().forEach(t -> {
-            Collections.sort(postedJobsPerTeam.get(t.getName()));
-            Collections.sort(jobsPerTeam.get(t.getName()));
-        });
+        List<JobData> regularJobs = world.getJobs().stream()
+                .filter(job -> !(job instanceof AuctionJob) && job.isActive())
+                .map(job -> job.toJobData(false, false))
+                .sorted()
+                .collect(Collectors.toList());
 
         // list of auction jobs in auctioning state (visible to all)
         List<AuctionJobData> auctioningJobs = world.getJobs().stream()
@@ -203,19 +189,19 @@ public class CitySimulation extends AbstractSimulation {
 
         // add per team: auctions assigned to that team + missions
         world.getTeams().forEach(team -> {
-            List<AuctionJobData> teamJobs = new Vector<>(auctioningJobs);
+            List<AuctionJobData> teamAuctions = new Vector<>(auctioningJobs);
             List<MissionData> teamMissions = new Vector<>();
             for (Job job : world.getJobs()) {
                 if(job instanceof AuctionJob
                         && ((AuctionJob)job).getAuctionWinner().equals(team.getName())
                         && job.isActive()){
                     if(job instanceof Mission) teamMissions.add((MissionData) job.toJobData(false, false));
-                    else teamJobs.add((AuctionJobData) job.toJobData(false, false));
+                    else teamAuctions.add((AuctionJobData) job.toJobData(false, false));
                 }
             }
-            Collections.sort(teamJobs);
+            Collections.sort(teamAuctions);
             Collections.sort(teamMissions);
-            auctionsPerTeam.put(team.getName(), teamJobs);
+            auctionsPerTeam.put(team.getName(), teamAuctions);
             missionsPerTeam.put(team.getName(), teamMissions);
         });
 
@@ -229,10 +215,10 @@ public class CitySimulation extends AbstractSimulation {
                             team, stepNo, teamData.get(team), entities, shops, workshops, stations, dumps,
                             storageMap.get(team),
                             resourceNodes,
-                            jobsPerTeam,
+                            wells,
+                            regularJobs,
                             auctionsPerTeam,
                             missionsPerTeam,
-                            postedJobsPerTeam,
                             world.getEntity(agent).getVision()
             ));
         });
@@ -247,6 +233,14 @@ public class CitySimulation extends AbstractSimulation {
         return world.getDumps().stream()
                 .sorted()
                 .map(dump -> new DumpData(dump.getName(), dump.getLocation().getLat(), dump.getLocation().getLon()))
+                .collect(Collectors.toList());
+    }
+
+    private List<WellData> buildWellData() {
+        return world.getWells().stream()
+                .sorted()
+                .map(well -> new WellData(well.getName(), well.getLocation().getLat(), well.getLocation().getLon(),
+                        well.getTeam(), well.getTypeName(), well.getIntegrity()))
                 .collect(Collectors.toList());
     }
 
@@ -482,6 +476,9 @@ public class CitySimulation extends AbstractSimulation {
                         .map(s -> s.toStorageData(world.getTeams().stream()
                                 .map(TeamState::getName)
                                 .collect(Collectors.toList())))
+                        .collect(Collectors.toList()),
+                world.getWells().stream()
+                        .map(Well::toWellData)
                         .collect(Collectors.toList()),
                 world.getTeams().stream()
                         .map(team -> new TeamData(team.getName(), team.getMassium(), team.getScore()))

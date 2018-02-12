@@ -470,7 +470,7 @@ public class WorldState {
             if(!wellNumbers.contains(wellNumber)) break;
         }
         wellNumbers.add(wellNumber);
-        Well well = new Well("well" + wellNumber, getEntity(agent).getLocation(), wellType);
+        Well well = new Well("well" + wellNumber, getTeamForAgent(agent), getEntity(agent).getLocation(), wellType);
         facilities.put(well.getName(), well);
         facilityByLocation.put(well.getLocation(), well);
         wells.add(well);
@@ -514,6 +514,10 @@ public class WorldState {
      */
     public Upgrade getUpgrade(String ability) {
         return upgrades.get(ability);
+    }
+
+    public Set<WellType> getWellTypes() {
+        return new HashSet<>(wellTypes.values());
     }
 }
 

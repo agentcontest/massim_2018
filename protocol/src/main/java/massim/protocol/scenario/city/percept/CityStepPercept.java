@@ -5,9 +5,9 @@ import massim.protocol.scenario.city.data.*;
 import massim.protocol.scenario.city.util.LocationUtil;
 
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @XmlAccessorType(XmlAccessType.NONE)
 //@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 @XmlType (propOrder={"simData","selfData","teamData","entityData","chargingStations","dumps","shops","storage","resourceNodes",
-        "workshops","jobs","auctions","missions","postedJobs"})
+        "wells","workshops","jobs","auctions","missions","postedJobs"})
 public class CityStepPercept extends RequestAction {
 
     // ID and deadline are inherited
@@ -32,10 +32,10 @@ public class CityStepPercept extends RequestAction {
     @XmlElement(name="dump") private List<DumpData> dumps;
     @XmlElement(name="storage") private List<StorageData> storage;
     @XmlElement(name="resourceNode") private List<ResourceNodeData> resourceNodes;
+    @XmlElement(name="well") private List<WellData> wells;
     @XmlElement(name="job") private List<JobData> jobs;
     @XmlElement(name="auction") private List<AuctionJobData> auctions;
     @XmlElement(name="mission") private List<MissionData> missions;
-    @XmlElement(name="posted") private List<JobData> postedJobs;
 
     private CityStepPercept(){} // for jaxb
 
@@ -52,11 +52,10 @@ public class CityStepPercept extends RequestAction {
      * @param dumps all dumps
      * @param storage data of all storage facilities containing the items for the team of the agent
      * @param resourceNodes all resource nodes
-     * @param jobsPerTeam map of all jobs by team (not including jobs posted by the team per entry)
+     * @param regularJobs list of active regular jobs
      * @param auctionsPerTeam map of all auctions by team (assigned auctions are only visible to the assigned team)
      * @param missionsPerTeam mission jobs for each team
-     * @param postedJobsPerTeam map of all posted jobs by team
-     * @param visRange the visibility range for determining whether to include certain elements
+     * @param vision the current vision of the entity
      */
     public CityStepPercept(EntityData self, String teamName, int step, TeamData team,
                            List<EntityData> entities,
@@ -66,26 +65,30 @@ public class CityStepPercept extends RequestAction {
                            List<DumpData> dumps,
                            List<StorageData> storage,
                            List<ResourceNodeData> resourceNodes,
-                           Map<String, List<JobData>> jobsPerTeam,
+                           List<WellData> wells,
+                           List<JobData> regularJobs,
                            Map<String, List<AuctionJobData>> auctionsPerTeam,
                            Map<String, List<MissionData>> missionsPerTeam,
-                           Map<String, List<JobData>> postedJobsPerTeam,
-                           int visRange){
+                           int vision){
         simData = new SimData(step);
         teamData = team;
         selfData = self;
-        entityData = entities;
+        entityData = entities.stream()
+                .filter(e -> LocationUtil.calculateRange(e.getLat(), e.getLon(), self.getLat(), self.getLon()) <= vision)
+                .collect(Collectors.toList());;
         this.shops = shops;
         this.workshops = workshops;
         this.chargingStations = stations;
         this.dumps = dumps;
         this.storage = storage;
         this.resourceNodes = resourceNodes.stream() // filter nodes by visibility range
-                .filter(rn -> LocationUtil.calculateRange(rn.getLat(), rn.getLon(), self.getLat(), self.getLon()) <= visRange)
+                .filter(rn -> LocationUtil.calculateRange(rn.getLat(), rn.getLon(), self.getLat(), self.getLon()) <= vision)
                 .collect(Collectors.toList());
-        this.jobs = jobsPerTeam.get(teamName);
+        this.wells = wells.stream()
+                .filter(well -> LocationUtil.calculateRange(well.getLat(), well.getLon(), self.getLat(), self.getLon()) <= vision)
+                .collect(Collectors.toList());
+        this.jobs = regularJobs;
         this.auctions = auctionsPerTeam.get(teamName);
-        this.postedJobs = postedJobsPerTeam.get(teamName);
         this.missions = missionsPerTeam.get(teamName);
     }
 
@@ -104,80 +107,78 @@ public class CityStepPercept extends RequestAction {
     }
 
     /**
-     * @return information about all entities in the simulation
+     * @return information about all entities visible to this entity
      */
     public List<EntityData> getEntityData(){
-        return entityData == null? new Vector<>() : entityData;
+        return entityData == null? new ArrayList<>() : entityData;
     }
 
     /**
      * @return information about all shops
      */
     public List<ShopData> getShopData(){
-        return shops == null? new Vector<>() : shops;
+        return shops == null? new ArrayList<>() : shops;
     }
 
     /**
      * @return information about all workshops
      */
     public List<WorkshopData> getWorkshops(){
-        return workshops == null? new Vector<>() : workshops;
+        return workshops == null? new ArrayList<>() : workshops;
     }
 
     /**
      * @return information about all charging stations
      */
     public List<ChargingStationData> getChargingStations(){
-        return chargingStations == null? new Vector<>() : chargingStations;
+        return chargingStations == null? new ArrayList<>() : chargingStations;
     }
 
     /**
      * @return information about all dumps
      */
     public List<DumpData> getDumps(){
-        return dumps == null? new Vector<>() : dumps;
+        return dumps == null? new ArrayList<>() : dumps;
     }
 
     /**
      * @return information about the storage facilities
      */
     public List<StorageData> getStorage(){
-        return storage == null? new Vector<>() : storage;
+        return storage == null? new ArrayList<>() : storage;
     }
 
     /**
      * @return information about the resource nodes
      */
     public List<ResourceNodeData> getResourceNodes(){
-        return resourceNodes == null? new Vector<>() : resourceNodes;
+        return resourceNodes == null? new ArrayList<>() : resourceNodes;
     }
+
+    /**
+     * @return all wells visible to this entity
+     */
+    public List<WellData> getWells() { return wells == null? new ArrayList<>() : wells; }
 
     /**
      * @return information about all non-auction jobs
      */
     public List<JobData> getJobs(){
-        return jobs == null? new Vector<>() : jobs;
+        return jobs == null? new ArrayList<>() : jobs;
     }
 
     /**
      * @return information about all auctions
      */
     public List<AuctionJobData> getAuctions(){
-        return auctions == null? new Vector<>() : auctions;
+        return auctions == null? new ArrayList<>() : auctions;
     }
 
     /**
-     * @return information about all jobs posted by the team
-     */
-    public List<JobData> getPostedJobs(){
-        return postedJobs == null? new Vector<>() : postedJobs;
-    }
-
-    /**
-     * @return information about all jobs posted by the team
+     * @return information about all mission jobs
      */
     public List<MissionData> getMissions(){
-        return missions == null? new Vector<>() : missions;
+        return missions == null? new ArrayList<>() : missions;
     }
 
     /**

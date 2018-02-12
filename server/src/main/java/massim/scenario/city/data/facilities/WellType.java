@@ -1,5 +1,7 @@
 package massim.scenario.city.data.facilities;
 
+import massim.protocol.scenario.city.data.WellTypeData;
+
 /**
  * Describes the values a new well can have.
  */
@@ -37,5 +39,9 @@ public class WellType {
 
     public int getEfficiency() {
         return efficiency;
+    }
+
+    public WellTypeData toWellTypeData() {
+        return new WellTypeData(name, efficiency, cost, maxIntegrity, initialIntegrity);
     }
 }

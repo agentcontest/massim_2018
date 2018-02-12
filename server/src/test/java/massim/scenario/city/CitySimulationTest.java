@@ -176,7 +176,6 @@ public class CitySimulationTest {
         assert percept.getStorage().size() > 0;
         assert percept.getAuctions().size() > 0;
         assert percept.getJobs().size() > 0;
-        assert percept.getPostedJobs().size() > 0;
         assert percept.getMissions().size() > 0;
         assert percept.getEntityData().size() > 0;
         assert percept.getSelfData() != null;

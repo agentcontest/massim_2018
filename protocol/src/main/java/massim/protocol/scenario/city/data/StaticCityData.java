@@ -13,37 +13,40 @@ import java.util.List;
 public class StaticCityData extends StaticWorldData {
 
     @XmlAttribute(name="id")
-    public String simId;
+    private String simId;
 
     @XmlAttribute
-    public int steps;
+    private int steps;
 
     @XmlAttribute
-    public String map;
+    private String map;
 
     @XmlAttribute
-    public long seedCapital;
+    private long seedCapital;
 
     @XmlList
-    public List<String> teams;
+    private List<String> teams;
 
     @XmlElement(name="role")
-    public List<RoleData> roles;
+    private List<RoleData> roles;
 
     @XmlElement(name="item")
-    public List<ItemData> items;
+    private List<ItemData> items;
+
+    @XmlElement(name="wellType")
+    private List<WellTypeData> wellTypes;
 
     @XmlAttribute
-    public double minLat;
+    private double minLat;
 
     @XmlAttribute
-    public double maxLat;
+    private double maxLat;
 
     @XmlAttribute
-    public double minLon;
+    private double minLon;
 
     @XmlAttribute
-    public double maxLon;
+    private double maxLon;
 
     /**
      * For jaxb.
@@ -53,7 +56,7 @@ public class StaticCityData extends StaticWorldData {
     }
 
     public StaticCityData(String simID, int steps, String map, long seedCapital, List<String> teams,
-                          List<RoleData> roles, List<ItemData> items,
+                          List<RoleData> roles, List<ItemData> items, List<WellTypeData> wellTypes,
                           double minLat, double maxLat, double minLon, double maxLon){
         this.simId = simID;
         this.steps = steps;
@@ -62,6 +65,7 @@ public class StaticCityData extends StaticWorldData {
         this.teams = teams;
         this.roles = roles;
         this.items = items;
+        this.wellTypes = wellTypes;
         this.minLat = minLat;
         this.maxLat = maxLat;
         this.minLon = minLon;
@@ -110,5 +114,9 @@ public class StaticCityData extends StaticWorldData {
 
     public double getMaxLat() {
         return this.maxLat;
+    }
+
+    public List<WellTypeData> getWellTypes() {
+        return wellTypes;
     }
 }

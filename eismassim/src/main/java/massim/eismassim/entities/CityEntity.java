@@ -139,6 +139,9 @@ public class CityEntity extends EISEntity {
         percept.getDumps().forEach(dump -> ret.add(new Percept("dump", new Identifier(dump.getName()),
                 new Numeral(dump.getLat()), new Numeral(dump.getLon()))));
 
+        percept.getWells().forEach(well -> ret.add(new Percept("well", new Identifier(well.getName()),
+                new Identifier(well.getType()), new Identifier(well.getTeam()), new Numeral(well.getIntegrity()))));
+
         // shop percepts
         percept.getShopData().forEach(shop ->
                 ret.add(new Percept("shop", new Identifier(shop.getName()), new Numeral(shop.getLat()),
@@ -166,7 +169,6 @@ public class CityEntity extends EISEntity {
         // job percepts
         percept.getJobs().forEach(job -> ret.add(createJobPercept(job, "job")));
         percept.getAuctions().forEach(job -> ret.add(createJobPercept(job, "auction")));
-        percept.getPostedJobs().forEach(job -> ret.add(createJobPercept(job, "posted")));
         percept.getMissions().forEach(job -> ret.add(createJobPercept(job, "mission")));
 
         return ret;

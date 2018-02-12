@@ -3,6 +3,7 @@ package massim.protocol.scenario.city.percept;
 import massim.protocol.messagecontent.SimStart;
 import massim.protocol.scenario.city.data.ItemData;
 import massim.protocol.scenario.city.data.RoleData;
+import massim.protocol.scenario.city.data.WellTypeData;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
@@ -31,7 +32,8 @@ public class CityInitialPercept extends SimStart {
     @XmlAttribute private int proximity;
     @XmlAttribute private int cellSize;
     @XmlElement private RoleData role;
-    @XmlElement(name="item") public List<ItemData> items;
+    @XmlElement(name="item") private List<ItemData> items;
+    @XmlElement(name="well") private List<WellTypeData> wellTypes;
 
     /**
      * for JAXB
@@ -52,7 +54,8 @@ public class CityInitialPercept extends SimStart {
     public CityInitialPercept(String name, String simId, int steps, String teamName, String mapName, long seedCapital,
                               RoleData role, List<ItemData> items,
                               double minLat, double maxLat, double minLon, double maxLon,
-                              double centerLat, double centerLon, int proximity, int cellSize) {
+                              double centerLat, double centerLon, int proximity, int cellSize,
+                              List<WellTypeData> wellTypes) {
         this.name = name;
         this.simId = simId;
         this.steps = steps;
@@ -69,6 +72,7 @@ public class CityInitialPercept extends SimStart {
         this.centerLon = centerLon;
         this.cellSize = cellSize;
         this.proximity = proximity;
+        this.wellTypes = wellTypes;
     }
 
     public String getName(){
@@ -125,5 +129,9 @@ public class CityInitialPercept extends SimStart {
 
     public double getCellSize() {
         return cellSize;
+    }
+
+    public List<WellTypeData> getWellTypes() {
+        return wellTypes;
     }
 }
