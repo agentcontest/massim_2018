@@ -264,13 +264,11 @@ public class Generator {
                 List<Item> possibleParts = new ArrayList<>(items);
                 RNG.shuffle(possibleParts);
                 Set<Item> parts = new HashSet<>(possibleParts.subList(0, Math.min(numberOfParts, possibleParts.size())));
-                int volume = parts.stream().mapToInt(Item::getVolume).sum();
-
                 // determine required roles
                 RNG.shuffle(roles);
                 Set<Role> requiredRoles = new HashSet<>(roles.subList(0, 2));
 
-                Item item = new Item("item" + items.size(), volume, parts, requiredRoles);
+                Item item = new Item("item" + items.size(), between(volMin, volMax), parts, requiredRoles);
                 layerItems.add(item);
             }
             items.addAll(layerItems);
