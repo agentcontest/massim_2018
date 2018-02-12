@@ -5,6 +5,7 @@ import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimStart;
 import massim.protocol.scenario.city.data.ActionData;
+import massim.protocol.scenario.city.data.JobData;
 import massim.protocol.scenario.city.percept.CityInitialPercept;
 import massim.protocol.scenario.city.percept.CityStepPercept;
 import massim.scenario.city.data.*;
@@ -91,7 +92,7 @@ public class CitySimulationTest {
     }
 
     @Test
-    public void actionIsPerceived() throws IOException {
+    public void actionIsPerceived() {
 
         Map<String, Action> actions = buildActionMap();
         actions.put("agentA1", new Action("give", "agentA2", "item0", "1"));
@@ -118,16 +119,15 @@ public class CitySimulationTest {
         Storage storage = (Storage) sim.getWorldState().getFacility("storage1");
         TeamState teamA = sim.getWorldState().getTeam("A");
         Item item = sim.getWorldState().getItemByName("item0");
-        // TODO
-//        Mission mission = new Mission(1000, storage, step + 1, step + 100, 1000, teamA, "myMission");
-//        mission.addRequiredItem(item, 3);
-//        sim.getWorldState().addJob(mission);
-//        AuctionJob auction = new AuctionJob(1001, storage, step + 1, step + 100, 2, 10002);
-//        auction.addRequiredItem(item, 17);
-//        sim.getWorldState().addJob(auction);
-//        Job job = new Job(777, storage, step + 1, step + 100, JobData.POSTER_SYSTEM);
-//        job.addRequiredItem(item, 9);
-//        sim.getWorldState().addJob(job);
+
+        ItemBox items = new ItemBox();
+        items.store(item, 3);
+        Mission mission = new Mission(1000, storage, step + 1, step + 100, 1000, items, teamA, "myMission");
+        sim.getWorldState().addJob(mission);
+        AuctionJob auction = new AuctionJob(1001, storage, step + 1, step + 100, items, 2, 10002);
+        sim.getWorldState().addJob(auction);
+        Job job = new Job(777, storage, step + 1, step + 100, items, JobData.POSTER_SYSTEM);
+        sim.getWorldState().addJob(job);
 
         // store something
         storage.store(item, 2, "A");
@@ -136,6 +136,9 @@ public class CitySimulationTest {
         Entity e1 = sim.getWorldState().getEntity("agentA1");
         ResourceNode node = (ResourceNode) sim.getWorldState().getFacility("resourceNode1");
         e1.setLocation(node.getLocation());
+        //move another entity in perception range
+        Entity e2 = sim.getWorldState().getEntity("agentA2");
+        e2.setLocation(e1.getLocation());
         // give an item to the agent
         e1.addItem(item, 1);
         e1.addItem(sim.getWorldState().getItemByName("tool1"), 1);
@@ -143,14 +146,6 @@ public class CitySimulationTest {
         // one step for activating jobs
         sim.preStep(step);
         Map<String, Action> actions = buildActionMap();
-        actions.put("agentB1", new Action("post_job",
-                "998",
-                "20",
-                storage.getName(), item.getName(), "5"));
-        actions.put("agentA3", new Action("post_job",
-                "997",
-                "20",
-                storage.getName(), item.getName(), "5"));
         sim.step(step, actions);
         step++;
         sim.preStep(step);

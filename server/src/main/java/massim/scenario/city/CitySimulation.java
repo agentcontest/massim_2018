@@ -356,7 +356,7 @@ public class CitySimulation extends AbstractSimulation {
             actionExecutor.execute(agent, actions, stepNo);
         actionExecutor.postProcess();
 
-        // check if agents may be stuck
+        // check if agents may be stuck @IMPROVE can this be prevented with GH?
         Set<String> roads = new HashSet<>(Collections.singletonList("road"));
         world.getEntities().stream()
                 .filter(e -> !e.getRole().getName().equals("drone"))

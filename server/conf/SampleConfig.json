@@ -57,8 +57,10 @@
 
       "roles" : {
         "car" : {
-          "speed" : 3,
-          "load" : 550,
+          "baseSpeed" : 3,
+          "maxSpeed" : 5,
+          "baseLoad" : 50,
+          "maxLoad"
           "battery" : 500,
           "roads" : ["road"]
         },
@@ -82,79 +84,9 @@
         }
       },
 
-      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 8}, {"truck" : 8}],
+      "entities" : [{"drone" : 6}, {"motorcycle" : 8}, {"car" : 10}, {"truck" : 12}],
 
-      "generate" : {
-        "wells" : {
-          "wellTypesMin" : 2,
-          "wellTypesMax" : 5,
-          "baseEfficiencyMin" : 1,
-          "baseEfficiencyMax" : 5,
-          "efficiencyIncreaseMin" : 1,
-          "efficiencyIncreaseMax" : 5,
-          "baseIntegrityMin" : 10,
-          "baseIntegrityMax" : 20,
-          "costFactor" : 100
-        },
-        "facilities" : {
-          "quadSize" : 0.04,
-          "blackoutProbability" : 0.1,
-          "blackoutTimeMin" : 5,
-          "blackoutTimeMax" : 10,
-          "chargingStations" : {
-            "density" : 0.9,
-            "rateMin" : 50,
-            "rateMax" : 150
-          },
-          "shops" : {
-            "density" : 0.8,
-            "tradeModMin" : 1,
-            "tradeModMax" : 4
-          },
-          "dumps" : {
-            "density" : 0.6
-          },
-          "workshops" : {
-            "density" : 0.6
-          },
-          "storage" : {
-            "density" : 0.8,
-            "capacityMin" : 7500,
-            "capacityMax" : 15000
-          },
-          "resourceNodes":{
-            "density" : 0.7,
-            "thresholdMin" : 10,
-            "thresholdMax" : 30
-          }
-        },
-        "items" : {
-          "resourcesMin" : 2,
-          "resourcesMax" : 4,
-          "levelDecreaseMin" : 1,
-          "levelDecreaseMax" : 2,
-          "graphDepthMin" : 3,
-          "graphDepthMax" : 4,
-          "volMin" : 10,
-          "volMax" : 50,
-          "partsMin" : 2,
-          "partsMax" : 8
-        },
-        "jobs" : {
-          "jobProbability" : 0.2,
-          "auctionProbability" : 0.1,
-          "missionProbability" : 0.01,
-          "jobDurationMin" : 50,
-          "jobDurationMax" : 100,
-          "rewardModMin" : 10,
-          "rewardModMax" : 20,
-          "itemCountMin" : 2,
-          "itemCountMax" : 10,
-          "auctions" : {
-            "auctionTime" : 5
-          }
-        }
-      }
+      "generate" : "$(generate/generate.json)"
     }
   ],
 
