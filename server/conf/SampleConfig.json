@@ -13,7 +13,7 @@
       "scenarioClass" : "city.CitySimulation",
       "steps" : 1000,
       "map" : "paris",
-      "seedCapital" : 50000,
+      "seedCapital" : 5000,
       "minLon" : 2.26,
       "maxLon" : 2.41,
       "minLat" : 48.82,
@@ -24,19 +24,19 @@
       "cellSize" : 200,
       "randomSeed" : 17,
       "randomFail" : 1,
-      "gotoCost" : 10,
+      "gotoCost" : 1,
       "rechargeRate" : 2,
 
       "upgrades" : [
         {
           "name" : "skill",
           "cost" : 1000,
-          "step" : 10
+          "step" : 1
         },
         {
           "name" : "vision",
           "cost" : 1000,
-          "step" : 10
+          "step" : 50
         },
         {
           "name" : "speed",
@@ -45,46 +45,72 @@
         },
         {
           "name" : "load",
-          "cost" : 1000,
+          "cost" : 200,
           "step" : 10
         },
         {
           "name" : "battery",
-          "cost" : 1000,
-          "step" : 10
+          "cost" : 300,
+          "step" : 5
         }
       ],
 
       "roles" : {
+        "drone" : {
+          "baseSpeed" : 5,
+          "maxSpeed" : 7,
+          "baseLoad" : 15,
+          "maxLoad" : 25,
+          "baseBattery" : 10,
+          "maxBattery" : 25,
+          "baseSkill" : 1,
+          "maxSkill" : 3,
+          "baseVision" : 600,
+          "maxVision" : 1000,
+          "roads" : ["air"]
+        },
+        "motorcycle" : {
+          "baseSpeed" : 4,
+          "maxSpeed" : 6,
+          "baseLoad" : 30,
+          "maxLoad" : 70,
+          "baseBattery" : 15,
+          "maxBattery" : 30,
+          "baseSkill" : 6,
+          "maxSkill" : 10,
+          "baseVision" : 500,
+          "maxVision" : 900,
+          "roads" : ["road"]
+        },
         "car" : {
           "baseSpeed" : 3,
           "maxSpeed" : 5,
           "baseLoad" : 50,
-          "maxLoad"
-          "battery" : 500,
-          "roads" : ["road"]
-        },
-        "drone" : {
-          "speed" : 5,
-          "load" : 100,
-          "battery" : 250,
-          "roads" : ["air"]
-        },
-        "motorcycle" : {
-          "speed" : 4,
-          "load" : 300,
-          "battery" : 350,
+          "maxLoad" : 150,
+          "baseBattery" : 20,
+          "maxBattery" : 50,
+          "baseSkill" : 8,
+          "maxSkill" : 12,
+          "baseVision" : 400,
+          "maxVision" : 800,
           "roads" : ["road"]
         },
         "truck" : {
-          "speed" : 2,
-          "load" : 3000,
-          "battery" : 2000,
+          "baseSpeed" : 2,
+          "maxSpeed" : 3,
+          "baseLoad" : 100,
+          "maxLoad" : 300,
+          "baseBattery" : 30,
+          "maxBattery" : 100,
+          "baseSkill" : 10,
+          "maxSkill" : 15,
+          "baseVision" : 300,
+          "maxVision" : 700,
           "roads" : ["road"]
         }
       },
 
-      "entities" : [{"drone" : 6}, {"motorcycle" : 8}, {"car" : 10}, {"truck" : 12}],
+      "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 10}, {"truck" : 12}],
 
       "generate" : "$(generate/generate.json)"
     }
