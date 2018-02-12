@@ -80,7 +80,6 @@ public class Entity {
         }
         if (currentBattery < cost){
             route = null;
-            currentBattery = 0;
             return false;
         }
         currentBattery -= cost;
