@@ -483,6 +483,10 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_UNKNOWN_ITEM);
                     return;
                 }
+                if(!item.needsAssembly()) {
+                    entity.setLastActionResult(FAILED_ITEM_TYPE);
+                    return;
+                }
                 amount = -1;
                 try{
                     amount = Integer.parseInt(params.get(1));
