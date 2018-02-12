@@ -490,6 +490,8 @@ public class Generator {
                     int resIndex = RNG.nextInt(world.getResources().size());
                     ResourceNode node = new ResourceNode("node" + rnCounter++, loc,
                             world.getResources().get(resIndex), between(thresholdMin, thresholdMax));
+                    facilities.add(node);
+                    locations.add(loc);
                 }
             }
         }
