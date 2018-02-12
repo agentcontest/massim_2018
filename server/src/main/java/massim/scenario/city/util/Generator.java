@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 public class Generator {
 
     private double quadSize;
-    private double blackoutProbability;
-    private int blackoutTimeMin;
-    private int blackoutTimeMax;
 
     private double chargingDensity;
     private int rateMin;
@@ -79,8 +76,6 @@ public class Generator {
 
     private int missionID = 0;
 
-    private Set<Facility> blackoutFacilities = new HashSet<>();
-
     public Generator(JSONObject randomConf){
         //parse facilities
         JSONObject facilities = randomConf.optJSONObject("facilities");
@@ -89,12 +84,6 @@ public class Generator {
         } else {
             quadSize = facilities.optDouble("quadSize", 0.4);
             Log.log(Log.Level.NORMAL, "Configuring facilities quadSize: " + quadSize);
-            blackoutProbability = facilities.optDouble("blackoutProbability", 0.1);
-            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutProbability: " + blackoutProbability);
-            blackoutTimeMin = facilities.optInt("blackoutTimeMin", 5);
-            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutTimeMin: " + blackoutTimeMin);
-            blackoutTimeMax = facilities.optInt("blackoutTimeMax", 10);
-            Log.log(Log.Level.NORMAL, "Configuring facilities blackoutTimeMax: " + blackoutTimeMax);
 
             //parse charging stations
             JSONObject chargingStations = facilities.optJSONObject("chargingStations");
@@ -577,38 +566,6 @@ public class Generator {
         }
         return result;
     }
-
-    /**
-     * Progresses each facility's blackout and may generate new ones.
-     * @param world the current world state
-     */
-    public void handleBlackouts(WorldState world){
-
-        // manage facilities affected by blackout
-        List<Facility> workingFacilities = new ArrayList<>();
-        for(Facility facility: blackoutFacilities){
-            facility.stepBlackoutCounter();
-            if(facility.stepBlackoutCounter() == 0) workingFacilities.add(facility);
-        }
-        blackoutFacilities.removeAll(workingFacilities);
-
-        // initiate new blackout
-        if(RNG.nextDouble() < blackoutProbability){
-            List<Facility> facilities = new ArrayList<>(world.getChargingStations());
-            Facility targetFacility = facilities.get(RNG.nextInt(facilities.size()));
-            if(!blackoutFacilities.contains(targetFacility)){
-                int duration = RNG.nextInt(blackoutTimeMax - blackoutTimeMin + 1) + blackoutTimeMin;
-                targetFacility.initiateBlackout(duration);
-                blackoutFacilities.add(targetFacility);
-                Log.log(Log.Level.NORMAL, "New blackout in " + targetFacility.getName() + ", duration " + duration + " steps.");
-            }
-        }
-    }
-
-    /**
-     * Adds a facility to the list of facilities affected by blackout (for testing)
-     */
-    public void addToBlackoutFacilities(Facility facility){ blackoutFacilities.add(facility);}
 
     /**
      * @return the well types which are creatable in the current simulation run

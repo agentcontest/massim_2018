@@ -516,10 +516,6 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_FACILITY);
                     break;
                 }
-                if(facility.getBlackoutCounter() > 0){
-                    entity.setLastActionResult(FAILED_FACILITY_STATE);
-                    break;
-                }
                 entity.charge(((ChargingStation)facility).getRate());
                 entity.setLastActionResult(SUCCESSFUL);
                 break;

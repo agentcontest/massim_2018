@@ -653,45 +653,6 @@ public class CitySimulationTest {
         assert !e1.getLastActionResult().equals(ActionExecutor.FAILED_NO_ROUTE);
     }
 
-    @Test
-    public void blackoutWorks(){
-        WorldState world = sim.getWorldState();
-        Entity e1 = world.getEntity("agentA1");
-        ChargingStation station = world.getChargingStations().iterator().next();
-
-        e1.discharge();
-        e1.setLocation(station.getLocation());
-
-        assert e1.getCurrentBattery() == 0;
-
-        station.initiateBlackout(5);
-        world.getGenerator().addToBlackoutFacilities(station);
-
-        sim.preStep(step);
-        Map<String, Action> actions = buildActionMap();
-        actions.put("agentA1", new Action("charge"));
-        sim.step(step, actions);
-
-        //facility is affected by blackout
-        assert e1.getCurrentBattery() == 0;
-        assert e1.getLastActionResult().equals("failed_facility_state");
-
-        actions.put("agentA1", new Action("skip"));
-        for(int i = 0; i < 5; i++){
-            sim.preStep(step);
-            sim.step(step, actions);
-            step++;
-        }
-
-        sim.preStep(step);
-        actions.put("agentA1", new Action("charge"));
-        sim.step(step, actions);
-
-        //facility starts working again after blackout is over
-        assert e1.getCurrentBattery() >= 0;
-
-    }
-
     /**
      * @return a new action-map where each agent just skips
      */
