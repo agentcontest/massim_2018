@@ -36,7 +36,6 @@ public class ActionExecutor {
     private final static String PARTIAL_SUCCESS = "successful_partial";
     private final static String FAILED_WRONG_PARAM = "failed_wrong_param";
     private final static String FAILED_RESOURCES = "failed_resources";
-    private final static String FAILED_ROLE = "failed_role";
     private final static String FAILED = "failed";
     private final static String USELESS = "useless";
     private final static String FAILED_FACILITY_STATE = "failed_facility_state";
@@ -132,9 +131,6 @@ public class ActionExecutor {
                 break;
 
             case BUILD:
-                if(entity.getRole().getName().equalsIgnoreCase("Drone")){
-                    entity.setLastActionResult(FAILED_ROLE);
-                }
                 if(params.size() > 1){
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     return;
