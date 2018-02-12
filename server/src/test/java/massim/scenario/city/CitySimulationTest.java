@@ -49,12 +49,6 @@ public class CitySimulationTest {
 
         // create config
         JSONObject matchConf = IOUtil.readJSONObject("conf/QuickTest.json").getJSONArray("match").getJSONObject(0);
-        // make agents really fast
-        JSONObject roles = matchConf.getJSONObject("roles");
-        roles.keySet().forEach(role -> {
-            roles.getJSONObject(role).put("speed", 10000);
-            roles.getJSONObject(role).put("load", 100000);
-        });
 
         // setup teams
         Set<TeamConfig> teams = new HashSet<>(Arrays.asList(new TeamConfig("A"), new TeamConfig("B")));
@@ -438,6 +432,7 @@ public class CitySimulationTest {
 
     @Test
     public void jobActionsWork(){
+        Map<String, Action> actions = buildActionMap();
         WorldState world = sim.getWorldState();
         Storage storage = world.getStorages().iterator().next();
         Entity eA = world.getEntity("agentA1");
@@ -446,46 +441,36 @@ public class CitySimulationTest {
         long moneyA = world.getTeam("A").getMassium();
         long moneyB = world.getTeam("B").getMassium();
         int reward = 77777;
+        ItemBox requirements = new ItemBox();
+        requirements.store(item, 5);
 
         eA.clearInventory();
         eB.clearInventory();
         eA.setLocation(storage.getLocation());
         eB.setLocation(storage.getLocation());
         eA.addItem(item, 3);
+        eB.addItem(item, 1);
+        storage.removeDelivered(item, 10000, "A");
         storage.removeDelivered(item, 10000, "B");
+        Job job = new Job(reward, storage, step + 1, step + 4, requirements, JobData.POSTER_SYSTEM);
+        world.addJob(job);
 
-        // check job posting
-
-        Map<String, Action> actions = buildActionMap();
-        actions.put("agentB1", new Action("post_job",
-                                          String.valueOf(reward),
-                                          "20",
-                                          storage.getName(), item.getName(), "5"));
-
+        // activate job
         sim.preStep(step);
-        sim.step(step, actions);
-
-        Optional<Job> job = world.getJobs().stream()
-                .filter(j -> j.getPoster().equals("B"))
-                .findAny();
-
-        assert job.isPresent();
-        String jobName = job.get().getName();
-
-        step++;
+        sim.step(step++, actions);
 
         // check delivering (partial)
-
         actions = buildActionMap();
-        actions.put("agentA1", new Action("deliver_job", jobName));
+        actions.put("agentA1", new Action("deliver_job", job.getName()));
+        actions.put("agentB1", new Action("deliver_job", job.getName()));
 
         sim.preStep(step);
-        sim.step(step, actions);
+        sim.step(step++, actions);
 
         assert eA.getItemCount(item) == 0;
+        assert eB.getItemCount(item) == 0;
         assert eA.getLastActionResult().equals("successful_partial");
-
-        step++;
+        assert eB.getLastActionResult().equals("successful_partial");
 
         // check completion
         eA.addItem(item, 3);
@@ -496,20 +481,20 @@ public class CitySimulationTest {
         assert eA.getItemCount(item) == 1;
         assert eA.getLastActionResult().equals("successful");
         assert world.getTeam("A").getMassium() == moneyA + reward;
-        assert world.getTeam("B").getMassium() == moneyB - reward;
-        assert storage.getDelivered(item, "B") == 5;
+        assert storage.getDelivered(item, "A") == 0;
+        assert storage.getDelivered(item, "B") == 1;
 
         step++;
 
         // retrieve delivery
 
         actions = buildActionMap();
-        actions.put("agentB1", new Action("retrieve_delivered", item.getName(), "5"));
+        actions.put("agentB1", new Action("retrieve_delivered", item.getName(), "1"));
 
         sim.preStep(step);
         sim.step(step, actions);
 
-        assert eB.getItemCount(item) == 5;
+        assert eB.getItemCount(item) == 1;
     }
 
     @Test

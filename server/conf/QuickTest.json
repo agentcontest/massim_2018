@@ -33,25 +33,126 @@
       "cellSize" : 500,
       "randomSeed" : 42,
       "randomFail" : 0,
-      "postJobLimit": 10,
-      "gotoCost" : 10,
+      "gotoCost" : 1,
       "rechargeRate" : 5,
-      "visibilityRange" : 500,
-      "restock" : 1.0,
-      "restockResource" : 0.9,
+
+      "upgrades" : [
+        {
+          "name" : "skill",
+          "cost" : 1000,
+          "step" : 1
+        },
+        {
+          "name" : "vision",
+          "cost" : 1000,
+          "step" : 50
+        },
+        {
+          "name" : "speed",
+          "cost" : 1000,
+          "step" : 1
+        },
+        {
+          "name" : "load",
+          "cost" : 200,
+          "step" : 10
+        },
+        {
+          "name" : "battery",
+          "cost" : 300,
+          "step" : 5
+        }
+      ],
 
       "roles" : {
         "spaceShip" : {
-          "speed" : 100000,
-          "load" : 550000,
-          "battery" : 99999999,
+          "baseSpeed" : 10000,
+          "maxSpeed" : 11000,
+          "baseLoad" : 10000,
+          "maxLoad" : 11000,
+          "baseBattery" : 10000,
+          "maxBattery" : 11000,
+          "baseSkill" : 10,
+          "maxSkill" : 10000,
+          "baseVision" : 600,
+          "maxVision" : 1000,
           "roads" : ["road"]
         }
       },
 
       "entities" : [{"spaceShip" : 30}],
 
-      "generate" : "$(generate/generate.json)"
+      "generate" : {
+        "facilities" : {
+          "quadSize" : 0.04,
+          "blackoutProbability" : 0.1,
+          "blackoutTimeMin" : 5,
+          "blackoutTimeMax" : 10,
+          "chargingStations" : {
+            "density" : 0.9,
+            "rateMin" : 50,
+            "rateMax" : 150
+          },
+          "shops" : {
+            "density" : 0.8,
+            "tradeModMin" : 1,
+            "tradeModMax" : 4
+          },
+          "dumps" : {
+            "density" : 0.6
+          },
+          "workshops" : {
+            "density" : 0.6
+          },
+          "storage" : {
+            "density" : 0.8,
+            "capacityMin" : 7500,
+            "capacityMax" : 15000
+          },
+          "resourceNodes" : {
+            "density" : 0.7,
+            "thresholdMin" : 10,
+            "thresholdMax" : 20
+          },
+          "wells" : {
+            "wellTypesMin" : 2,
+            "wellTypesMax" : 5,
+            "baseEfficiencyMin" : 1,
+            "baseEfficiencyMax" : 5,
+            "efficiencyIncreaseMin" : 1,
+            "efficiencyIncreaseMax" : 5,
+            "baseIntegrityMin" : 50,
+            "baseIntegrityMax" : 100,
+            "costFactor" : 100
+          }
+        },
+        "items" : {
+          "resourcesMin" : 2,
+          "resourcesMax" : 4,
+          "levelDecreaseMin" : 1,
+          "levelDecreaseMax" : 2,
+          "graphDepthMin" : 3,
+          "graphDepthMax" : 4,
+          "volMin" : 5,
+          "volMax" : 10,
+          "partsMin" : 2,
+          "partsMax" : 8
+        },
+        "jobs" : {
+          "jobProbability" : 0.2,
+          "auctionProbability" : 0.1,
+          "missionProbability" : 0.01,
+          "jobDurationMin" : 50,
+          "jobDurationMax" : 100,
+          "rewardModMin" : 10,
+          "rewardModMax" : 20,
+          "itemCountMin" : 2,
+          "itemCountMax" : 10,
+          "auctions" : {
+            "auctionTime" : 5
+          }
+        }
+      }
     }
   ],
 

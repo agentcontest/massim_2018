@@ -3,23 +3,22 @@ package massim;
 import massim.config.ServerConfig;
 import massim.config.TeamConfig;
 import massim.monitor.Monitor;
-import massim.protocol.DynamicWorldData;
-import massim.protocol.StaticWorldData;
 import massim.protocol.WorldData;
 import massim.protocol.messagecontent.Action;
 import massim.protocol.messagecontent.RequestAction;
 import massim.protocol.messagecontent.SimEnd;
 import massim.protocol.messagecontent.SimStart;
 import massim.scenario.AbstractSimulation;
-import massim.util.*;
-
+import massim.util.IOUtil;
+import massim.util.InputManager;
+import massim.util.Log;
+import massim.util.RNG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -372,7 +371,7 @@ public class Server {
 
     /**
      * Handles snapshots of the world state, i.e. notifies monitor and saves replays (if configured).
-     * @param simID the ID of the current sim
+     * @param simId the ID of the current sim
      * @param startTime string representation of the simulation's start time
      * @param world the world state
      */
