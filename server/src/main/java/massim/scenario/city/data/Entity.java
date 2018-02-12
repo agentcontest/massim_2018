@@ -206,6 +206,22 @@ public class Entity {
         return skill;
     }
 
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getVision() {
+        return vision;
+    }
+
+    public int getBatteryCapacity () {
+        return battery;
+    }
+
+    public int getLoadCapacity() {
+        return items.getCapacity();
+    }
+
     public void upgrade(Upgrade upgrade) {
         switch(upgrade.getName()) {
             case "skill":

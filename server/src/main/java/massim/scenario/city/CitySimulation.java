@@ -123,7 +123,7 @@ public class CitySimulation extends AbstractSimulation {
                          .sorted()
                          .forEach(agent -> {
                             Entity entity = world.getEntity(agent);
-                            entities.add(new EntityData(null, null, null, null, null, null,
+                            entities.add(new EntityData(null, null, null, null, null, null, null, null, null, null, null,
                                 agent, world.getTeamForAgent(agent),
                                 entity.getRole().getName(),
                                 entity.getLocation().getLat(),
@@ -236,7 +236,7 @@ public class CitySimulation extends AbstractSimulation {
                             auctionsPerTeam,
                             missionsPerTeam,
                             postedJobsPerTeam,
-                            world.getVisibilityRange()
+                            world.getEntity(agent).getVision()
             ));
         });
         return percepts;
@@ -324,7 +324,12 @@ public class CitySimulation extends AbstractSimulation {
             result.put(agent,
                     new EntityData(
                             entity.getCurrentBattery(),
+                            entity.getBatteryCapacity(),
                             entity.getCurrentLoad(),
+                            entity.getLoadCapacity(),
+                            entity.getVision(),
+                            entity.getSkill(),
+                            entity.getSpeed(),
                             new ActionData(entity.getLastAction().getActionType(),
                                     entity.getLastAction().getParameters(),
                                     entity.getLastActionResult()),

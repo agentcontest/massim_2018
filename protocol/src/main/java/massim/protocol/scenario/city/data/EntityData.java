@@ -18,7 +18,22 @@ public class EntityData {
     private Integer charge;
 
     @XmlAttribute
+    private Integer chargeMax;
+
+    @XmlAttribute
     private Integer load;
+
+    @XmlAttribute
+    private Integer loadMax;
+
+    @XmlAttribute
+    private Integer vision;
+
+    @XmlAttribute
+    private Integer skill;
+
+    @XmlAttribute
+    private Integer speed;
 
     @XmlElement(name = "action")
     private ActionData lastAction;
@@ -55,7 +70,11 @@ public class EntityData {
     /**
      * Constructor. Make sure to only give the parameters you want serialized.
      * @param currentBattery current charge
+     * @param maxBattery the entity's battery capacity
      * @param currentLoad currently used capacity
+     * @param maxLoad the entity's maximum capacity
+     * @param vision the current vision
+     * @param speed the current speed of the entity
      * @param lastAction last action used
      * @param facilityName facility the agent currently is in, if so
      * @param route current route of the agent if available.
@@ -67,13 +86,20 @@ public class EntityData {
      * @param lat latitude
      * @param lon longitude
      */
-    public EntityData(Integer currentBattery, Integer currentLoad, ActionData lastAction,
+    public EntityData(Integer currentBattery, Integer maxBattery, Integer currentLoad, Integer maxLoad,
+                      Integer vision, Integer skill, Integer speed,
+                      ActionData lastAction,
                       String facilityName, List<WayPointData> route, List<ItemAmountData> items,
                       String agentName, String team, String role, double lat, double lon) {
         this.charge = currentBattery;
+        this.chargeMax = maxBattery;
         this.load = currentLoad;
+        this.loadMax = maxLoad;
         this.lastAction = lastAction;
         this.facility = facilityName;
+        this.vision = vision;
+        this.skill = skill;
+        this.speed = speed;
         if(route != null){
             if (route.size() > 0 ) {
                 routeLength = route.size();
@@ -88,86 +114,70 @@ public class EntityData {
         this.lon = lon;
     }
 
-    /**
-     * @return the name of the entity
-     */
     public String getName() {
         return name == null? "" : name;
     }
 
-    /**
-     * @return the battery charge of the entity
-     */
     public Integer getCharge() {
         return charge == null? 0 : charge;
     }
 
-    /**
-     * @return the currently used up volume of the entity
-     */
+    public Integer getChargeMax() {
+        return chargeMax == null? 0 : chargeMax;
+    }
+
     public Integer getLoad() {
         return load == null? 0 : load;
     }
 
-    /**
-     * @return the action that was last executed by the entity
-     */
+    public Integer getLoadMax() {
+        return loadMax == null? 0 : loadMax;
+    }
+
     public ActionData getLastAction() {
         return lastAction;
     }
 
-    /**
-     * @return the latitude of the entity
-     */
     public double getLat() {
         return lat;
     }
 
-    /**
-     * @return the longitude of the entity
-     */
     public double getLon() {
         return lon;
     }
 
-    /**
-     * @return the facility the entity currently is in (or null)
-     */
     public String getFacility() {
         return facility == null? "" : facility;
     }
 
-    /**
-     * @return the length of the entity's current route
-     */
+    public Integer getVision() {
+        return vision == null? 0 : vision;
+    }
+
+    public Integer getSkill() {
+        return skill == null? 0 : skill;
+    }
+
+    public Integer getSpeed() {
+        return speed == null? 0 : speed;
+    }
+
     public Integer getRouteLength() {
         return routeLength == null? 0: routeLength;
     }
 
-    /**
-     * @return name of the entity's team
-     */
     public String getTeam() {
         return team == null? "" : team;
     }
 
-    /**
-     * @return the entity's role
-     */
     public String getRole() {
         return role == null? "" : role;
     }
 
-    /**
-     * @return list of items the entity is carrying
-     */
     public List<ItemAmountData> getItems() {
         return items == null? new Vector<>() : items;
     }
 
-    /**
-     * @return if the entity has a route, the waypoints of that route, else null
-     */
     public List<WayPointData> getRoute() {
         return route == null? new Vector<>() : route;
     }

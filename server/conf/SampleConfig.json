@@ -26,9 +26,6 @@
       "randomFail" : 1,
       "gotoCost" : 10,
       "rechargeRate" : 2,
-      "visibilityRange" : 500,
-      "restock" : 1.0,
-      "restockResource" : 0.9,
 
       "upgrades" : [
         {

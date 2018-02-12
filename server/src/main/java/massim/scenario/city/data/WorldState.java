@@ -24,7 +24,6 @@ public class WorldState {
     private long seedCapital;
     private int randomFail;
     private String id;
-    private int visibilityRange;
     private int gotoCost;
     private int rechargeRate;
     private double minLon;
@@ -95,8 +94,6 @@ public class WorldState {
         Location mapCenter = new Location(centerLon, centerLat);
         randomFail = config.optInt("randomFail", 1);
         Log.log(Log.Level.NORMAL, "Configuring random fail probability: " + randomFail);
-        visibilityRange = config.optInt("visibilityRange", 500);
-        Log.log(Log.Level.NORMAL, "Configuring visibility range: " + visibilityRange);
         gotoCost = config.optInt("gotoCost", 10);
         Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
         rechargeRate = config.optInt("rechargeRate", 5);
@@ -411,13 +408,6 @@ public class WorldState {
      */
     public List<Facility> getFacilities(){
         return new ArrayList<>(facilities.values());
-    }
-
-    /**
-     * @return the visibility range of an agent
-     */
-    public int getVisibilityRange(){
-        return visibilityRange;
     }
 
     /**
