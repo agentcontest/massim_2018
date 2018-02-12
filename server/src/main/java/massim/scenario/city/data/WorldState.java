@@ -24,7 +24,6 @@ public class WorldState {
     private long seedCapital;
     private int randomFail;
     private String id;
-    private int postJobLimit;
     private int visibilityRange;
     private int gotoCost;
     private int rechargeRate;
@@ -93,8 +92,6 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring scenario centerLat: " + centerLat);
         double centerLon = config.optDouble("centerLon", 0);
         Log.log(Log.Level.NORMAL, "Configuring scenario centerLon: " + centerLon);
-        postJobLimit = config.optInt("postJobLimit", 10);
-        Log.log(Log.Level.NORMAL, "Configuring post_job limit: " + postJobLimit);
         Location mapCenter = new Location(centerLon, centerLat);
         randomFail = config.optInt("randomFail", 1);
         Log.log(Log.Level.NORMAL, "Configuring random fail probability: " + randomFail);
@@ -407,13 +404,6 @@ public class WorldState {
      */
     public List<Role> getRoles(){
         return new Vector<>(roles.values());
-    }
-
-    /**
-     * @return how many jobs a team may have posted at a time
-     */
-    public int getPostJobLimit(){
-        return postJobLimit;
     }
 
     /**
