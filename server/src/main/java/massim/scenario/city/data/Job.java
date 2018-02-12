@@ -24,7 +24,7 @@ public class Job {
     private int endStep;
     private String poster;
 
-    private ItemBox requiredItems = new ItemBox();
+    private ItemBox requiredItems;
     private Map<String, ItemBox> deliveredItems = new HashMap<>();
 
     /**
@@ -35,11 +35,12 @@ public class Job {
      * @param end the last step of the job
      * @param poster the origin of the job (the system or any team)
      */
-    public Job(int reward, Storage storage, int begin, int end, String poster){
+    public Job(int reward, Storage storage, int begin, int end, ItemBox requiredItems, String poster){
         this.reward = reward;
         this.storage = storage;
         this.beginStep = begin;
         this.endStep = end;
+        this.requiredItems = requiredItems;
         this.poster = poster;
     }
 
@@ -49,10 +50,6 @@ public class Job {
 
     public Storage getStorage(){
         return storage;
-    }
-
-    public void addRequiredItem(Item item, int amount){
-        requiredItems.store(item, amount);
     }
 
     /**

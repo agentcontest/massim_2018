@@ -141,26 +141,17 @@
           "partsMax" : 8
         },
         "jobs" : {
-          "rate" : 0.2,
-          "auctionProbability" : 0.4,
-          "missionProbability" : 0.1,
-          "productTypesMin" : 3,
-          "productTypesMax" : 5,
-          "difficultyMin" : 3,
-          "difficultyMax" : 12,
-          "timeMin" : 100,
-          "timeMax" : 400,
-          "rewardAddMin" : 50,
-          "rewardAddMax" : 100,
+          "jobProbability" : 0.2,
+          "auctionProbability" : 0.1,
+          "missionProbability" : 0.01,
+          "jobDurationMin" : 50,
+          "jobDurationMax" : 100,
+          "rewardModMin" : 10,
+          "rewardModMax" : 20,
+          "itemCountMin" : 2,
+          "itemCountMax" : 10,
           "auctions" : {
-            "auctionTimeMin" : 2,
-            "auctionTimeMax" : 10,
-            "fineSub" : 50,
-            "fineAdd" : 50,
-            "maxRewardAdd" : 50
-          },
-          "missions" : {
-            "missionDifficultyMax" : 6
+            "auctionTime" : 5
           }
         }
       }

@@ -547,16 +547,15 @@ public class CitySimulation extends AbstractSimulation {
                     int reward = -1;
                     try{reward = Integer.parseInt(command[3]);} catch (NumberFormatException ignored){}
                     Facility facility = world.getFacility(command[4]);
-                    Map<Item, Integer> requirements = new HashMap<>();
+                    ItemBox requirements = new ItemBox();
                     for(int i = 5; i < command.length; i += 2){
                         Item item = world.getItemByName(command[i]);
                         int amount = -1;
                         try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
-                        if(item != null && amount > 0) requirements.put(item, amount);
+                        if(item != null && amount > 0) requirements.store(item, amount);
                     }
-                    if(start > 0 && end >= start && reward > 0 && requirements.size() > 0 && facility instanceof Storage) {
-                        Job job = new Job(reward, (Storage) facility, start, end, JobData.POSTER_SYSTEM);
-                        requirements.forEach(job::addRequiredItem);
+                    if(start > 0 && end >= start && reward > 0 && requirements.getStoredTypes().size() > 0 && facility instanceof Storage) {
+                        Job job = new Job(reward, (Storage) facility, start, end, requirements, JobData.POSTER_SYSTEM);
                         world.addJob(job);
                         break;
                     }
@@ -576,16 +575,15 @@ public class CitySimulation extends AbstractSimulation {
                     int fine = -1;
                     try{fine = Integer.parseInt(command[5]);} catch (NumberFormatException ignored){}
                     Facility facility = world.getFacility(command[6]);
-                    Map<Item, Integer> requirements = new HashMap<>();
+                    ItemBox requirements = new ItemBox();
                     for(int i = 7; i < command.length; i += 2){
                         Item item = world.getItemByName(command[i]);
                         int amount = -1;
                         try{amount = Integer.parseInt(command[i+1]);} catch (NumberFormatException ignored){}
-                        if(item != null && amount > 0) requirements.put(item, amount);
+                        if(item != null && amount > 0) requirements.store(item, amount);
                     }
-                    if(start > 0 && end >= start && reward > 0 && requirements.size() > 0 && facility instanceof Storage) {
-                        AuctionJob auction = new AuctionJob(reward, (Storage) facility, start, end, auctionTime, fine);
-                        requirements.forEach(auction::addRequiredItem);
+                    if(start > 0 && end >= start && reward > 0 && requirements.getStoredTypes().size() > 0 && facility instanceof Storage) {
+                        AuctionJob auction = new AuctionJob(reward, (Storage) facility, start, end, requirements, auctionTime, fine);
                         world.addJob(auction);
                         break;
                     }

@@ -27,8 +27,8 @@ public class AuctionJob extends Job{
      * @param auctionTime the number of steps to run the auction, i.e. begin at step 7 and auctionTime 5 means:
      * @param fine the amount of money the assigned team has to pay if it does not finish the job in time
      */
-    public AuctionJob(int reward, Storage storage, int begin, int end, int auctionTime, int fine) {
-        super(reward, storage, begin, end, JobData.POSTER_SYSTEM); // auctions can only be created by the system
+    public AuctionJob(int reward, Storage storage, int begin, int end, ItemBox items, int auctionTime, int fine) {
+        super(reward, storage, begin, end, items, JobData.POSTER_SYSTEM); // auctions can only be created by the system
         this.auctionTime = auctionTime;
         this.fine = fine;
     }

@@ -38,13 +38,13 @@ public class WorldState {
     private Map<String, Role> roles = new HashMap<>();
 
     private Map<String, Facility> facilities = new HashMap<>();
-    private Set<Workshop> workshops = new HashSet<>();
-    private Set<Dump> dumps = new HashSet<>();
-    private Set<ChargingStation> chargingStations = new HashSet<>();
-    private Set<Shop> shops = new HashSet<>();
-    private Set<Storage> storages = new HashSet<>();
-    private Set<ResourceNode> resourceNodes = new HashSet<>();
-    private Set<Well> wells = new HashSet<>();
+    private List<Workshop> workshops = new ArrayList<>();
+    private List<Dump> dumps = new ArrayList<>();
+    private List<ChargingStation> chargingStations = new ArrayList<>();
+    private List<Shop> shops = new ArrayList<>();
+    private List<Storage> storages = new ArrayList<>();
+    private List<ResourceNode> resourceNodes = new ArrayList<>();
+    private List<Well> wells = new ArrayList<>();
 
     private Vector<String> agentNames;
     private Map<String, String> agentToTeam = new HashMap<>();
@@ -358,29 +358,29 @@ public class WorldState {
         return entityToAgent.get(e);
     }
 
-    public Set<Dump> getDumps() {
+    public List<Dump> getDumps() {
         return dumps;
     }
 
-    public Set<Workshop> getWorkshops() {
+    public List<Workshop> getWorkshops() {
         return workshops;
     }
 
-    public Set<ChargingStation> getChargingStations() {
+    public List<ChargingStation> getChargingStations() {
         return chargingStations;
     }
 
-    public Set<Shop> getShops() {
+    public List<Shop> getShops() {
         return shops;
     }
 
-    public Set<Storage> getStorages() {
+    public List<Storage> getStorages() {
         return storages;
     }
 
-    public Set<ResourceNode> getResourceNodes() { return resourceNodes; }
+    public List<ResourceNode> getResourceNodes() { return resourceNodes; }
 
-    public Set<Well> getWells() { return wells; }
+    public List<Well> getWells() { return wells; }
 
     /**
      * @return a new list of all team states

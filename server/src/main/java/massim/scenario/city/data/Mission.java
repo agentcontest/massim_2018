@@ -23,8 +23,8 @@ public class Mission extends AuctionJob {
      * @param team        the team that this mission will be assigned to
      * @param missionID   the ID for the mission (the job name will differ per team)
      */
-    public Mission(int reward, Storage storage, int begin, int end, int fine, TeamState team, String missionID) {
-        super(reward, storage, begin, end, 0, fine); // create an auction with no auctioning phase
+    public Mission(int reward, Storage storage, int begin, int end, int fine, ItemBox items, TeamState team, String missionID) {
+        super(reward, storage, begin, end, items, 0, fine); // create an auction with no auctioning phase
         this.missionID = missionID;
         bid(team, reward); // place the fixed bid
         assign(); // immediately assign
