@@ -72,7 +72,7 @@
           "maxLoad" : 11000,
           "baseBattery" : 10000,
           "maxBattery" : 11000,
-          "baseSkill" : 10,
+          "baseSkill" : 50,
           "maxSkill" : 10000,
           "baseVision" : 600,
           "maxVision" : 1000,

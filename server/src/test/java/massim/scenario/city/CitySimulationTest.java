@@ -603,7 +603,19 @@ public class CitySimulationTest {
 
     @Test
     public void resourceNodesWork(){
-        // TODO
+        WorldState world = sim.getWorldState();
+        ResourceNode node = world.getResourceNodes().get(0);
+        Entity agentA1 = world.getEntity("agentA1");
+        agentA1.setLocation(node.getLocation());
+        agentA1.clearInventory();
+
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("gather"));
+
+        sim.preStep(step);
+        sim.step(step++, actions);
+
+        assert agentA1.getItemCount(node.getResource()) == agentA1.getSkill() / node.getThreshold();
     }
 
 //    @Test

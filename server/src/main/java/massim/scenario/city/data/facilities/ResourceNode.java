@@ -45,4 +45,7 @@ public class ResourceNode extends Facility{
         return result;
     }
 
+    public int getThreshold() {
+        return threshold;
+    }
 }
