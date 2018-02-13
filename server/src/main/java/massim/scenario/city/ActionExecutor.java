@@ -108,7 +108,7 @@ public class ActionExecutor {
                 Location destination;
                 if(params.size() == 1){ // param must be facility name
                     Facility facility = world.getFacility(params.get(0));
-                    if(facility == null || facility instanceof ResourceNode){
+                    if(facility == null || facility instanceof ResourceNode || facility instanceof Well){
                         entity.setLastActionResult(FAILED_UNKNOWN_FACILITY);
                         break;
                     }
