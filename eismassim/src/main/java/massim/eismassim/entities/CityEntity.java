@@ -150,6 +150,7 @@ public class CityEntity extends EISEntity {
                 new Numeral(dump.getLat()), new Numeral(dump.getLon()))));
 
         percept.getWells().forEach(well -> ret.add(new Percept("well", new Identifier(well.getName()),
+                new Numeral(well.getLat()), new Numeral(well.getLon()),
                 new Identifier(well.getType()), new Identifier(well.getTeam()), new Numeral(well.getIntegrity()))));
 
         // shop percepts
