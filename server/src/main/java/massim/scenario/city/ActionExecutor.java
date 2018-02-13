@@ -562,11 +562,12 @@ public class ActionExecutor {
                 ResourceNode node = (ResourceNode) facility;
                 int resources = node.gather(entity.getSkill());
                 if(resources > 0){
-                    if(entity.getFreeSpace() < resources * node.getResource().getVolume()) {
+                    int actual = Math.min(resources, entity.getFreeSpace() / node.getResource().getVolume());
+                    if(actual == 0) {
                         entity.setLastActionResult(FAILED_CAPACITY);
                         break;
                     }
-                    entity.addItem(node.getResource(), resources);
+                    entity.addItem(node.getResource(), actual);
                     entity.setLastActionResult(SUCCESSFUL);
                     break;
                 } else {
