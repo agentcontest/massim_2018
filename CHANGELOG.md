@@ -1,5 +1,31 @@
 # MASSim CHANGELOG
 
+## Package release 2.0
+
+* scenario
+  * removed skip action (redundant)
+  * changed goal: get the highest score!
+  * added wells to generate score points with
+  * added build/dismantle actions to build/dismantle wells
+  * entities (and wells) are now only visible in an agent's vision radius
+  * roles now have a new skill attribute determining the efficiency of build, dismantle and gather actions
+  * roles now have a new vision attribute describing an agent's vision radius
+  * roles now have values for maximum speed, battery, load, vision and skill to support the
+  * new upgrade system! each agent can upgrade its speed, battery, load, vision and skill
+  * tools have been removed, items now require the presence of roles instead
+  * currency renamed to massium
+    * used to build wells or upgrade agents
+  * shops do not sell items any more
+    * assembled items can be sold in shops
+  * post_job action has been removed
+    * nobody used it anyway
+  * blackouts have been removed
+  * under the hood changes
+    * simulation instance generation has been simplified
+    * resource nodes are more common
+    * resource nodes use skill system to determine when they yield a resource
+    * volume of assembled items does not depend on required parts anymore
+
 ## Package release 1.7
 
 * monitor

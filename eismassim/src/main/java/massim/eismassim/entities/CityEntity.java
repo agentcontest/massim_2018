@@ -112,6 +112,7 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("lon", new Numeral(self.getLon())));
         ret.add(new Percept("routeLength", new Numeral(self.getRouteLength())));
         ret.add(new Percept("money", new Numeral(percept.getTeamData().getMassium())));
+        ret.add(new Percept("score", new Numeral(percept.getTeamData().getScore())));
 
         if(self.getFacility() != null) ret.add(new Percept("facility", new Identifier(self.getFacility())));
 
