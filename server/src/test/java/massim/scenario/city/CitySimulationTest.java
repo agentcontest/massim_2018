@@ -491,63 +491,62 @@ public class CitySimulationTest {
         WorldState world = sim.getWorldState();
         Storage storage = world.getStorages().iterator().next();
         Item item = world.getItems().get(0);
-        // TODO
-//        AuctionJob auction = new AuctionJob(999, storage, step + 1, step + 4, 2, 888);
-//        AuctionJob auction2 = new AuctionJob(999, storage, step + 1, step + 4, 2, 888);
-//        auction.addRequiredItem(item, 1);
-//        auction2.addRequiredItem(item, 1);
-//        world.addJob(auction);
-//        world.addJob(auction2);
-//        long moneyA = world.getTeam("A").getMassium();
-//        long moneyB = world.getTeam("B").getMassium();
-//        Entity eB = world.getEntity("agentB1");
-//
-//        Map<String, Action> actions = buildActionMap();
-//        sim.preStep(step);
-//        sim.step(step, actions); // let auctions get names and be registered
-//
-//        step++;
-//
-//        actions.put("agentA1", new Action("bid_for_job", auction.getName(), "1000"));
-//        actions.put("agentB1", new Action("bid_for_job", auction2.getName(), "998"));
-//        sim.preStep(step);
-//        sim.step(step, actions);
-//
-//        assert auction.getLowestBid() == null;
-//        assert auction2.getLowestBid() == 998;
-//
-//        step++;
-//
-//        actions = buildActionMap();
-//        actions.put("agentA1", new Action("bid_for_job", auction.getName(), "778"));
-//        sim.preStep(step);
-//        sim.step(step, actions);
-//
-//        assert auction.getLowestBid() == 778;
-//
-//        step++;
-//
-//        // complete auction for team B
-//
-//        eB.addItem(item, 1);
-//        eB.setLocation(storage.getLocation());
-//
-//        actions = buildActionMap();
-//        actions.put("agentB1", new Action("deliver_job", auction2.getName()));
-//        sim.preStep(step);
-//        sim.step(step, actions);
-//
-//        assert eB.getLastActionResult().equals("successful");
-//
-//        step++;
-//
-//        // check if team A paid the fine and B got the reward
-//
-//        sim.preStep(step);
-//        sim.step(step, buildActionMap());
-//
-//        assert world.getTeam("A").getMassium() == moneyA - auction.getFine();
-//        assert world.getTeam("B").getMassium() == moneyB + auction2.getLowestBid();
+        ItemBox itemsRequired = new ItemBox();
+        itemsRequired.store(item, 1);
+        AuctionJob auction = new AuctionJob(999, storage, step + 1, step + 4, itemsRequired, 2, 888);
+        AuctionJob auction2 = new AuctionJob(999, storage, step + 1, step + 4, itemsRequired, 2, 888);
+        world.addJob(auction);
+        world.addJob(auction2);
+        long moneyA = world.getTeam("A").getMassium();
+        long moneyB = world.getTeam("B").getMassium();
+        Entity eB = world.getEntity("agentB1");
+
+        Map<String, Action> actions = buildActionMap();
+        sim.preStep(step);
+        sim.step(step, actions); // let auctions get names and be registered
+
+        step++;
+
+        actions.put("agentA1", new Action("bid_for_job", auction.getName(), "1000"));
+        actions.put("agentB1", new Action("bid_for_job", auction2.getName(), "998"));
+        sim.preStep(step);
+        sim.step(step, actions);
+
+        assert auction.getLowestBid() == null;
+        assert auction2.getLowestBid() == 998;
+
+        step++;
+
+        actions = buildActionMap();
+        actions.put("agentA1", new Action("bid_for_job", auction.getName(), "778"));
+        sim.preStep(step);
+        sim.step(step, actions);
+
+        assert auction.getLowestBid() == 778;
+
+        step++;
+
+        // complete auction for team B
+
+        eB.addItem(item, 1);
+        eB.setLocation(storage.getLocation());
+
+        actions = buildActionMap();
+        actions.put("agentB1", new Action("deliver_job", auction2.getName()));
+        sim.preStep(step);
+        sim.step(step, actions);
+
+        assert eB.getLastActionResult().equals("successful");
+
+        step++;
+
+        // check if team A paid the fine and B got the reward
+
+        sim.preStep(step);
+        sim.step(step, buildActionMap());
+
+        assert world.getTeam("A").getMassium() == moneyA - auction.getFine();
+        assert world.getTeam("B").getMassium() == moneyB + auction2.getLowestBid();
     }
 
     // TODO test facility creation/generation
