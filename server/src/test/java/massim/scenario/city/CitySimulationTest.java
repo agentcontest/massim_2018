@@ -559,7 +559,28 @@ public class CitySimulationTest {
 
     @Test
     public void shopsWork(){
-        // TODO
+        WorldState world = sim.getWorldState();
+        Item resource = world.getResources().get(0);
+        Item assembledItem = world.getAssembledItems().get(0);
+        Shop shop = world.getShops().get(0);
+        Entity agentA1 = world.getEntity("agentA1");
+        Entity agentB1 = world.getEntity("agentB1");
+        agentA1.setLocation(shop.getLocation());
+        agentB1.setLocation(shop.getLocation());
+        agentA1.clearInventory();
+        agentB1.clearInventory();
+        agentA1.addItem(resource, 3);
+        agentB1.addItem(assembledItem, 3);
+
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("trade", resource.getName(), "2"));
+        actions.put("agentB1", new Action("trade", assembledItem.getName(), "2"));
+
+        sim.preStep(step);
+        sim.step(step++, actions);
+
+        assert agentA1.getItemCount(resource) == 3;
+        assert agentB1.getItemCount(assembledItem) == 1;
     }
 
     @Test
