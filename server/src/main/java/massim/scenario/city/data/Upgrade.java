@@ -1,5 +1,7 @@
 package massim.scenario.city.data;
 
+import massim.protocol.scenario.city.data.UpgradeData;
+
 /**
  * An upgrade.
  */
@@ -25,5 +27,9 @@ public class Upgrade {
 
     public int getStep() {
         return step;
+    }
+
+    public UpgradeData toUpgradeData() {
+        return new UpgradeData(name, cost, step);
     }
 }

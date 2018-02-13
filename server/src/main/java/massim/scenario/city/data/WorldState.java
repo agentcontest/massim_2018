@@ -519,5 +519,9 @@ public class WorldState {
     public Set<WellType> getWellTypes() {
         return new HashSet<>(wellTypes.values());
     }
+
+    public List<Upgrade> getUpgrades() {
+        return new ArrayList<>(upgrades.values());
+    }
 }
 

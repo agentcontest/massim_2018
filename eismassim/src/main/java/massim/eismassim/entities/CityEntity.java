@@ -81,6 +81,16 @@ public class CityEntity extends EISEntity {
             ret.add(new Percept("item", params));
         });
 
+        // add well types
+        simStart.getWellTypes().forEach(wellType ->
+                ret.add(new Percept("wellType", new Identifier(wellType.getName()), new Numeral(wellType.getCost()),
+                    new Numeral(wellType.getEfficiency()), new Numeral(wellType.getInitialIntegrity()),
+                    new Numeral(wellType.getIntegrity()))));
+
+        // add upgrades
+        simStart.getUpgrades().forEach(upgrade -> ret.add(new Percept("upgrade", new Identifier(upgrade.getName()),
+                new Numeral(upgrade.getCost()), new Numeral(upgrade.getStep()))));
+
         return ret;
     }
 

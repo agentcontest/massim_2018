@@ -70,6 +70,10 @@ public class CitySimulation extends AbstractSimulation {
                 .map(WellType::toWellTypeData)
                 .collect(Collectors.toList());
 
+        List<UpgradeData> upgradeData = world.getUpgrades().stream()
+                .map(Upgrade::toUpgradeData)
+                .collect(Collectors.toList());
+
         // create the static data object
         staticData = new StaticCityData(world.getSimID(), world.getSteps(), world.getMapName(), world.getSeedCapital(),
                                         world.getTeams().stream()
@@ -98,7 +102,8 @@ public class CitySimulation extends AbstractSimulation {
                         world.getMinLat(), world.getMaxLat(), world.getMinLon(), world.getMaxLon(),
                         world.getMap().getCenter().getLat(), world.getMap().getCenter().getLon(),
                         Location.getProximity(), world.getMap().getCellSize(),
-                        wellTypeData
+                        wellTypeData,
+                        upgradeData
                         )));
         return initialPercepts;
     }
