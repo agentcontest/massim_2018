@@ -128,14 +128,14 @@ public class CitySimulationTest {
 
         // move agent to resource node
         Entity e1 = sim.getWorldState().getEntity("agentA1");
-        ResourceNode node = (ResourceNode) sim.getWorldState().getFacility("resourceNode1");
+        ResourceNode node = (ResourceNode) sim.getWorldState().getFacility("node1");
         e1.setLocation(node.getLocation());
         //move another entity in perception range
         Entity e2 = sim.getWorldState().getEntity("agentA2");
         e2.setLocation(e1.getLocation());
         // give an item to the agent
         e1.addItem(item, 1);
-        e1.addItem(sim.getWorldState().getItemByName("tool1"), 1);
+        e1.addItem(sim.getWorldState().getItemByName("item1"), 1);
 
         // one step for activating jobs
         sim.preStep(step);
@@ -323,18 +323,7 @@ public class CitySimulationTest {
         for(int i = 1; i < requiredItems.size(); i++)
             assistants[i%assistants.length].addItem(requiredItems.get(i), 1);
 
-        // check assembly without tools
-
-        sim.preStep(step);
-        sim.step(step, actions);
-
-        assert e1.getLastActionResult().equals("failed_tools");
-        assert e2.getLastActionResult().equals("failed_tools");
-
-        step++;
-
-        // check assembly with all requirements satisfied
-        // TODO roles
+        // check assembly
 
         sim.preStep(step);
         sim.step(step, actions);
