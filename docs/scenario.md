@@ -507,7 +507,7 @@ Complete Example (with bogus values):
     minLat="48.82" minLon="2.26" name="agentA1" proximity="5"
     seedCapital="10" steps="10000" team="A">
     <role baseBattery="10000" baseLoad="10000" baseSkill="50" baseSpeed="10000"
-      baseVision="600" maxBattery="11000" maxLoad="11000" maxSkill="10000" 
+      baseVision="600" maxBattery="11000" maxLoad="11000" maxSkill="10000"
       maxSpeed="11000" maxVision="1000" name="car"/>
     <item name="item0" volume="5"/>
     <item name="item2" volume="8"/>
