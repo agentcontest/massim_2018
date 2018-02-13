@@ -612,7 +612,32 @@ public class CitySimulationTest {
 
     @Test
     public void upgradesWork() {
-
+        WorldState world = sim.getWorldState();
+        Upgrade upgrade = world.getUpgrade("load");
+        Entity agentA1 = world.getEntity("agentA1");
+        TeamState teamA = world.getTeam("A");
+        Shop shop = world.getShops().get(0);
+        agentA1.setLocation(shop.getLocation());
+        teamA.subMassium(teamA.getMassium());
+        teamA.addMassium(upgrade.getCost());
+        int load = agentA1.getLoadCapacity();
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("upgrade", "load"));
+        // check 1 upgrade
+        sim.preStep(step);
+        sim.step(step++, actions);
+        assert agentA1.getLastActionResult().equalsIgnoreCase("successful");
+        assert agentA1.getLoadCapacity() == load + upgrade.getStep();
+        assert teamA.getMassium() == 0;
+        // check upgrade when fully upgraded
+        while(agentA1.getLoadCapacity() < agentA1.getRole().getMaxLoad()) {
+            agentA1.upgrade(upgrade);
+        }
+        teamA.addMassium(upgrade.getCost());
+        sim.preStep(step);
+        sim.step(step++, actions);
+        assert agentA1.getLoadCapacity() == agentA1.getRole().getMaxLoad();
+        assert teamA.getMassium() == 0;
     }
 
     @Test
