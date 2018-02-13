@@ -3,6 +3,7 @@
 The MASSim server software is located in the `server` directory.
 
 ## Running the server
+
 You can run the server directly through the file
 `server-[version]-jar-with-dependencies.jar` without the need for additional
 shell scripts.
@@ -23,12 +24,13 @@ server with the `--monitor` option.
 The monitor will be available at [http://localhost:8000/](http://localhost:8000/) by default.
 
 ## Terminology
-* __Simulation__: one round of the respective scenario lasting a predefined
-number of steps
+
+* __Simulation__: one round of the respective scenario lasting a predefined number of steps
 * __Match__: a number of simulations played by the same teams
 * __Tournament__: a number of matches
 
 ## Configuration
+
 The MASSim server reads its configuration from JSON files. The file to use can
 be directly given as an argument to the java command. Otherwise, the server
 looks for a "conf" directory in the current working directory.
@@ -47,14 +49,15 @@ explained in the following.
 }
 ```
 
-#### server block
+### server block
+
 The server block contains information about the server in general, which will hold for all simulations.
 
 ```JSON
 "server" : {
     "tournamentMode" : "round-robin",
-    "teamsPerMatch" : 3,
-    "teamSize" : 6,
+    "teamsPerMatch" : 2,
+    "teamSize" : 34,
     "launch" : "key",
     "port" : 12300,
     "backlog" : 10000,
@@ -66,26 +69,18 @@ The server block contains information about the server in general, which will ho
     "maxPacketLength" : 65536
   }
 ```
-* __tournamentMode__: The tournament mode specifies, which teams play against each other in which order. Available modes are:
- 1. `round-robin`: Each unique combination of teams will play the set of
-simulations.
- * `manual`: This indicates that the actual matches will be manually
-configured in a separate vonfiguration block.
- * `random`: For each match, the participating teams are picked randomly
-until enough teams to play the match have been determined. This is repeated
-until the server is terminated manually.
 
+* __tournamentMode__: The tournament mode specifies, which teams play against each other in which order. Available modes are:
+  * `round-robin`: Each unique combination of teams will play the set of simulations.
+  * `manual`: This indicates that the actual matches will be manually configured in a separate vonfiguration block.
+  * `random`: For each match, the participating teams are picked randomly until enough teams to play the match have been determined. This is repeated until the server is terminated manually.
 
 * __teamsPerMatch__: How many teams play simultaneously in one simulation
-
 * __teamSize__: How many agents a team contains
-
 * __launch__: How the start of the matches is delayed
- * `key`: The server will wait for the ENTER key to start.
- * `[Int]s`": The server will start after [Int] seconds (e.g. 60s).
- * `HH:mm`: The server will start at the time indicated by HH:mm
-(e.g. 12:00).
-
+  * `key`: The server will wait for the ENTER key to start.
+  * `[Int]s`": The server will start after [Int] seconds (e.g. 60s).
+  * `HH:mm`: The server will start at the time indicated by HH:mm (e.g. 12:00).
 
 * __port__: The port on which to listen for incoming connections (see [protocol.md](protocol.md) for information about what to send)
 
@@ -103,7 +98,8 @@ until the server is terminated manually.
 
 * __maxPacketLength__: The maximum number of bytes of an XML message that will be processed by the server. Bytes beyond that limit will be immediately discarded.
 
-#### manual-mode block
+### manual-mode block
+
 This block specifies the manual-mode configuration. It is used (and required) if the __tournamentMode__ is set to `manual-mode`.
 
 ```JSON
@@ -117,32 +113,36 @@ This block specifies the manual-mode configuration. It is used (and required) if
 The block is an array of arrays. Each internal array specifies the teams participating in one match.
 In this example, the teams A, B and C play in the first match against each other.
 
-#### match block
+### match block
+
 This block describes exactly how each simulation will be set up and is mostly scenario dependent. One object in the match array represents one simulation.
 Always required are the fields
 
 ```JSON
 "match" : [
   {
-    "id" : "2017-Sim-1of1",
+    "id" : "2018-Sim-1of1",
     "scenarioClass" : "city.CitySimulation",
     "steps" : 1000
   }
 ]
 ```
+
 where
+
 * __id__ is an identifier for the simulation,
 * __scenarioClass__ is the path of the scenario's main class, and
 * __steps__ is the number of steps the simulation will last.
 
 For the remaining scenario-dependent items we refer to [scenario.md](scenario.md).
 
-#### teams block
+### teams block
+
 The teams block describes the teams and their credentials. The teams listed here can always connect to the server - however, they will of course only receive percepts when they are participating in the current simulation.
 
 ```JSON
 "teams" : {
-    "A" : 
+    "A" :
       [
         ["agentA1", "1"],
         ["agentA2", "1"],
@@ -152,9 +152,7 @@ The teams block describes the teams and their credentials. The teams listed here
         ["agentA6", "1"]
       ],
     "B" : "$(teams/B.json)",
-    "C" : "$(teams/C.json)",
-    "D" : "$(teams/D.json)",
-    "E" : "$(teams/E.json)"
+    "C" : "$(teams/C.json)"
   }
 ```
 
@@ -162,12 +160,14 @@ Each key in the ```teams``` JSON object is the name of a team. It points to an a
 
 Here, for teams B to E we used a custom JSON include mechanism that will be explained in the next section.
 
-#### JSON include mechanism
+### JSON include mechanism
+
 As it is often required to use e.g. the same team in different configuration files, each value can be stored in a separate file. The syntax to include external JSON elements is ```"$(path/to/include.json)"```.
 
 Before configuration files are parsed, all such occurrences will be replaced with the content of the file found at that location. Those files may in turn reference other files. The paths are always interpreted relative to the referencing file.
 
 ## Commands
+
 After the server has been started, it is listening for user input. The following commands are always accepted:
 
 * __pause__: The server pauses before the next step is executed (the current step is finished first).
