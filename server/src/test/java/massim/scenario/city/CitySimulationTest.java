@@ -548,7 +548,6 @@ public class CitySimulationTest {
         assert world.getTeam("B").getMassium() == moneyB + auction2.getLowestBid();
     }
 
-    // TODO test facility creation/generation
     @Test
     public void buildingWorks() {
         WorldState world = sim.getWorldState();
