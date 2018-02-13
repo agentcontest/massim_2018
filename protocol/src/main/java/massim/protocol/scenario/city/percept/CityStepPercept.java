@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @XmlAccessorType(XmlAccessType.NONE)
 //@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 @XmlType (propOrder={"simData","selfData","teamData","entityData","chargingStations","dumps","shops","storage","resourceNodes",
-        "wells","workshops","jobs","auctions","missions","postedJobs"})
+        "wells","workshops","jobs","auctions","missions"})
 public class CityStepPercept extends RequestAction {
 
     // ID and deadline are inherited
