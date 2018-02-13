@@ -7,6 +7,7 @@
 * [Items](#items)
 * [Facilities](#facilities)
 * [Roles](#roles)
+* [Upgrades](#job) (new!)
 * [Jobs](#job)
 * [Actions](#actions)
 * [Percepts](#percepts)
@@ -159,7 +160,13 @@ These 4 roles will also be used in the contest, however, the parameters are stil
 
 ## Upgrades
 
-TODO
+Upgrades can be bought in shops individually for each agent. Each update has
+
+* a __name__ describing the attribute that is upgraded,
+* a __cost__ that has to be paid with massium, and
+* a __step__ describing how much the attribute is increased with one upgrade.
+
+The attributes that can be upgraded are _speed_, _load_ (carrying capacity), _battery_, _vision_ and _skill_. Each attribute can be upgraded up to its maximum value (see [Roles](#roles) above).
 
 ## Jobs
 
