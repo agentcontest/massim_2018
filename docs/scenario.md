@@ -1,6 +1,6 @@
 # MASSim Scenario Documentation
 
-## Agents in the City (2017)
+## Agents in the City (2018)
 
 * [Intro](#background-story)
 * [Locations](#locations)
@@ -157,7 +157,11 @@ The first 5 attributes have a base and a max value. Each agent starts at the bas
 
 These 4 roles will also be used in the contest, however, the parameters are still subject to change.
 
-## Job
+## Upgrades
+
+TODO
+
+## Jobs
 
 A job is the general way to earn massium in this scenario.
 

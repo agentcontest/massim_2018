@@ -8,11 +8,11 @@ In other words, _EISMASSim_ is a proxy environment on the client side which hand
 
 ## Using EISMASSim
 
-#### Include the library
+### Include the library
 
 _EISMASSim_ is packaged as a jar file `eismassim-X.Y-jar-with-dependencies.jar` which already includes the _EIS_ package. The easiest way would be to include the jar with dependencies in your classpath. If you want to manage dependencies yourself, use `eismassim-X.Y.jar`. You can get the required EIS version (0.5.0) from the [eishub](https://github.com/eishub/eis).
 
-#### Create and start the Environment Interface instance
+### Create and start the Environment Interface instance
 
 ```Java
 EnvironmentInterfaceStandard ei = new EnvironmentInterface();
@@ -30,7 +30,7 @@ try {
 
 This sets the state of the interface to `RUNNING`.
 
-#### Register your agents
+### Register your agents
 
 Each agent you want to connect needs to be registered with the interface.
 
@@ -42,7 +42,7 @@ try {
 }
 ```
 
-#### Associate agents with entities
+### Associate agents with entities
 
 Entities are the _corporeal_ parts used for perceiving and acting, i.e. the vehicles in the simulation. The available entities are specified in the `eismassimconfig.json` file which needs to match the _MASSim_ scenario requirements.
 
@@ -56,7 +56,7 @@ try {
 
 This part automatically triggers authentication of the associated entity with the _MASSim_ server.
 
-#### Perceive the environment
+### Perceive the environment
 
 Percepts can either be _polled_ or received as _notifications_.
 
@@ -70,7 +70,7 @@ try {
 
 This would retrieve all percepts for the agent named `agentName`. The return value is a map, since the agent could be associated with more than one entity.
 
-#### Execute actions
+### Execute actions
 
 ```Java
 Action action = new Action(...);
@@ -151,7 +151,7 @@ Actions and percepts in _EISMASSim_ use the _Interface Intermediate Language_ (I
 
 Thus, any IILang _DataContainer_ forms a tree structure that can also be represented with Prolog-like syntax. For example, `car(red, 2007, [ac, radio], wheels(4))` could be a _Percept_ with the name `car`, an _Identifier_ (parameter) `red`, a _Numeral_ 2007, a _ParameterList_ containing 2 _Identifiers_ and a _Function_ named `wheels` containing a final _Numeral_.
 
-## MAPC 2017 scenario
+## MAPC 2018 scenario
 
 ### Actions
 
@@ -184,22 +184,33 @@ The following percepts might be included in a `SIM-START` message:
   * stepNumber : Numeral - number of steps the simulation will take
 * `team(name)`
   * name : Identifier - name of the agent's team
-* `role(name, speed, load, battery, [tool1, ...])`
+* `role(name, baseSpeed, maxSpeed, baseLoad, maxLoad, baseSkill, maxSkill, baseVision, maxVision, baseBattery, maxBattery)`
   * represents the agent's role
   * name : Identifier - name of the role
-  * speed : Numeral - speed of the role
-  * load : Numeral - carrying capacity of the role
-  * battery : Numeral - maximum battery charge of the role
-  * tool1 : Identifier - a tool usable by the role (list might be empty)
-* `item(name, volume, tools([tool1, ...]), parts([[item1, qty1], ...]))`
+  * base/maxSpeed : Numeral - base/max speed of the role
+  * base/maxLoad : Numeral - base/max carrying capacity of the role
+  * base/maxSkill : Numeral - base/max skill of the role
+  * base/maxVision : Numeral - base/max vision of the role
+  * base/maxBattery : Numeral - base/maximum battery charge of the role
+* `item(name, volume, roles([role1, ...]), parts([item1, ...]))`
   * represents an item type in the simulation
   * name : Identifier - name of the item
   * volume : Numeral - the item's volume
-  * tools : Function - all tools required to assemble the item
-    * tool1 : Identifier - one of the tools required for assembly
-  * parts : Function - all quantities of items required for assembly
-    * item1 : Identifier - the first item required for assembly
-    * qty1 : Numeral - quantity of 'item1' required for assembly
+  * roles : Function - all roles required to assemble the item
+    * role1 : Identifier - one of the roles required for assembly
+  * parts : Function - all items required for assembly
+    * item1 : Identifier - one item required for assembly
+* `upgrade(name, cost, step)`
+  * represents an upgrade agents can buy
+  * name : Identifier - the name of the upgrade, i.e. the attribute to upgrade
+  * cost : Numeral - how much the upgrade costs
+* `wellType(name, cost, efficiency, initialIntegrity, integrity)`
+  * a type of well that can be built
+  * name : Identifier - the name of the type
+  * cost : Numeral - how much it costs to build a well of this type
+  * efficiency : Numeral - how much points the well generates per step
+  * initialIntegrity : Numeral - the well's integrity after the first build action
+  * integrity : Numeral - the well's maximum integrity
 * `{min,max,center}{Lat,Lon}(coordinate)`
   * coordinate: Numeral - one of the 4 map bounds or the "center"
 * `proximity(p)`
@@ -263,15 +274,10 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * name : Identifier
   * lat : Numeral
   * lon : Numeral
-* `shop(name, lat, lon, restock, [item(name1, price1, qty1), ...])`
+* `shop(name, lat, lon)`
   * name : Identifier - the shop's name
   * lat : Numeral
   * lon : Numeral
-  * restock : Numeral - number of steps between restocks
-  * item : Function - an item stocked in the shop
-    * name1 - Identifier : that item's name
-    * price1 - Numeral : the item's price in this shop
-    * qty1 - Numeral : the quantity available in this shop
 * `storage(name, lat, lon, cap, used, [item(name1, stored1, delivered1), ...])`
   * name : Identifier - the storage's name
   * lat : Numeral
@@ -291,6 +297,13 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * lat : Numeral
   * lon : Numeral
   * resource : Identifier - name of the item that can be gathered at the node
+* `well(name, lat, lon, type, team, integrity)`
+  * name : Identifier
+  * lat : Numeral
+  * lon : Numeral
+  * type : Identifier - the well's type
+  * team : Identifier - the team that built the well
+  * integrity : Numeral - the well's current integrity
 * `job(id, storage, reward, start, end, [required(name1, qty1), ...])`
   * represents a non-auction job (excluding those posted by the agent's team)
   * id : Identifier - the job's ID
@@ -301,8 +314,6 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * required : Function - an item required to complete the job
     * name1 : Identififer - name of that item
     * qty1 : Numeral - required quantity
-* `posted(id, storage, reward, start, end, [required(name1, qty1), ...])`
-  * represents a job posted by the agent's team (parameters are the same as for `job`)
 * `auction(id, storage, reward, start, end, fine, bid, time, [required(name1, qty1), ...])`
   * same parameters as `job` plus:
     * fine : Numeral - amount to pay if the auction is assigned but not completed
