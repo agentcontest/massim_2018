@@ -44,7 +44,7 @@ public class WorldState {
     private List<Shop> shops = new ArrayList<>();
     private List<Storage> storages = new ArrayList<>();
     private List<ResourceNode> resourceNodes = new ArrayList<>();
-    private List<Well> wells = new ArrayList<>();
+    private Set<Well> wells = new HashSet<>();
 
     private Vector<String> agentNames;
     private Map<String, String> agentToTeam = new HashMap<>();
@@ -380,7 +380,7 @@ public class WorldState {
 
     public List<ResourceNode> getResourceNodes() { return resourceNodes; }
 
-    public List<Well> getWells() { return wells; }
+    public Set<Well> getWells() { return wells; }
 
     /**
      * @return a new list of all team states

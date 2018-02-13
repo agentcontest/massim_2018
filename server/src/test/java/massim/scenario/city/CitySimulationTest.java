@@ -549,6 +549,71 @@ public class CitySimulationTest {
     }
 
     // TODO test facility creation/generation
+    @Test
+    public void buildingWorks() {
+        WorldState world = sim.getWorldState();
+        Entity agentA1 = world.getEntity("agentA1");
+        Entity agentB1 = world.getEntity("agentB1");
+        double lat = world.getMinLat() + (world.getMaxLat() - world.getMinLat()) / 2;
+        double lon = world.getMinLon() + (world.getMaxLon() - world.getMinLon()) / 2;
+        Location loc = new Location(lon, lat);
+        agentA1.setLocation(loc);
+        agentB1.setLocation(loc);
+        TeamState team = world.getTeam("A");
+        long mass = team.getMassium();
+        WellType wellType = world.getWellTypes().iterator().next();
+        team.addMassium(wellType.getCost());
+        assert team.getScore() == 0;
+        assert team.getMassium() >= wellType.getCost();
+
+        Map<String, Action> actions = buildActionMap();
+        actions.put("agentA1", new Action("build", wellType.getName()));
+
+        sim.preStep(step);
+        sim.step(step++, actions);
+
+        assert agentA1.getLastActionResult().equalsIgnoreCase("successful");
+        assert world.getWells().size() == 1;
+        assert team.getMassium() == mass;
+
+        Well well = world.getWells().iterator().next();
+        int integrity = well.getIntegrity();
+        actions.put("agentA1", new Action("build"));
+
+        sim.preStep(step);
+        sim.step(step++, actions);
+
+        // check if well was built
+        assert well.getIntegrity() > integrity;
+        assert team.getScore() > 0;
+
+        actions = buildActionMap();
+        actions.put("agentB1", new Action("dismantle"));
+
+        // check if well can be dismantled
+        integrity = well.getIntegrity();
+        while(true) {
+            sim.preStep(step);
+            sim.step(step++, actions);
+            assert well.getIntegrity() < integrity;
+            integrity = well.getIntegrity();
+            if (integrity == 0) break;
+        }
+
+        assert well.getIntegrity() == 0;
+
+        // check if score remains the same without the well
+        long score = team.getScore();
+        actions = buildActionMap();
+        sim.preStep(step);
+        sim.step(step++ ,actions);
+        assert team.getScore() == score;
+    }
+
+    @Test
+    public void upgradesWork() {
+
+    }
 
     @Test
     public void chargingStationsWork(){
