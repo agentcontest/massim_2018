@@ -496,77 +496,173 @@ The complete XML format is discussed in [protocol.md](protocol.md).
 ### Initial percept
 
 This percept contains information that does not change during the whole simulation. As mentioned in the protocol description, everything is contained in a `simulation` element.
-A more or less complete example can be found [here](resources/example-simStart.xml).
 
-Example:
+Complete Example (with bogus values):
 
 ```XML
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<message timestamp="1489763697332" type="sim-start">
-  <simulation id="2017-QuickTest-Sim" map="london"
-              seedCapital="10" steps="1000" team="A"
-              minLat="1.1" maxLat="1.2" minLon="2.1" maxLon="2.3" centerLat="1.15" centerLon="2.2">
-    <role battery="500" load="1000" name="SampleRole" speed="10">
-      <tool name="tool0"/>
-      <tool name="tool1"/>
-    </role>
-    <item name="item0" volume="72"/>
-    <item name="item14" volume="0">
-      <item amount="2" name="item12"/>
-      <item amount="1" name="item8"/>
-      <tool name="tool0"/>
+<message timestamp="1518531678919" type="sim-start">
+  <simulation cellSize="500" centerLat="48.8424" centerLon="2.3209"
+    id="2017-QuickTest-Sim" map="paris" maxLat="48.9" maxLon="2.41"
+    minLat="48.82" minLon="2.26" name="agentA1" proximity="5"
+    seedCapital="10" steps="10000" team="A">
+    <role baseBattery="10000" baseLoad="10000" baseSkill="50" baseSpeed="10000"
+      baseVision="600" maxBattery="11000" maxLoad="11000" maxSkill="10000" 
+      maxSpeed="11000" maxVision="1000" name="car"/>
+    <item name="item0" volume="5"/>
+    <item name="item2" volume="8"/>
+    <item name="item1" volume="7"/>
+    <item name="item7" volume="6">
+      <item>item3</item>
+      <item>item1</item>
+      <item>item0</item>
+      <role>drone</role>
+      <role>car</role>
     </item>
+    <item name="item3" volume="6">
+      <item>item1</item>
+      <item>item2</item>
+      <item>item0</item>
+      <role>truck</role>
+      <role>drone</role>
+    </item>
+    <item name="item6" volume="6">
+      <item>item1</item>
+      <item>item2</item>
+      <item>item3</item>
+      <role>car</role>
+      <role>motorcycle</role>
+    </item>
+    <item name="item5" volume="7">
+      <item>item3</item>
+      <item>item1</item>
+      <item>item2</item>
+      <item>item3</item>
+      <item>item0</item>
+      <role>car</role>
+      <role>truck</role>
+    </item>
+    <upgrade cost="1000" name="vision" step="50"/>
+    <upgrade cost="200" name="load" step="10"/>
+    <upgrade cost="1000" name="skill" step="1"/>
+    <upgrade cost="300" name="battery" step="5"/>
+    <upgrade cost="1000" name="speed" step="1"/>
+    <well cost="2112" efficiency="17" initialIntegrity="30"
+      integrity="61" name="wellType2"/>
+    <well cost="1546" efficiency="12" initialIntegrity="45"
+      integrity="90" name="wellType1"/>
+    <well cost="964" efficiency="7" initialIntegrity="34"
+      integrity="69" name="wellType0"/>
   </simulation>
 </message>
+
 ```
 
 #### Simulation details
 
-The `simulation` tag has attributes for the simulation `id`, the name of the `map` that is used and its bounds, the seed capital, the number of simulation `steps` to be played and the name of the agent's `team`.
+The `simulation` tag has attributes for the simulation `id`, the name of the `map` that is used and its `bounds`, the `seed capital`, the number of simulation `steps` to be played and the name of the agent's `team`.
 
 #### Role details
 
-The percept also contains the agent's `role` and its details; speed, maximum load, name and maximum battery charge. The role element may further contain an arbitrary number of child nodes, one for each tool the role is allowed to use.
+The percept also contains the agent's `role` and its details; the name and base and max values for speed, load, battery, vision and skill.
 
 #### Item details
 
 Each item type present in the simulation has a child node in the simulation element. It contains the item's unique `name` and `volume`.
 
-If the item has to be assembled, the necessary parts are included as child nodes (`item` and `tool` elements) of the item element.
+If the item has to be assembled, the necessary parts are included as child nodes (`item` and `role` elements) of the item element.
 
 #### Contest note
 
-The roles and their details will be defined (and made public) in before and not change between simulations. This does not hold for tools however, as they are random for all simulations.
+The roles and their details will be defined (and made public) in before and not change between simulations.
 
 ### Step percept
 
 This percept contains information about the simulation state at the beginning of each step.
-A more or less complete example can be found [here](resources/example-requestAction.xml).
 
 Example:
 
 ```XML
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<message timestamp="1489763697397" type="request-action">
-  <percept deadline="1489763701395" id="0">
-    <simulation step="0"/>
-    <self charge="101" facility="shop1" lat="51.4741" load="0" lon="-0.06057" name="agentA1"
-          role="SampleRole" team="A">
-      <action result="successful" type="skip"/>
+<message timestamp="1518532127931" type="request-action">
+  <percept deadline="0" id="0">
+    <simulation step="28"/>
+    <self charge="9999" chargeMax="10000" facility="shop1" lat="48.8321" load="27" loadMax="11000" lon="2.37036" name="agentA1" role="truck" skill="50" speed="10000" team="A" vision="600">
+      <action result="successful" type="goto">
+        <params>shop1</params>
+      </action>
       <items amount="4" name="item0"/>
-      <items amount="1" name="tool1"/>
-      <route i="0" lat="51.4739" lon="-0.06657"/>
-      <route i="1" lat="51.47384" lon="-0.07346"/>
-      <route i="2" lat="51.47379" lon="-0.08041"/>
-      <route i="3" lat="51.47349" lon="-0.08759"/>
-      <route i="4" lat="51.47452" lon="-0.09439"/>
-      <route i="5" lat="51.47704" lon="-0.10037"/>
-      <route i="6" lat="51.4777" lon="-0.10676"/>
+      <items amount="1" name="item1"/>
     </self>
-    <team massium="10"/>
-
-    ...
-
+    <team massium="0" score="0"/>
+    <entity lat="48.8321" lon="2.37036" name="agentA1" role="spaceShip" team="A"/>
+    <chargingStation lat="48.85235" lon="2.2966" name="chargingStation0" rate="63"/>
+    <chargingStation lat="48.82805" lon="2.34884" name="chargingStation1" rate="74"/>
+    <chargingStation lat="48.85461" lon="2.38234" name="chargingStation2" rate="91"/>
+    <chargingStation lat="48.89517" lon="2.2898" name="chargingStation3" rate="66"/>
+    <chargingStation lat="48.86315" lon="2.33847" name="chargingStation4" rate="115"/>
+    <chargingStation lat="48.86259" lon="2.35423" name="chargingStation5" rate="61"/>
+    <dump lat="48.85051" lon="2.27233" name="dump0"/>
+    <dump lat="48.84405" lon="2.33852" name="dump1"/>
+    <dump lat="48.82756" lon="2.36615" name="dump2"/>
+    <dump lat="48.86625" lon="2.28654" name="dump3"/>
+    <dump lat="48.86241" lon="2.30136" name="dump4"/>
+    <dump lat="48.88224" lon="2.3806" name="dump5"/>
+    <dump lat="48.87846" lon="2.40522" name="dump6"/>
+    <shop lat="48.85576" lon="2.32994" name="shop0"/>
+    <shop lat="48.8321" lon="2.37036" name="shop1"/>
+    <shop lat="48.85703" lon="2.38503" name="shop2"/>
+    <shop lat="48.86482" lon="2.27006" name="shop3"/>
+    <shop lat="48.88191" lon="2.33994" name="shop4"/>
+    <shop lat="48.87743" lon="2.37683" name="shop5"/>
+    <storage lat="48.83797" lon="2.27845" name="storage0" totalCapacity="12908" usedCapacity="0"/>
+    <storage lat="48.82751" lon="2.31396" name="storage1" totalCapacity="13083" usedCapacity="10">
+      <item delivered="0" name="item0" stored="2"/>
+    </storage>
+    <storage lat="48.85846" lon="2.37058" name="storage2" totalCapacity="10475" usedCapacity="0"/>
+    <storage lat="48.834" lon="2.39991" name="storage3" totalCapacity="11656" usedCapacity="0"/>
+    <storage lat="48.86021" lon="2.27621" name="storage4" totalCapacity="13676" usedCapacity="0"/>
+    <storage lat="48.89115" lon="2.34152" name="storage5" totalCapacity="12432" usedCapacity="0"/>
+    <storage lat="48.87917" lon="2.40604" name="storage6" totalCapacity="13994" usedCapacity="0"/>
+    <workshop lat="48.82829" lon="2.28847" name="workshop0"/>
+    <workshop lat="48.85105" lon="2.37446" name="workshop1"/>
+    <workshop lat="48.83679" lon="2.40162" name="workshop2"/>
+    <workshop lat="48.8963" lon="2.29449" name="workshop3"/>
+    <workshop lat="48.88298" lon="2.31242" name="workshop4"/>
+    <workshop lat="48.89543" lon="2.3725" name="workshop5"/>
+    <workshop lat="48.8862" lon="2.39122" name="workshop6"/>
+    <job end="57" id="job1" reward="19" start="5" storage="storage6">
+      <required amount="1" name="item3"/>
+      <required amount="1" name="item5"/>
+      <required amount="1" name="item6"/>
+    </job>
+    <job end="79" id="job6" reward="26" start="17" storage="storage3">
+      <required amount="1" name="item3"/>
+      <required amount="2" name="item6"/>
+      <required amount="1" name="item7"/>
+    </job>
+    <job end="79" id="job8" reward="19" start="20" storage="storage4">
+      <required amount="2" name="item5"/>
+      <required amount="1" name="item6"/>
+    </job>
+    <job end="126" id="job11" reward="777" start="27" storage="storage1">
+      <required amount="3" name="item0"/>
+    </job>
+    <job end="93" id="job13" reward="28" start="28" storage="storage4">
+      <required amount="1" name="item3"/>
+      <required amount="1" name="item6"/>
+      <required amount="1" name="item7"/>
+    </job>
+    <auction auctionTime="5" end="74" fine="41" id="job2" reward="41" start="9" storage="storage5">
+      <required amount="2" name="item3"/>
+      <required amount="3" name="item5"/>
+      <required amount="5" name="item6"/>
+    </auction>
+    <auction auctionTime="2" end="126" fine="10002" id="job12" reward="1001" start="27" storage="storage1">
+      <required amount="3" name="item0"/>
+    </auction>
+    <mission auctionTime="0" end="126" fine="1000" id="job10" lowestBid="1000" reward="1000" start="27" storage="storage1">
+      <required amount="3" name="item0"/>
+    </mission>
   </percept>
 </message>
 ```
@@ -575,7 +671,7 @@ The information is contained in the `percept` element within the message. This e
 
 #### Self details
 
-The `self` element contains information about the agent itself; its current battery charge and used carrying capacity, position, role and team. If the agent is in the same location as a facility, that facility is listed as an attribute as well. The action the agent executed in the last step together with its result is included in a child node of the `self` element.
+The `self` element contains information about the agent itself; its current battery charge and its maximum battery charge (depending on the current upgrade status); the same for carrying capacity (load). Also the agent's current vision, skill, position, role and team are listed. The action the agent executed in the last step together with its result is included in a child node of the `self` element.
 
 Also, a child element for each carried item type is nested. Finally, if the agent currently follows a route, each waypoint of that route is listed in a child node, containing its location and index within the route.
 
@@ -585,7 +681,7 @@ The `team` element contains information about the agent's team; currently only h
 
 #### Entity details
 
-For each entity (or agent) in the simulation, one `entity` element is added.
+For each entity (or agent) in the simulation __in the current vision radius__, one `entity` element is added.
 
 Example:
 
@@ -659,6 +755,14 @@ Example:
 
 The resource node element contains the item that can be mined. Attention: This percept is only visible if the agent is "close" to the node (see `visibilityRange` parameter).
 
+##### Well details
+
+Example:
+
+```XML
+<well lat="51.478" lon="-0.03632" team="A" type="wellType1" integrity="555"/>
+```
+
 #### Job details
 
 An element for each job is added (`job`, `auction`, `mission` or `posted`).
@@ -684,14 +788,6 @@ Please note that the `lowestBid` attribute is not present if no bids have been p
 
 Assigned auctions can be recognized by comparing `start + auctionTime` with the current step. If the auction is still visible after the `auctionTime`, the team has won the auction.
 
-__Posted job example:__ (all active jobs posted by the team)
-
-```XML
-<posted start="30" end="156" id="job11" reward="6546" storage="storage8">
-  <required amount="3" name="item0"/>
-</posted>
-```
-
 __Mission job example:__ (all currently active missions for the team)
 
 ```XML
@@ -709,27 +805,25 @@ Example:
 
 ```JSON
 {
-  "id" : "2017-TestSim-1of1",
+  "id" : "2018-SampleSimulation",
   "scenarioClass" : "city.CitySimulation",
   "steps" : 1000,
-  "map" : "london",
-  "seedCapital" : 50000,
-  "minLon" : -0.1978,
-  "maxLon" : -0.0354,
-  "minLat" : 51.4647,
-  "maxLat" : 51.5223,
-  "centerLat" : 51.4885438,
-  "centerLon" : -0.1112036,
-  "proximity" : 0.0002,
-  "cellSize" : 0.001,
+  "map" : "paris",
+  "seedCapital" : 5000,
+  "minLon" : 2.26,
+  "maxLon" : 2.41,
+  "minLat" : 48.82,
+  "maxLat" : 48.90,
+  "centerLat" : 48.8424,
+  "centerLon" : 2.3209,
+  "proximity" : 5,
+  "cellSize" : 200,
   "randomSeed" : 17,
   "randomFail" : 1,
-  "postJobLimit" : 10,
-  "gotoCost" : 10,
-  "rechargeRate" : 5,
-  "visibilityRange" : 500,
-  "restock" : 1.0,
-  "restockResource" : 0.9,
+  "gotoCost" : 1,
+  "rechargeRate" : 2,
+
+  "upgrades" : {},
 
   "roles" : {},
 
@@ -759,12 +853,8 @@ For each simulation, the following parameters may be specified:
 * __cellSize__: the cellSize value (see [Locations](#locations) section)
 * __randomSeed__: the random seed that is used for map generation and action execution
 * __randomFail__: the probability for any action to fail (in %)
-* __postJobLimit__: the number of simultaneously active jobs for each team (i.e. a team may not post more jobs)
 * __gotoCost__: the energy cost for 1 goto action
 * __rechargeRate__: the energy that is restored between 1 and 2 times with 1 recharge action
-* __visibilityRange__: the maximum distance in meters between an agent and a resource node for the agent to perceive that resource node
-* __restock__: the probability for a base item (batch) of a completed job to be restocked in a random shop
-* __restockResource__: same as __restock__, but for resources
 
 The number of agents per role is defined in the `entities` array. Each object may have only one key (the name of the role). The value for the key is the number of agents for that role.
 
@@ -773,18 +863,14 @@ Agents are assigned their role according to their position in the team config. I
 ## Random generation
 
 In the first section of the random generation the parameters for the generation of the facilities can be specified:
-* __quadSize__: cellSize of the grid that is used for positioning
-* __blackoutProbability__: probability of a blackout occurring in a random facility (per step)
-* __blackoutTimeMin/Max__: bounds for the duration of a blackout
-* Parameters for charging stations:
-  * __density__: probability of placing a charging station per quad (or number of charging stations to place if >1)
+
+* __quadSize__: cell size of the grid that is used for positioning
+* Parameters for chaging stations:
+  * __density__: probability of placing a facility per quadrant (or number of facilities to place if >1)
   * __rateMin/Max__: bounds for charging rate
 * Parameters for shops:
   * __density__: see above
-  * __min/maxProd__: bounds for number of different available products per shop
-  * __amountMin/Max__: bounds for the starting amount a shop sells of a product
-  * __priceAddMin/Max__: bounds for the price a shop adds to an items value (can vary between products of the same shop)
-  * __restockMin/Max__: bounds for a shop's restock interval
+  * __tradeModMin/Max__: Multiplier for prices items are bought at.
 * Parameters for dumps:
   * __density__: see above
 * Parameters for workshops:
@@ -792,36 +878,33 @@ In the first section of the random generation the parameters for the generation 
 * Parameters for storage:
   * __density__: see above
   * __capacityMin/Max__: bounds for the storage's capacity
-* Parameter for resource nodes:
+* Parameters for resource nodes:
   * __density__: see above
-  * __gatherFrequencyMin/Max__: bounds for number of gather actions after which a new resource is found
+  * __thresholdMin/Max__: bounds for the threshold that has to be surpassed with accumulated skill values to yield a resource
+* Parameters for wells:
+  * __wellTypesMin/Max__: bounds for the number of well types
+  * __baseEfficiencyMin/Max__: bounds for the efficiency of the "worst" well type
+  * __efficiencyIncreaseMin/Max__: bounds for the increase of efficiency for each next type
+  * __baseIntegrityMin/Max__: bounds for the well's integrity
+  * __costFactor__: multiplyer for the well's price (combined with efficiency)
 
-In the second section of the random generation the parameters for the generation of the items can be specified:
-* __baseItemsMin/Max__: bounds for the number of base items
-* __levelDecreaseMin/Max__: bounds for the number of items by which the next level of the item graph will be smaller
-* __graphDepthMin/Max__: bounds for the number of levels of the item graph
-* __resourcesMin/Max__: bounds for the number of resources
-* __min/maxVol__: bounds for the volume of the items
-* __valueMin/Max__: bounds for the value of the items
-* __min/maxReq__: bounds for the number of required items for assembly
-* __reqAmountMin/Max__: bounds for the amount per required item for assembly
-* __toolsMin/Max__: bounds for the number of tools
-* __toolProbability__: probability of an item needing a tool for assembly
+Second section - generation of items:
 
-In the third section of the random generation the parameters for the generation of the jobs can be specified:
-* __rate__: probability of a job appearing in the first step of the simulation (decreases with every following step)
-* __auctionProbability__: probability of a job being an auction
-* __missionProbability__: probability of a job being a mission
-* __productTypesMin/Max__: bounds for the number of different products required for a job
-* __difficultyMin/Max__: bounds for the difficulty of a job
-* __timeMin/Max__: bounds for the number of steps a job is active
-* __rewardAddMin/Max__: bounds for the value that is added to the reward
+* __resourcesMin/Max__: bounds for the number of resource items
+* __levelDecreaseMin/Max__: bounds for the number of items by which the next level of the item graph will decrease
+* __graphDepthMin/Max__: bounds for the number of layers of the item graph
+* __volMin/Max__: bounds for the volume of the items
+* __partsMin/Max__: bounds for the number of items required to assemble an item
+
+Third section - generation of jobs:
+
+* __jobProbability__: probability of a job appearing in each step of the simulation
+* __auctionProbability__: same but for auctions
+* __missionProbability__: same but for missions
+* __jobDurationMin/Max__: bounds for a job's duration
+* __itemCountMin/Max__: bounds for the number of items a job may require
 * Parameters for auctions:
-  * __auctionTimeMin/Max__: bounds for the duration of the auction part
-  * __fineSub/Add__: how the fine can be modified at most
-  * __maxRewardAdd__: how much to add at most to the maximum reward (the highest value that can be bid)
-* Parameters for missions:
-  * __missionDifficultyMax__: upper bound for the difficulty of a mission
+  * __auctionTime__: the duration of the auction part
 
 ## Commands
 
