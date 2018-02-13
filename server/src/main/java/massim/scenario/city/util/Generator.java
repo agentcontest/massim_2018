@@ -520,8 +520,8 @@ public class Generator {
             for(Item item: job.getRequiredItems().getStoredTypes()){
                 reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
             }
-            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(", ", reqItems) + " " + job.getReward() +
-                    " " + job.getBeginStep() + " " + job.getEndStep() + " " + job.getStorage() + " " + job.getClass().getSimpleName());
+            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(", ", reqItems) + " reward(" + job.getReward() +
+                    ") " + job.getBeginStep() + "-" + job.getEndStep() + " " + job.getStorage() + " " + job.getClass().getSimpleName());
         }
 
         return jobs;

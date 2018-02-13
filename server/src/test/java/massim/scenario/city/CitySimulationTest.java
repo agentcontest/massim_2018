@@ -428,7 +428,6 @@ public class CitySimulationTest {
         Entity eB = world.getEntity("agentB1");
         Item item = world.getItems().get(0);
         long moneyA = world.getTeam("A").getMassium();
-        long moneyB = world.getTeam("B").getMassium();
         int reward = 77777;
         ItemBox requirements = new ItemBox();
         requirements.store(item, 5);
@@ -618,22 +617,16 @@ public class CitySimulationTest {
         assert agentA1.getItemCount(node.getResource()) == agentA1.getSkill() / node.getThreshold();
     }
 
-//    @Test
-//    public void jobsWork(){
-//        WorldState world = sim.getWorldState();
-//        Set<Job> jobs = new HashSet<>();
-//        for(int i=0; i<20; i++){
-//            jobs = world.getGenerator().generateJobs(i,world);
-//            if(!jobs.isEmpty()){
-//                break;
-//            }
-//        }
-//        if(!jobs.isEmpty()){
-//            Job job = jobs.iterator().next();
-//            assert !job.getRequiredItems().getStoredTypes().isEmpty();
-//            assert job.getReward()>0;
-//        }
-//    }
+    @Test
+    public void jobsWork(){
+        WorldState world = sim.getWorldState();
+        for(int i = 0; i < 100; i++) {
+            world.getGenerator().generateJobs(i, world).forEach(job -> {
+                assert !job.getRequiredItems().getStoredTypes().isEmpty();
+                assert job.getReward() > 0;
+            });
+        }
+    }
 
     @Test
     public void stuckAgentsAreRescued(){
