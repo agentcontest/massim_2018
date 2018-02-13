@@ -36,6 +36,9 @@ public class StaticCityData extends StaticWorldData {
     @XmlElement(name="wellType")
     private List<WellTypeData> wellTypes;
 
+    @XmlElement(name="upgrades")
+    private List<UpgradeData> upgrades;
+
     @XmlAttribute
     private double minLat;
 
@@ -57,6 +60,7 @@ public class StaticCityData extends StaticWorldData {
 
     public StaticCityData(String simID, int steps, String map, long seedCapital, List<String> teams,
                           List<RoleData> roles, List<ItemData> items, List<WellTypeData> wellTypes,
+                          List<UpgradeData> upgrades,
                           double minLat, double maxLat, double minLon, double maxLon){
         this.simId = simID;
         this.steps = steps;
@@ -66,6 +70,7 @@ public class StaticCityData extends StaticWorldData {
         this.roles = roles;
         this.items = items;
         this.wellTypes = wellTypes;
+        this.upgrades = upgrades;
         this.minLat = minLat;
         this.maxLat = maxLat;
         this.minLon = minLon;
@@ -118,5 +123,9 @@ public class StaticCityData extends StaticWorldData {
 
     public List<WellTypeData> getWellTypes() {
         return wellTypes;
+    }
+
+    public List<UpgradeData> getUpgrades() {
+        return upgrades;
     }
 }

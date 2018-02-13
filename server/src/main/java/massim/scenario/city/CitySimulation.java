@@ -84,6 +84,7 @@ public class CitySimulation extends AbstractSimulation {
                                                         .collect(Collectors.toList()),
                                         itemData,
                                         wellTypeData,
+                                        upgradeData,
                                         world.getMinLat(), world.getMaxLat(),
                                         world.getMinLon(), world.getMaxLon());
 
