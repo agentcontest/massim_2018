@@ -2,9 +2,9 @@
   "server" : "$(server/server.json)",
 
   "manual-mode" : [
-    ["A", "B", "C"],
-    ["B", "C", "D"],
-    ["C", "D", "E"]
+    ["A", "B"],
+    ["B", "C"],
+    ["A", "C"]
   ],
 
   "match" : [
@@ -119,8 +119,6 @@
   "teams" : {
     "A" : "$(teams/A.json)",
     "B" : "$(teams/B.json)",
-    "C" : "$(teams/C.json)",
-    "D" : "$(teams/D.json)",
-    "E" : "$(teams/E.json)"
+    "C" : "$(teams/C.json)"
   }
 }
