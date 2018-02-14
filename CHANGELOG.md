@@ -20,6 +20,7 @@
     * shops do not sell items any more
       * added new trade action to sell assembled items in shops
     * tools have been removed, assembly now requires the presence of roles instead
+    * assembled items require at most one instance of each part
   * removed actions
     * post_job
       * nobody used it anyway
