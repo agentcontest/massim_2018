@@ -1,5 +1,5 @@
 {
-  "scenario": "city2017",
+  "scenario": "city2018",
   "host": "localhost",
   "port": 12300,
   "scheduling": true,

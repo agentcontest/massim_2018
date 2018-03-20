@@ -126,7 +126,7 @@ public class EnvironmentInterface extends EIDefaultImpl implements Runnable{
         // parse host, port and scenario
         String host = config.optString("host", "localhost");
         int port = config.optInt("port", 12300);
-        String scenario = config.optString("scenario", "city2017");
+        String scenario = config.optString("scenario", "city2018");
         Log.log("Configuring EIS: " + scenario + "@" + host + ":" + port);
 
         // annotate percepts with timestamps

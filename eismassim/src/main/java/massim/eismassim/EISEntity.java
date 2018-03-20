@@ -181,7 +181,7 @@ public abstract class EISEntity implements Runnable{
     static EISEntity createEntity(String name, String scenario, String host, int port, String username, String password) {
         EISEntity entity = null;
         switch(scenario){
-            case "city2017":
+            case "city2018":
                 entity = new CityEntity();
                 break;
         }
