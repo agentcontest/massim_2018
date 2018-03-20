@@ -1,4 +1,4 @@
-// Agent bob in project MAPC2017.mas2j
+// Agent bob in project MAPC2018.mas2j
 
 /* Initial beliefs and rules */
 
