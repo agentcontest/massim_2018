@@ -529,7 +529,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;
                 }
-                entity.charge(world.getRechargeRate() + RNG.nextInt(world.getRechargeRate() + 1));
+                entity.charge(world.getRechargeRate());
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 

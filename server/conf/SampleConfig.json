@@ -25,7 +25,7 @@
       "randomSeed" : 17,
       "randomFail" : 1,
       "gotoCost" : 1,
-      "rechargeRate" : 2,
+      "rechargeRate" : 1,
 
       "upgrades" : [
         {
