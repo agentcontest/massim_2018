@@ -47,14 +47,13 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
   )));
 }
 
-function details(ctrl: Ctrl, staticWorld: StaticWorld) {
+function details(ctrl: Ctrl) {
   const sel = ctrl.selection();
 
   if (!sel) return h('div', [
     h('strong', 'Details:'), ' select an agent or facility'
   ])
   else if (isAgent(sel)) {
-    const role = staticWorld.roles.filter(r => r.name === sel.role)[0];
     const lastAction = sel.lastAction || {
       type: 'noAction',
       result: 'successful',
@@ -62,7 +61,7 @@ function details(ctrl: Ctrl, staticWorld: StaticWorld) {
     };
     return h('div', [
       h('div', h('strong',  ['Agent ', h('em', sel.name)])),
-      h('div', ['charge: ', h('em', n(sel.charge))].concat(role ? [' / ', n(role.battery)] : [])),
+      h('div', ['charge: ', h('em', n(sel.charge)), ' / ', sel.chargeMax]),
       h('div', ['load: ', h('em', n(sel.load))]),
       h('div', ['lastAction: ', h('em', [lastAction.type, '(', lastAction.params.join(', '), ') = ', lastAction.result])]),
       h('div', ['items: ', sel.items.length ? h('ul', sel.items.map(item =>
@@ -130,7 +129,7 @@ export default function(ctrl: Ctrl) {
   else return h('div#overlay', [
     ctrl.replay ? replay(ctrl.replay) : undefined,
     h('div.btn', simulation(ctrl, ctrl.vm.static, ctrl.vm.dynamic)),
-    h('div.btn', details(ctrl, ctrl.vm.static)),
+    h('div.btn', details(ctrl)),
     h('div.btn', jobs(ctrl.vm.dynamic))
   ]);
 }

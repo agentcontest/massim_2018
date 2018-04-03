@@ -108,6 +108,7 @@ export interface Agent {
   team: string;
   load: number;
   charge: number;
+  chargeMax: number;
   routeLength: number;
   route: Waypoint[];
   items: ItemAmount[];
@@ -172,9 +173,16 @@ export interface Team {
 
 export interface Role {
   name: RoleName;
-  battery: number;
-  load: number;
-  speed: number;
+  baseBattery: number;
+  baseLoad: number;
+  baseSkill: number;
+  baseSpeed: number;
+  baseVision: number;
+  maxBattery: number;
+  maxLoad: number;
+  maxSkill: number;
+  maxSpeed: number;
+  maxVision: number;
   tools: string[];
 }
 
