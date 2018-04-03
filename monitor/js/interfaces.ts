@@ -178,6 +178,7 @@ export interface Located {
 
 export interface Team {
   name: string;
+  score: number;
   massium: number;
 }
 
