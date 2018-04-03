@@ -104,7 +104,6 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
             cacheSize++;
           }
         } else {
-          console.log('indeed');
           vm.state = 'error';
           stop();
         }
