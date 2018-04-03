@@ -94,6 +94,8 @@ export default function(target: Element, ctrl: Ctrl): MapView {
   });
 
   const redraw = function() {
+    const view = map.getView();
+
     vectorSource.clear();
     if (!ctrl.vm.static || !ctrl.vm.dynamic) return;
 
@@ -140,7 +142,16 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       if (agent !== ctrl.selection()) renderAgent(agent);
     });
     ctrl.vm.dynamic.entities.forEach(agent => {
-      if (agent === ctrl.selection()) renderAgent(agent);
+      if (agent === ctrl.selection()) {
+        renderAgent(agent);
+
+        // draw vision radius as a circle
+        const center = ol.proj.fromLonLat([agent.lon, agent.lat]);
+        const resolutionFactor = view.getResolution() / ol.proj.getPointResolution(view.getProjection(), view.getResolution(), center);
+        const radius = (agent.vision / ol.proj.METERS_PER_UNIT.m) * resolutionFactor;
+        const circle = new ol.geom.Circle(center, radius);
+        vectorSource.addFeature(new ol.Feature(circle));
+      }
     });
 
     // draw rectangle with the extents of the map
@@ -155,7 +166,7 @@ export default function(target: Element, ctrl: Ctrl): MapView {
 
     if (currentMap !== ctrl.vm.static.map) {
       // adjust the map when a new simulation starts
-      map.getView().fit(extent, {
+      view.fit(extent, {
         size: map.getSize(),
         padding: [50, 50, 50, 50],
         constrainResolution: false
