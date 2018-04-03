@@ -116,8 +116,12 @@ export interface Agent {
   role: RoleName;
   team: string;
   load: number;
+  loadMax: number;
   charge: number;
   chargeMax: number;
+  skill: number;
+  speed: number;
+  vision: number;
   routeLength: number;
   route: Waypoint[];
   items: ItemAmount[];
