@@ -1,4 +1,4 @@
-import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, isAgent } from './interfaces';
+import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, Well, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
@@ -85,8 +85,12 @@ function details(ctrl: Ctrl) {
     else if (key == 'allStoredItems') {
       return h('div', ['items: ', storageItems(ctrl, sel as Storage)]);
     }
+    else if (key == 'team') {
+      const team = (sel as Well).team;
+      return h('div', ['team: ', h('span.team.' + ctrl.normalizeTeam(team), team)]);
+    }
     else {
-      return h('div', [key, ': ', h('em', (sel as any)[key].toString())])
+      return h('div', [key, ': ', h('em', (sel as any)[key].toString())]);
     }
   })));
 }
