@@ -2,7 +2,7 @@ RES=src/main/resources/www/img
 
 all: pngs
 
-pngs: facility_pngs facility_pngs_h agent_pngs agent_pngs_h agent_pngs_i
+pngs: facility_pngs facility_pngs_h agent_pngs agent_pngs_h agent_pngs_i well_pngs well_pngs_h
 
 
 facility_pngs: $(RES)/chargingStation.png $(RES)/resourceNode.png $(RES)/dump.png $(RES)/shop.png $(RES)/storage.png $(RES)/workshop.png
@@ -189,3 +189,27 @@ $(RES)/spaceShip-b-i.png: svg/spaceShip.svg
 
 $(RES)/spaceShip-c-i.png: svg/spaceShip.svg
 	cat $< | sed -e 's/#000000/#ff7070/g' | sed -e 's/#0072b2/#626262/g' | inkscape -z -e $@ -w 50 -h 50 -f /dev/stdin
+
+
+well_pngs: $(RES)/well-a.png $(RES)/well-b.png $(RES)/well-c.png
+
+$(RES)/well-a.png: svg/well.svg
+	cat $< | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
+
+$(RES)/well-b.png: svg/well.svg
+	cat $< | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
+
+$(RES)/well-c.png: svg/well.svg
+	cat $< | sed -e 's/#0072b2/#626262/g' | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
+
+
+well_pngs_h: $(RES)/well-a-h.png $(RES)/well-b-h.png $(RES)/well-c-h.png
+
+$(RES)/well-a-h.png: svg/well.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
+
+$(RES)/well-b-h.png: svg/well.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | sed -e 's/#0072b2/#009e73/g' | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
+
+$(RES)/well-c-h.png: svg/well.svg
+	cat $< | sed -e 's/#000000/#ffffff/g' | sed -e 's/#0072b2/#626262/g' | inkscape -z -e $@ -w 55 -h 67 -f /dev/stdin
