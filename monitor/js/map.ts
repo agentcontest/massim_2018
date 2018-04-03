@@ -1,4 +1,4 @@
-import { Ctrl, MapView, Located, Facility, FacilityType, Agent } from './interfaces';
+import { Ctrl, MapView, Located, Facility, FacilityType, Agent, Well } from './interfaces';
 
 import ol = require('openlayers');
 
@@ -49,7 +49,19 @@ export default function(target: Element, ctrl: Ctrl): MapView {
         width: 3
       }),
     });
-  }
+  };
+
+  const wellIconStyle = function(well: Well, selected: boolean): ol.style.Style {
+    const suffix = selected ? '-h' : '';
+    return new ol.style.Style({
+      image: new ol.style.Icon({
+        src: 'img/well-' + ctrl.normalizeTeam(well.team) + suffix + '.png',
+        anchor: [27, 67],
+        anchorXUnits: 'pixels',
+        anchorYUnits: 'pixels'
+      })
+    });
+  };
 
   const openStreetMapLayer = new ol.layer.Tile({
     source: new ol.source.OSM({
@@ -102,19 +114,20 @@ export default function(target: Element, ctrl: Ctrl): MapView {
       };
     };
 
-    const renderRoute = function(agent: Agent) {
-      const polyline = new ol.geom.LineString([xy(agent)].concat(agent.route.map(xy)));
-      const feature = new ol.Feature({ geometry: polyline });
-      feature.setStyle(teamColorStyle(agent));
-      vectorSource.addFeature(feature);
-    };
-
     ctrl.vm.dynamic.workshops.forEach(renderFacility('workshop'));
     ctrl.vm.dynamic.dumps.forEach(renderFacility('dump'));
     ctrl.vm.dynamic.shops.forEach(renderFacility('shop'));
     ctrl.vm.dynamic.chargingStations.forEach(renderFacility('chargingStation'));
     ctrl.vm.dynamic.resourceNodes.forEach(renderFacility('resourceNode'));
     ctrl.vm.dynamic.storages.forEach(renderFacility('storage'));
+    ctrl.vm.dynamic.wells.forEach(well => addFeature(well, wellIconStyle(well, well === ctrl.selection())));
+
+    const renderRoute = function(agent: Agent) {
+      const polyline = new ol.geom.LineString([xy(agent)].concat(agent.route.map(xy)));
+      const feature = new ol.Feature({ geometry: polyline });
+      feature.setStyle(teamColorStyle(agent));
+      vectorSource.addFeature(feature);
+    };
 
     const renderAgent = function(agent: Agent) {
       const active = agent.lastAction && agent.lastAction.type !== 'noAction' &&

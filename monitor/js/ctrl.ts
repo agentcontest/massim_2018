@@ -1,4 +1,4 @@
-import { Redraw, Ctrl, ReplayCtrl, ViewModel, Agent, Facility } from './interfaces';
+import { Redraw, Ctrl, ReplayCtrl, ViewModel, Agent, Well, Facility } from './interfaces';
 
 const TEAMS = ['a', 'b', 'c'];
 
@@ -164,14 +164,15 @@ export default function(redraw: Redraw, replayPath?: string): Ctrl {
   const entities = function(): Array<Agent | Facility> {
     const d = vm.dynamic;
     if (!d) return [];
-    return ([] as Array<Agent | Facility>).concat(
+    return ([] as Array<Agent | Facility | Well>).concat(
       d.entities,
       d.workshops,
       d.dumps,
       d.resourceNodes,
       d.shops,
       d.chargingStations,
-      d.storages
+      d.storages,
+      d.wells
     );
   };
 

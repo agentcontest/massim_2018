@@ -98,6 +98,15 @@ export interface Facility {
   name: string;
 }
 
+export interface Well {
+  lat: number;
+  lon: number;
+  name: string;
+  team: string;
+  type: string;
+  integrity: number;
+}
+
 export type RoleName = 'SpaceShip';
 
 export interface Agent {
@@ -157,6 +166,7 @@ export interface DynamicWorld {
   chargingStations: ChargingStation[];
   storages: Storage[];
   entities: Agent[];
+  wells: Well[];
   jobs: Job[];
   teams: Team[];
 }
