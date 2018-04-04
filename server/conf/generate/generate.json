@@ -3,8 +3,8 @@
     "quadSize" : 0.04,
     "chargingStations" : {
       "density" : 0.9,
-      "rateMin" : 50,
-      "rateMax" : 150
+      "rateMin" : 20,
+      "rateMax" : 40
     },
     "shops" : {
       "density" : 0.8,
