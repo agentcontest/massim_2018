@@ -40,8 +40,8 @@
     }
   },
   "items" : {
-    "resourcesMin" : 2,
-    "resourcesMax" : 4,
+    "resourcesMin" : 4,
+    "resourcesMax" : 6,
     "levelDecreaseMin" : 1,
     "levelDecreaseMax" : 2,
     "graphDepthMin" : 3,
@@ -57,8 +57,9 @@
     "missionProbability" : 0.01,
     "jobDurationMin" : 50,
     "jobDurationMax" : 100,
-    "rewardModMin" : 10,
-    "rewardModMax" : 20,
+    "rewardScale" : 5,
+    "rewardModMin" : 100,
+    "rewardModMax" : 200,
     "itemCountMin" : 2,
     "itemCountMax" : 10,
     "auctions" : {

@@ -21,7 +21,7 @@ public class Item implements Comparable<Item>{
         this.rolesNeeded = roles;
         if(parts.isEmpty()) value = 0;
         else {
-            value = getRequiredBaseItems().size();
+            value = getRequiredBaseItems().values().stream().mapToInt(i -> i).sum();
         }
     }
 

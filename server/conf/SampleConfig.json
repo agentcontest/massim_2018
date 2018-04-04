@@ -22,7 +22,7 @@
       "centerLon" : 2.3209,
       "proximity" : 5,
       "cellSize" : 200,
-      "randomSeed" : 17,
+      "randomSeed" : 18,
       "randomFail" : 1,
       "gotoCost" : 1,
       "rechargeRate" : 0.3,

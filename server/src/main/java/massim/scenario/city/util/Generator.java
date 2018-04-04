@@ -69,6 +69,7 @@ public class Generator {
     private int jobDurationMax;
     private int rewardModMin;
     private int rewardModMax;
+    private int rewardScale;
     private int itemCountMin;
     private int itemCountMax;
 
@@ -204,6 +205,7 @@ public class Generator {
             jobDurationMax = optInt(jobs, "jobDurationMax", 100);
             rewardModMin = optInt(jobs, "rewardModMin", 10);
             rewardModMax = optInt(jobs, "rewardModMax", 20);
+            rewardScale = optInt(jobs, "rewardScale", 10);
             itemCountMin = optInt(jobs, "itemCountMin", 2);
             itemCountMax = optInt(jobs, "itemCountMax", 10);
 
@@ -255,6 +257,7 @@ public class Generator {
         // generate assembled items
         int layers = between(graphDepthMin, graphDepthMax);
         int levelAmount = items.size();
+        int itemCount = items.size();
         for(int i = 1; i <= layers; i++){
             levelAmount = Math.max(1, levelAmount - between(levelDecreaseMin, levelDecreaseMax));
             List<Item> layerItems = new ArrayList<>();
@@ -268,11 +271,13 @@ public class Generator {
                 RNG.shuffle(roles);
                 Set<Role> requiredRoles = new HashSet<>(roles.subList(0, Math.min(2, roles.size())));
 
-                Item item = new Item("item" + items.size(), between(volMin, volMax), parts, requiredRoles);
+                Item item = new Item("item" + itemCount++, between(volMin, volMax), parts, requiredRoles);
                 layerItems.add(item);
             }
             items.addAll(layerItems);
         }
+        items.forEach(item -> Log.log(Log.Level.NORMAL, String.format("%s: vol(%d), val(%d)",
+                item.getName(), item.getVolume(), item.getValue())));
         return items;
     }
 
@@ -545,6 +550,7 @@ public class Generator {
             itemsRequired.store(item, 1);
             reward += item.getValue();
         }
+        reward *= rewardScale;
         reward += between(rewardModMin, rewardModMax);
 
         List<Job> result = new ArrayList<>();
@@ -579,6 +585,7 @@ public class Generator {
             int cost = (int) (costFactor * (efficiency + Math.sqrt(efficiency)));
             WellType type = new WellType(name, Math.max(integrity/2, 1), Math.max(integrity, 1), cost, efficiency);
             result.put(name, type);
+            Log.log(Log.Level.NORMAL, String.format("%s: eff(%d), int(%d), cost(%d)", name, efficiency, integrity, cost));
         }
         return result;
     }
