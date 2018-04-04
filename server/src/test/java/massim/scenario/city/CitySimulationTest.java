@@ -393,7 +393,7 @@ public class CitySimulationTest {
         actions.put("agentA2", new Action("recharge"));
         sim.step(step, actions);
 
-        assert e2.getCurrentBattery() > 0; // actual amount is unpredictable
+        assert e2.getLastActionResult().equalsIgnoreCase("failed") || e2.getCurrentBattery() == 1;
     }
 
     @Test

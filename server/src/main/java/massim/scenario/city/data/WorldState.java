@@ -25,7 +25,7 @@ public class WorldState {
     private int randomFail;
     private String id;
     private int gotoCost;
-    private int rechargeRate;
+    private double rechargeRate;
     private double minLon;
     private double maxLon;
     private double minLat;
@@ -96,7 +96,7 @@ public class WorldState {
         Log.log(Log.Level.NORMAL, "Configuring random fail probability: " + randomFail);
         gotoCost = config.optInt("gotoCost", 10);
         Log.log(Log.Level.NORMAL, "Configuring cost for goto: " + gotoCost);
-        rechargeRate = config.optInt("rechargeRate", 5);
+        rechargeRate = config.optDouble("rechargeRate", 0.3);
         Log.log(Log.Level.NORMAL, "Configuring recharge rate: " + rechargeRate);
 
         // parse upgrades
@@ -411,9 +411,9 @@ public class WorldState {
     }
 
     /**
-     * @return the energy restored 1 to 2 times by the recharge action
+     * @return the probability to restore 1 energy (0 to 1)
      */
-    public int getRechargeRate(){
+    public double getRechargeRate(){
         return rechargeRate;
     }
 

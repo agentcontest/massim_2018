@@ -403,13 +403,14 @@ failed_facility_state | The charging station is currently out of order due to a 
 
 ### recharge
 
-Uses the agent's solar collectors to recharge its battery (slowly).
+**Tries** to use the agent's solar collectors to recharge its battery (by 1).
 
 No parameters.
 
 Failure Code | Reason
 --- | ---
 failed_wrong_param | Parameters have been given.
+failed | The action failed because it's not supposed to always succeed.
 
 ### gather
 
