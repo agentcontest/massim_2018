@@ -1,6 +1,8 @@
 # MASSim CHANGELOG
 
-## Package release 2.0
+## 2018
+
+### Package release 1.0
 
 * scenario
   * changed goal: get the highest score!
@@ -32,7 +34,9 @@
     * volume of assembled items does not depend on required parts anymore
     * simplified job generation
 
-## Package release 1.7
+## 2017
+
+### Package release 1.7
 
 * monitor
   * added replay mechanism
@@ -42,7 +46,7 @@
 * server
   * added some more log output
 
-## Package release 1.6
+### Package release 1.6
 
 * scenario
   * added measure to prevent empty jobs
@@ -51,7 +55,7 @@
 * monitor
   * added rendering of agents' routes
 
-## Package release 1.5
+### Package release 1.5
 
 * scenario
   * added percepts for map center, cellSize and proximity
@@ -66,7 +70,7 @@
   * fixed a bug where actions could go missing on extremely slow hardware
   * refactored the scenario generation
 
-## Package release 1.4
+### Package release 1.4
 
 * protocol
   * added the agent's name to sim-start
@@ -87,7 +91,7 @@
 * server
   * will now only parse as many agents from team config as required and make up its own names if too few agents are configured
 
-## Package release 1.3
+### Package release 1.3
 
 * scenario:
   * blackouts added (charging stations may not work for a couple of steps)
@@ -99,7 +103,7 @@
 * protocol: added min/max lat and lon to sim-start percept
 * eismassim: removed obsolete missionId parameter from mission percepts
 
-## Package release 1.2
+### Package release 1.2
 
 * changed xml format of tools in roles and item-requirements
 * added tools to sim-start message
@@ -109,7 +113,7 @@
 * changed "item" percept to "hasItem" for carried items (eismassim)
 * added missing facility percept (eismassim)
 
-## Package release 1.1
+### Package release 1.1
 
 * improved job generation (replaced temporary one)
 * fixed a bug where assembled items could (or would) have volume 0
