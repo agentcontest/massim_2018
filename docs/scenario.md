@@ -914,7 +914,9 @@ Third section - generation of jobs:
 * __auctionProbability__: same but for auctions
 * __missionProbability__: same but for missions
 * __jobDurationMin/Max__: bounds for a job's duration
-* __itemCountMin/Max__: bounds for the number of items a job may require
+* __itemCountMin/Max__: bounds for the number of items a job may
+* __rewardScale__: a scale factor for the jobs' rewards
+* __rewardModMin/Max__: bounds for the value that is added to calculated rewards
 * Parameters for auctions:
   * __auctionTime__: the duration of the auction part
 
