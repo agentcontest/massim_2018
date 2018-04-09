@@ -62,7 +62,9 @@ public class CitySimulationTest {
 
         Map<String, SimStart> initialPercepts = sim.init(steps, matchConf, teams);
         SimStart percept = initialPercepts.get("agentA1");
+
 //        Log.log(Log.Level.NORMAL, Conversions.docToString(new Message(System.currentTimeMillis(), percept).toXML(), true));
+
         assert percept instanceof CityInitialPercept;
         CityInitialPercept initialPercept = (CityInitialPercept) percept;
         assert initialPercept.getItemData().size() > 0;
@@ -742,7 +744,7 @@ public class CitySimulationTest {
      */
     private static Map<String, Action> buildActionMap(){
         return sim.getWorldState().getAgents().stream()
-                .collect(Collectors.toMap(ag -> ag, ag -> new Action("skip")));
+                .collect(Collectors.toMap(ag -> ag, ag -> new Action("continue")));
     }
 
     /**

@@ -70,12 +70,12 @@ public class CityEntity extends EISEntity {
 
             ParameterList requiredRoles = new ParameterList();
             if(item.getRoles() != null)
-                item.getRoles().forEach(itemRole -> requiredRoles.add(new Identifier(itemRole)));
+                item.getRoles().forEach(itemRole -> requiredRoles.add(new Identifier(itemRole.getName())));
             params.add(new Function("roles", requiredRoles));
 
             ParameterList requiredParts = new ParameterList();
             item.getParts().forEach(part ->
-                    requiredParts.add(new Identifier(part)));
+                    requiredParts.add(new Identifier(part.getName())));
             params.add(new Function("parts", requiredParts));
 
             ret.add(new Percept("item", params));

@@ -59,10 +59,10 @@ public class CitySimulation extends AbstractSimulation {
                         item.getName(),
                         item.getVolume(),
                         item.getRequiredItems().stream()
-                                .map(Item::getName)
+                                .map(it -> new NameData(it.getName()))
                                 .collect(Collectors.toList()),
                         item.getRequiredRoles().stream()
-                                .map(Role::getName)
+                                .map(role -> new NameData(role.getName()))
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
 

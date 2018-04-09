@@ -18,10 +18,10 @@ public class ItemData {
     private int volume;
 
     @XmlElement(name="item")
-    private List<String> parts;
+    private List<NameData> parts;
 
     @XmlElement(name="role")
-    private List<String> roles;
+    private List<NameData> roles;
 
     /**
      * For JAXB
@@ -35,7 +35,7 @@ public class ItemData {
      * @param requiredParts items required to assemble the item (may be null or empty)
      * @param roles roles required to assemble the item (may be null or empty)
      */
-    public ItemData(String name, int volume, List<String> requiredParts, List<String> roles){
+    public ItemData(String name, int volume, List<NameData> requiredParts, List<NameData> roles){
         this.name = name;
         this.volume = volume;
         if(requiredParts.size() > 0) parts = requiredParts;
@@ -59,14 +59,14 @@ public class ItemData {
     /**
      * @return a list of the required items to craft this item or null if no items are required
      */
-    public List<String> getParts() {
+    public List<NameData> getParts() {
         return parts == null? new Vector<>() : parts;
     }
 
     /**
      * @return a list of all roles necessary to craft this item or null if no roles required
      */
-    public List<String> getRoles() {
+    public List<NameData> getRoles() {
         return roles == null? new Vector<>() : roles;
     }
 }
