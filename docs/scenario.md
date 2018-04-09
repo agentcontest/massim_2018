@@ -610,7 +610,7 @@ Example:
       <items amount="1" name="item1"/>
     </self>
     <team massium="0" score="0"/>
-    <entity lat="48.8321" lon="2.37036" name="agentA1" role="spaceShip" team="A"/>
+    <entity lat="48.8321" lon="2.37036" name="agentA1" role="car" team="A"/>
     <chargingStation lat="48.85235" lon="2.2966" name="chargingStation0" rate="63"/>
     <chargingStation lat="48.82805" lon="2.34884" name="chargingStation1" rate="74"/>
     <chargingStation lat="48.85461" lon="2.38234" name="chargingStation2" rate="91"/>
