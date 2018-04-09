@@ -525,34 +525,38 @@ Complete Example (with bogus values):
     <item name="item2" volume="8"/>
     <item name="item1" volume="7"/>
     <item name="item7" volume="6">
-      <item>item3</item>
-      <item>item1</item>
-      <item>item0</item>
-      <role>drone</role>
-      <role>car</role>
+      <item name="item1"/>
+      <item name="item4"/>
+      <item name="item0"/>
+      <role name="car"/>
+      <role name="truck"/>
     </item>
-    <item name="item3" volume="6">
-      <item>item1</item>
-      <item>item2</item>
-      <item>item0</item>
-      <role>truck</role>
-      <role>drone</role>
+    <item name="item4" volume="6">
+      <item name="item1"/>
+      <item name="item2"/>
+      <item name="item0"/>
+      <role name="drone"/>
+      <role name="truck"/>
+    </item>
+    <item name="item3" volume="9">
+      <item name="item1"/>
+      <item name="item2"/>
+      <item name="item0"/>
+      <role name="truck"/>
     </item>
     <item name="item6" volume="6">
-      <item>item1</item>
-      <item>item2</item>
-      <item>item3</item>
-      <role>car</role>
-      <role>motorcycle</role>
+      <item name="item1"/>
+      <item name="item2"/>
+      <item name="item3"/>
+      <role name="car"/>
     </item>
     <item name="item5" volume="7">
-      <item>item3</item>
-      <item>item1</item>
-      <item>item2</item>
-      <item>item3</item>
-      <item>item0</item>
-      <role>car</role>
-      <role>truck</role>
+      <item name="item1"/>
+      <item name="item4"/>
+      <item name="item2"/>
+      <item name="item3"/>
+      <item name="item0"/>
+      <role name="car"/>
     </item>
     <upgrade cost="1000" name="vision" step="50"/>
     <upgrade cost="200" name="load" step="10"/>
