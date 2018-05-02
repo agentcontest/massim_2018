@@ -26,7 +26,7 @@ public class Mission extends AuctionJob {
     public Mission(int reward, Storage storage, int begin, int end, int fine, ItemBox items, TeamState team, String missionID) {
         super(reward, storage, begin, end, items, 0, fine); // create an auction with no auctioning phase
         this.missionID = missionID;
-        bid(team, reward); // place the fixed bid
+        bid(-10, team, reward); // place the fixed bid
         assign(); // immediately assign
     }
 

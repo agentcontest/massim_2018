@@ -227,4 +227,8 @@ public class Job {
     public String toString(){
         return String.format("type(%s) reward(%d) from(%s)", getClass().getSimpleName(), reward, poster);
     }
+
+    public void delayEndStep(int delay) {
+        endStep += delay;
+    }
 }

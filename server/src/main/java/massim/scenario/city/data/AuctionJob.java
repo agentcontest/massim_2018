@@ -24,7 +24,7 @@ public class AuctionJob extends Job{
      * @param storage the storage the items should be delivered to
      * @param begin the time the auctioning starts
      * @param end the latest step in which items can be delivered
-     * @param auctionTime the number of steps to run the auction, i.e. begin at step 7 and auctionTime 5 means:
+     * @param auctionTime the number of steps to run the auction
      * @param fine the amount of money the assigned team has to pay if it does not finish the job in time
      */
     public AuctionJob(int reward, Storage storage, int begin, int end, ItemBox items, int auctionTime, int fine) {
@@ -97,10 +97,20 @@ public class AuctionJob extends Job{
      * @param team the team that is bidding
      * @param amount the amount to bid
      */
-    public void bid(TeamState team, int amount){
+    public void bid(int step, TeamState team, int amount){
         if(amount > getReward()) return;
         if (lowestBid == null || amount < lowestBid){
             lowestBid = amount;
+            if(currentAuctionWinner != null && team != currentAuctionWinner) {
+                /*
+                 * increase auction time and job end if one team has been undercut by the other and auction
+                 * would end in the current step
+                 */
+                if(getBeginStep() + auctionTime - 2 < step) {
+                    auctionTime++;
+                    delayEndStep(1);
+                }
+            }
             currentAuctionWinner = team;
         }
     }

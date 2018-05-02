@@ -438,7 +438,7 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_JOB_STATUS);
                     break;
                 }
-                auction.bid(world.getTeam(world.getTeamForAgent(agent)), price);
+                auction.bid(stepNo, world.getTeam(world.getTeamForAgent(agent)), price);
                 entity.setLastActionResult(SUCCESSFUL);
                 break;
 

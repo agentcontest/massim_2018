@@ -183,15 +183,19 @@ An auction job has an initial phase in which agent teams can bid for it.
 The teams are bidding the amount of massium which they want to be paid for completing
 the job. Of course, the team with the lowest bid wins.
 
+**New in 2018**: The auction time (and the job's end step) are increased by 1, if
+
+* one team underbid the other team, and
+* the current step would be the last one of the auction phase.
+
 This type of job has the advantage, that a team can be sure to be the only one
 working on it if it won the auction. However, the teams have to estimate
 how low they can bid to still have an advantage.
 
-Each step during the auction phase, the current lowest bid and corresponding team
-can be perceived by all agents.
+Each step during the auction phase, the current lowest bid can be perceived by all agents.
 
 * __begin__: the step in which the auctioning begins.
-* __auctionTime__: the duration of the auction phase. The winner of the auction will be determined at the end of step (begin + auctionTime - 1).
+* __auctionTime__: the duration of the auction phase. The winner of the auction will be determined at the end of step (begin + auctionTime - 1 [+ delay from underbidding]).
 * __end__: the latest step in which items can be delivered to complete the job
 * __reward__: for this job, the reward is the maximum reward possible, i.e. bids that go above this value will be ignored.
 * __fine__: at the end of the auction job, if it has not been completed, the team that won the auction has to pay this fine.
