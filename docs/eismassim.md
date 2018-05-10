@@ -234,6 +234,16 @@ The following percepts might be included in a `REQUEST-ACTION` message. Most of 
   * ch : Numeral - agent's current battery charge
 * `load(cap)`
   * cap : Numeral - agent's currently used capacity
+* `speed(s)`
+  * s : Numeral - agent's current speed
+* `maxLoad(cap)`
+  * cap : Numeral - agent's current carrying capacity
+* `maxBattery(b)`
+  * b : Numeral - agent's current battery capacity
+* `skill(s)`
+  * s : Numeral - agent's current skill value
+* `vision(v)`
+  * v : Numeral - agent's current visibility range
 * `lat(d)`
   * d : Numeral - latitude of the agent's location
 * `lon(d)`

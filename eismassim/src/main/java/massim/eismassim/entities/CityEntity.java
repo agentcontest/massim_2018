@@ -114,6 +114,12 @@ public class CityEntity extends EISEntity {
         ret.add(new Percept("massium", new Numeral(percept.getTeamData().getMassium())));
         ret.add(new Percept("score", new Numeral(percept.getTeamData().getScore())));
 
+        ret.add(new Percept("speed", new Numeral(percept.getSelfData().getSpeed())));
+        ret.add(new Percept("maxLoad", new Numeral(percept.getSelfData().getLoadMax())));
+        ret.add(new Percept("maxBattery", new Numeral(percept.getSelfData().getChargeMax())));
+        ret.add(new Percept("skill", new Numeral(percept.getSelfData().getSkill())));
+        ret.add(new Percept("vision", new Numeral(percept.getSelfData().getVision())));
+
         if(self.getFacility() != null) ret.add(new Percept("facility", new Identifier(self.getFacility())));
 
         // add percepts for last action
