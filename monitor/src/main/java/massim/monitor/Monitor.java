@@ -96,14 +96,18 @@ public class Monitor {
             .useDelimiter("\\A")
             .next();
 
-        WebServer server = WebServers.createWebServer(port)
+        ExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        InetSocketAddress bind = new InetSocketAddress(port);
+        String publicUri = "http://127.0.0.1:" + port + "/";
+
+        WebServer server = WebServers.createWebServer(executor, bind, URI.create(publicUri))
             .add(new EmbeddedResourceHandler("www"))
             .add("/?/", new StringHttpHandler("text/html", html))
             .add(new StaticFileHandler(replayPath))
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Viewing replay %s on http://127.0.0.1:%d/?/", replayPath, port));
+        System.out.println(String.format("[ MONITOR ] Viewing replay %s on %s?/", replayPath, publicUri));
     }
 
     private void broadcast(String message) {
