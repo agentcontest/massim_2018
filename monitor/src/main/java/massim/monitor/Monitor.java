@@ -20,6 +20,11 @@ import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
 
 import java.nio.file.Paths;
 
@@ -68,13 +73,17 @@ public class Monitor {
      * Used by the massim server to create the "live" monitor.
      */
     public Monitor(int port) throws ExecutionException, InterruptedException {
-        WebServer server = WebServers.createWebServer(port)
+        ExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        InetSocketAddress bind = new InetSocketAddress(port);
+        String publicUri = "http://127.0.0.1:" + port + "/";
+
+        WebServer server = WebServers.createWebServer(executor, bind, URI.create(publicUri))
             .add("/socket", new HttpToWebSocketHandler(this.socketHandler))
             .add(new EmbeddedResourceHandler("www"))
             .start()
             .get();
 
-        System.out.println(String.format("[ MONITOR ] Webmonitor listening on http://127.0.0.1:%d/", port));
+        System.out.println(String.format("[ MONITOR ] Webmonitor listening on %s", publicUri));
     }
 
     /**
