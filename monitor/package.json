@@ -9,10 +9,10 @@
     "snabbdom": "^0.7.1"
   },
   "devDependencies": {
-    "browserify": "^16.1.1",
+    "browserify": "^16.2.2",
     "gulp": "^3.9.1",
-    "tsify": "^3.0.4",
-    "typescript": "^2.7.2",
+    "tsify": "^4.0.0",
+    "typescript": "^2.8.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.0"
