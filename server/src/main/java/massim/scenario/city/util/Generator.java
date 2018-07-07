@@ -543,6 +543,11 @@ public class Generator {
         // draw items
         int reward = 0;
         List<Item> itemsAvailable = world.getAssembledItems();
+        // use only base items if configuration avoided the creation of assembled items
+        if (itemsAvailable.size() == 0){
+        	itemsAvailable = world.getResources();
+        }
+        
         ItemBox itemsRequired = new ItemBox();
         int numberOfItems = between(itemCountMin, itemCountMax);
         for(int i = 0; i < numberOfItems; i++) {
