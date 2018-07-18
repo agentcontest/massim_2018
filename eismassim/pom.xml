@@ -38,7 +38,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>massim.javaagents.Main</mainClass>
+                            <mainClass>massim.eismassim.EnvironmentInterface</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
