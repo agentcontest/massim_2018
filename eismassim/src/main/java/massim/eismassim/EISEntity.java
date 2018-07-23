@@ -1,6 +1,7 @@
 package massim.eismassim;
 
 import eis.exceptions.ActException;
+import eis.exceptions.EntityException;
 import eis.exceptions.PerceiveException;
 import eis.iilang.Action;
 import eis.iilang.Numeral;
@@ -483,5 +484,13 @@ public abstract class EISEntity implements Runnable{
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(raw));
         if (useXML) log(Conversions.docToString(doc, true) + " received");
         return doc;
+    }
+
+    protected void setType(String type) {
+        try {
+            EI.setType(getName(), type);
+        } catch (EntityException e) {
+            e.printStackTrace();
+        }
     }
 }

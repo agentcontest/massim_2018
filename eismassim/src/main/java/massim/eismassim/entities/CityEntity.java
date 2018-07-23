@@ -61,6 +61,8 @@ public class CityEntity extends EISEntity {
                 new Numeral(role.getBaseSkill()), new Numeral(role.getMaxSkill()),
                 new Numeral(role.getBaseVision()), new Numeral(role.getMaxVision()),
                 new Numeral(role.getBaseBattery()), new Numeral(role.getMaxBattery())));
+        // set own type
+        if (role.getName() != null) setType(role.getName());
 
         // add item percepts
         simStart.getItemData().forEach(item -> {
