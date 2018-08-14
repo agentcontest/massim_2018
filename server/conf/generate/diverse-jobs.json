@@ -1,0 +1,15 @@
+{
+  "jobProbability": 0.2,
+  "auctionProbability": 0.1,
+  "missionProbability": 0.01,
+  "jobDurationMin": 80,
+  "jobDurationMax": 100,
+  "rewardScale": 5,
+  "rewardModMin": 100,
+  "rewardModMax": 200,
+  "itemCountMin": 4,
+  "itemCountMax": 20,
+  "auctions": {
+    "auctionTime": 5
+  }
+}

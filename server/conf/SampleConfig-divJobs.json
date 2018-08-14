@@ -30,7 +30,7 @@
       "upgrades" : "$(upgrades/upgrades.json)",
       "roles" : "$(roles/roles.json)",
       "entities" : [{"drone" : 4}, {"motorcycle" : 8}, {"car" : 10}, {"truck" : 12}],
-      "generate" : "$(generate/generate.json)"
+      "generate" : "$(generate/generate2.json)"
     }
   ],
 
