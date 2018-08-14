@@ -70,6 +70,7 @@ public abstract class IOUtil {
         Matcher m = pattern.matcher(text);
         StringBuffer result = new StringBuffer();
         File file = new File(path).getAbsoluteFile();
+        Log.log(Log.Level.DEBUG, "Reading file " + file.getAbsolutePath());
         String subPath = "";
         while(m.find()){
             try {
