@@ -9,7 +9,7 @@
 
   "match" : [
     {
-      "id" : "2018-SampleSimulation",
+      "id" : "2018-SampleSimulation-DiverseJobs",
       "scenarioClass" : "city.CitySimulation",
       "steps" : 1000,
       "map" : "paris",

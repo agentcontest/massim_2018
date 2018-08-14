@@ -28,11 +28,11 @@
       "thresholdMax" : 20
     },
     "wells" : {
-      "wellTypesMin" : 2,
-      "wellTypesMax" : 5,
-      "baseEfficiencyMin" : 1,
-      "baseEfficiencyMax" : 5,
-      "efficiencyIncreaseMin" : 1,
+      "wellTypesMin" : 3,
+      "wellTypesMax" : 3,
+      "baseEfficiencyMin" : 3,
+      "baseEfficiencyMax" : 4,
+      "efficiencyIncreaseMin" : 4,
       "efficiencyIncreaseMax" : 5,
       "baseIntegrityMin" : 50,
       "baseIntegrityMax" : 100,

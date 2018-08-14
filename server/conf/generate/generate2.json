@@ -28,11 +28,11 @@
       "thresholdMax" : 20
     },
     "wells" : {
-      "wellTypesMin" : 2,
-      "wellTypesMax" : 5,
-      "baseEfficiencyMin" : 1,
-      "baseEfficiencyMax" : 5,
-      "efficiencyIncreaseMin" : 1,
+      "wellTypesMin" : 3,
+      "wellTypesMax" : 3,
+      "baseEfficiencyMin" : 3,
+      "baseEfficiencyMax" : 4,
+      "efficiencyIncreaseMin" : 4,
       "efficiencyIncreaseMax" : 5,
       "baseIntegrityMin" : 50,
       "baseIntegrityMax" : 100,
@@ -41,15 +41,15 @@
   },
   "items" : {
     "resourcesMin" : 5,
-    "resourcesMax" : 6,
+    "resourcesMax" : 5,
     "levelDecreaseMin" : 1,
-    "levelDecreaseMax" : 2,
+    "levelDecreaseMax" : 1,
     "graphDepthMin" : 3,
     "graphDepthMax" : 3,
     "volMin" : 5,
     "volMax" : 10,
-    "partsMin" : 2,
-    "partsMax" : 4
+    "partsMin" : 3,
+    "partsMax" : 5
   },
-  "jobs" : "$(jobs/diverse-jobs.json)"
+  "jobs" : "$(jobs/diverseJobs.json)"
 }
