@@ -36,12 +36,12 @@
       "efficiencyIncreaseMax" : 5,
       "baseIntegrityMin" : 50,
       "baseIntegrityMax" : 100,
-      "costFactor" : 20
+      "costFactor" : 80
     }
   },
   "items" : {
-    "resourcesMin" : 5,
-    "resourcesMax" : 5,
+    "resourcesMin" : 10,
+    "resourcesMax" : 20,
     "levelDecreaseMin" : 1,
     "levelDecreaseMax" : 1,
     "graphDepthMin" : 3,
