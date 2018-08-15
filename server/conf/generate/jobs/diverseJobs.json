@@ -4,9 +4,9 @@
   "missionProbability": 0.01,
   "jobDurationMin": 80,
   "jobDurationMax": 100,
-  "rewardScale": 5,
+  "rewardScale": 15,
   "rewardModMin": 100,
-  "rewardModMax": 200,
+  "rewardModMax": 300,
   "itemCountMin": 4,
   "itemCountMax": 20,
   "auctions": {

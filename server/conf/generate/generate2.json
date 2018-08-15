@@ -23,9 +23,9 @@
       "capacityMax" : 15000
     },
     "resourceNodes" : {
-      "density" : 0.7,
-      "thresholdMin" : 10,
-      "thresholdMax" : 20
+      "density" : 0.9,
+      "thresholdMin" : 6,
+      "thresholdMax" : 18
     },
     "wells" : {
       "wellTypesMin" : 3,
