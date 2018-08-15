@@ -177,7 +177,7 @@ public class ActionExecutor {
                     return;
                 }
                 Facility fac = world.getFacilityByLocation(entity.getLocation());
-                if(fac == null || !(fac instanceof Well)) {
+                if(!(fac instanceof Well)) {
                     entity.setLastActionResult(FAILED_LOCATION);
                     return;
                 }
