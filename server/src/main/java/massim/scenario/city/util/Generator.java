@@ -522,11 +522,16 @@ public class Generator {
         // Log jobs
         for(Job job: jobs){
             List<String> reqItems = new ArrayList<>();
+            int value = 0;
             for(Item item: job.getRequiredItems().getStoredTypes()){
                 reqItems.add(job.getRequiredItems().getItemCount(item) + "x " + item.getName());
+                if(item.needsAssembly()) value += job.getRequiredItems().getItemCount(item) *item.getValue();
+                else value += job.getRequiredItems().getItemCount(item);
             }
-            Log.log(Log.Level.NORMAL, "New job: " + job.getName() + ": " + String.join(", ", reqItems) + " reward(" + job.getReward() +
-                    ") " + job.getBeginStep() + "-" + job.getEndStep() + " " + job.getStorage() + " " + job.getClass().getSimpleName());
+
+            Log.log(Log.Level.NORMAL, String.format("New %s: resources(%d), reward(%d), %d-%d, %s, %s",
+                    job.getClass().getSimpleName(), value, job.getReward(), job.getBeginStep(), job.getEndStep(),
+                    job.getStorage().getName(), String.join(", ", reqItems)));
         }
 
         return jobs;
