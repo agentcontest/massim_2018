@@ -2,6 +2,18 @@
 
 ## 2018
 
+## Package release 1.1
+
+* protocol
+  * changed xml structure of items to attributes
+* eismassim
+  * upgraded to EIS 0.6.0
+  * fix: added percepts that were missing
+  * entity type is now set to the name of the role when the info is received
+* scenario
+  * made auction duration dynamic
+  * added some more sample configurations
+
 ### Package release 1.0
 
 * scenario
