@@ -488,7 +488,7 @@ public abstract class EISEntity implements Runnable{
 
     protected void setType(String type) {
         try {
-            EI.setType(getName(), type);
+            if(EI.isEntityConnected(getName())) EI.setType(getName(), type);
         } catch (EntityException e) {
             e.printStackTrace();
         }
