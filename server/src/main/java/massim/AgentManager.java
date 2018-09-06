@@ -322,7 +322,7 @@ class AgentManager {
                     out.write(0);
                     out.flush();
                 } catch (InterruptedException | TransformerException | IOException e) {
-                    Log.log(Log.Level.DEBUG, "Error writing to socket. Stop sending now.");
+                    Log.log(Log.Level.DEBUG, name + ": Error writing to socket. Stop sending now.");
                     break;
                 }
             }
