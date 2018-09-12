@@ -121,8 +121,15 @@ public class ActionExecutor {
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;
                 }
-                if (destination != null) entity.setRoute(
-                        world.getMap().findRoute(entity.getLocation(), destination, entity.getRole().getPermissions()));
+                if (destination != null) {
+                    Route route = entity.getRoute();
+                    if (route == null || route.isCompleted() || !route.getWaypoints().getLast().equals(destination)) {
+                        // only search new route if there is none or the old one is for another destination
+                        entity.setRoute(
+                                world.getMap().findRoute(entity.getLocation(), destination,
+                                        entity.getRole().getPermissions()));
+                    }
+                }
                 else{
                     entity.setLastActionResult(FAILED_WRONG_PARAM);
                     break;

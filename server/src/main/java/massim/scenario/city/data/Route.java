@@ -58,7 +58,7 @@ public class Route {
     /**
      * @return a (new) list containing the waypoints of this route
      */
-    public List<Location> getWaypoints(){
+    public LinkedList<Location> getWaypoints(){
         return new LinkedList<>(route);
     }
 
