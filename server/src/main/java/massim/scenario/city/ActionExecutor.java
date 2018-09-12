@@ -175,6 +175,7 @@ public class ActionExecutor {
                     }
                     Well well = (Well) facility;
                     well.build(entity.getSkill());
+                    entity.setLastActionResult(SUCCESSFUL);
                 }
                 break;
 
