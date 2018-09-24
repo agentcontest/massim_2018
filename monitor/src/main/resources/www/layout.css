@@ -13,7 +13,6 @@ body {
 #overlay {
   left: 0.5em;
   top: 0.5em;
-  max-width: calc(100vw - 0.5em - 5em);
   position: absolute;
 }
 #overlay.replay {
@@ -44,7 +43,7 @@ body {
   color: white;
   margin: 1px;
   padding: 0.4em;
-  max-width: 300px;
+  width: 300px;
 }
 
 .ol-zoom {
