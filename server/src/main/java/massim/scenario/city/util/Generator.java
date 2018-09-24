@@ -439,9 +439,9 @@ public class Generator {
             for (double b = minLon; b < maxLon; b += quadSize) { // (a,b) = corner of the current quadrant
                 int numberOfFacilities = 0;
                 if(resourceDensity < 1){
-                    if(RNG.nextDouble() < storageDensity) numberOfFacilities = 1;
+                    if(RNG.nextDouble() < resourceDensity) numberOfFacilities = 1;
                 }
-                else numberOfFacilities = new Float(storageDensity).intValue();
+                else numberOfFacilities = new Float(resourceDensity).intValue();
                 for(int i = 0; i < numberOfFacilities; i++){
                     Location loc = getUniqueLocationInBounds(locations, world, a, a + quadSize, b, b + quadSize);
                     int resIndex = RNG.nextInt(world.getResources().size());
