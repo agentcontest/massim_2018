@@ -71,6 +71,10 @@ body {
   background: #626262;
 }
 
+.delta {
+  font-size: 0.8em;
+}
+
 ul {
   margin: 0;
   font-size: 0.8em;
