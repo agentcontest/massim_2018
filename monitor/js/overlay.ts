@@ -45,8 +45,8 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
   ].concat(dynamic.teams.map(team =>
     h('div', [h('strong', [
       'Score ', h('span.team.' + ctrl.normalizeTeam(team.name), team.name), ':']), ' ',
-      n(team.score), " \u25B2", scoreDelta(team.name, staticWorld, dynamic),
-      '(', n(team.massium, '$'), ')'
+      n(team.score), h('span.delta', ["\u25B2", scoreDelta(team.name, staticWorld, dynamic)]),
+      ' (', n(team.massium, '$'), ')'
     ])
   )));
 }
