@@ -1,4 +1,4 @@
-import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, Well, isAgent } from './interfaces';
+import { Ctrl, ReplayCtrl, StaticWorld, DynamicWorld, Shop, Storage, Well, WellType, isAgent } from './interfaces';
 
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
@@ -45,7 +45,7 @@ function simulation(ctrl: Ctrl, staticWorld: StaticWorld, dynamic: DynamicWorld)
   ].concat(dynamic.teams.map(team =>
     h('div', [h('strong', [
       'Score ', h('span.team.' + ctrl.normalizeTeam(team.name), team.name), ':']), ' ',
-      n(team.score), ' ',
+      n(team.score), " \u25B2", scoreDelta(team.name, staticWorld, dynamic),
       '(', n(team.massium, '$'), ')'
     ])
   )));
@@ -129,6 +129,17 @@ function jobs(dynamic: DynamicWorld) {
     })),
     jobs.length > MAX_JOBS ? h('div', 'and ' + (jobs.length - MAX_JOBS) + ' more ongoing') : null
   ]);
+}
+
+function wellType(name: string, staticWorld: StaticWorld): WellType | undefined {
+  return staticWorld.wellTypes.filter(t => t.name == name)[0];
+}
+
+function scoreDelta(team: string, staticWorld: StaticWorld, dynamic: DynamicWorld): number {
+  return dynamic.wells
+    .filter(well => well.team == team)
+    .map(well => wellType(well.type, staticWorld)!.efficiency)
+    .reduce((a, b) => a + b, 0);
 }
 
 export default function(ctrl: Ctrl) {

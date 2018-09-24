@@ -107,6 +107,14 @@ export interface Well {
   integrity: number;
 }
 
+export interface WellType {
+  cost: number;
+  efficiency: number;
+  initialIntegrity: number;
+  integrity: number;
+  name: string;
+}
+
 export type RoleName = 'SpaceShip';
 
 export interface Agent {
@@ -205,6 +213,7 @@ export interface StaticWorld {
   simId: string;
   teams: string[];
   roles: Role[];
+  wellTypes: WellType[];
   steps: number;
   map: string;
   minLat: number;
