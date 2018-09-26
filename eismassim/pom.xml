@@ -6,7 +6,7 @@
 
     <groupId>massim</groupId>
     <artifactId>eismassim</artifactId>
-    <version>3.6</version>
+    <version>3.7</version>
 
     <packaging>jar</packaging>
 
