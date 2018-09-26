@@ -2,6 +2,17 @@
 
 ## 2018
 
+## Package release 1.2 - the final 2018 package
+
+* monitor
+  * show the sum of current wells' efficiency
+* eismassim
+  * fix an entity type set exception
+* server
+  * cache routes if they do not change
+  * fix build action result
+  * fix generator using wrong parameter
+
 ## Package release 1.1
 
 * protocol
