@@ -1,5 +1,5 @@
-MASSim
-======
+MASSim 2016-2018: Agents in the City
+====================================
 
 [![Build Status](https://travis-ci.org/agentcontest/massim.svg?branch=master)](https://travis-ci.org/agentcontest/massim)
 
@@ -21,8 +21,6 @@ Download
 --------
 
 We upload **binary releases** to GitHub: https://github.com/agentcontest/massim/releases
-
-There also are (potentially unstable) [development snapshots](https://s3-eu-west-1.amazonaws.com/agentcontest/massim/massim-master.tar.gz) built after each commit.
 
 Building MASSim
 ---------------
