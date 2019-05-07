@@ -1,7 +1,7 @@
 MASSim 2016-2018: Agents in the City
 ====================================
 
-[![Build Status](https://travis-ci.org/agentcontest/massim.svg?branch=master)](https://travis-ci.org/agentcontest/massim)
+[![Build Status](https://travis-ci.org/agentcontest/massim_2018.svg?branch=master)](https://travis-ci.org/agentcontest/massim_2018)
 
 _MASSim_ (Multi-Agent Systems Simulation Platform), the simulation (server)
 software used in the
